@@ -76,7 +76,7 @@ export function detectVictory(grid: Grid, lastMove: Move): false | string[] {
   if (leftToRightPath) {
     return leftToRightPath;
   }
-  return route.path(SIDE_DOWN, SIDE_UP, pathOptions);
+  return route.path(SIDE_DOWN, SIDE_UP, pathOptions) ?? false;
 }
 
 export function getNodeTag(x: number, y: number): string {
