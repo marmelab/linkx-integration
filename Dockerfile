@@ -27,7 +27,10 @@ RUN <<-EOF
 		apcu \
 		intl \
 		opcache \
-		zip
+		zip \
+		pdo \
+		pgsql \
+		pdo_pgsql
 	rm -rf /var/lib/apt/lists/*
 EOF
 
