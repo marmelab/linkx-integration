@@ -7,7 +7,9 @@
     "run": "node src/main.ts"
   },
   "dependencies": {
-    "chalk": "catalog:"
+    "@hono/node-server": "catalog:",
+    "chalk": "catalog:",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

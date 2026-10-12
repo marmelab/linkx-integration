@@ -23,4 +23,4 @@ test-watch:
 	@pnpm test:watch
 
 run:
-	@pnpm --filter @linkx-integration/cli run run --file=$(file)
+	@pnpm --filter @linkx-integration/cli run run --file=$(file) --mode=$(mode)
