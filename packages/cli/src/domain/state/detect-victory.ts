@@ -1,5 +1,6 @@
 import Graph from "node-dijkstra";
 
+import type { Victory } from "../game/game.ts";
 import type { Move } from "../game/move.ts";
 import type { Adjacencies, Grid } from "./grid.ts";
 
@@ -11,7 +12,7 @@ const SIDE_LEFT = "LEFT";
 const SIDE_RIGHT = "RIGHT";
 
 // TODO : switch from boolean to path + color in next ticket
-export function detectVictory(grid: Grid, lastMove: Move): false | string[] {
+export function detectVictory(grid: Grid, lastMove: Move): Victory {
   if (!lastMove || lastMove?.skipped) {
     return false;
   }
@@ -74,16 +75,27 @@ export function detectVictory(grid: Grid, lastMove: Move): false | string[] {
 
   const leftToRightPath = route.path(SIDE_LEFT, SIDE_RIGHT, pathOptions);
   if (leftToRightPath) {
-    return leftToRightPath;
+    return {
+      path: leftToRightPath,
+      color: lastMove.color,
+    };
   }
-  return route.path(SIDE_DOWN, SIDE_UP, pathOptions) ?? false;
+  const bottomToTopPath = route.path(SIDE_DOWN, SIDE_UP, pathOptions);
+  if (bottomToTopPath) {
+    return {
+      path: bottomToTopPath,
+      color: lastMove.color,
+    };
+  }
+
+  return false;
 }
 
 export function getNodeTag(x: number, y: number): string {
   return `${x}.${y}`;
 }
 
-function getAdjacencies(
+export function getAdjacencies(
   grid: Grid,
   gridX: number,
   gridY: number,

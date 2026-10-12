@@ -7,7 +7,5 @@ describe("get-possible-moves", () => {
     expect(getPossibleMoves(game).length).toBe(95);
   });
 
-  it("should find a skip when no move is possible", () => {
-    // TODO
-  });
+  // TODO to complete when time allows it
 });
