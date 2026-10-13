@@ -14,27 +14,19 @@ export function getArguments(): CommandArguments {
         const inputPartialPath = currentArg.substring(7);
         if (inputPartialPath.startsWith("/") || inputPartialPath.length == 0) {
           return {
-            ...args,
+            isServer: false,
             inputPath: inputPartialPath,
           };
         } else {
           return {
-            ...args,
+            isServer: false,
             inputPath: path.join(process.cwd(), inputPartialPath),
           };
         }
-      } else if (
-        currentArg.startsWith("--mode=") &&
-        currentArg.substring(7) === "server"
-      ) {
-        return {
-          ...args,
-          isServer: true,
-        };
       }
 
       return args;
     },
-    { isServer: false } satisfies CommandArguments,
+    { isServer: true } satisfies CommandArguments,
   );
 }
