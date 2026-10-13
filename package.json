@@ -12,9 +12,6 @@
     "test:watch": "vitest",
     "prepare": "husky"
   },
-  "dependencies": {
-    "node-dijkstra": "catalog:"
-  },
   "devDependencies": {
     "@types/node": "catalog:",
     "husky": "catalog:",

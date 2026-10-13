@@ -27,6 +27,11 @@ export function parseSaveFile(input?: string): Array<Move> {
       if (moveInput.toUpperCase() === "W") {
         return undefined;
       }
+      if (!moveInput) {
+        throw new Error(
+          "Blank moves are not allowed. Please verify you do not have a double whitespace in the given state.",
+        );
+      }
 
       return parseSingularMove(color, moveInput);
     })
@@ -74,7 +79,7 @@ function extractRotation(moveInput: string): Rotation {
     const rotationNumber = Number.parseInt(rotationInput[0].charAt(1));
     if (Number.isNaN(rotationNumber)) {
       throw new Error(
-        "The rotation is indicated by a 'r' followed by a number between 0 and 3.",
+        `Rotation not recognized.\nThe rotation is indicated by a 'r' followed by a number between 0 and 3.`,
       );
     }
     return (rotationNumber % 4) as Rotation;
