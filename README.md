@@ -6,6 +6,29 @@ Official rules: <https://www.jeux-abstraits.fr/wp-content/uploads/2026/07/lynkx.
 
 ## Getting started
 
+You need a working **docker** and **docker-compose**.
+
+```bash
+docker compose up
+```
+
+or
+
+```bash
+docker-compose up
+```
+
+Api: http://localhost:3000
+Swagger: http://localhost:8080
+
+After modifying the node files, you need to rebuild :
+
+```bash
+docker-compose build && docker-compose up
+```
+
+## Getting started (cli mode)
+
 You need Node v26 (see `.nvmrc`) and pnpm 12. Or open the repository in the devcontainer, which ships with both.
 
 ```bash
