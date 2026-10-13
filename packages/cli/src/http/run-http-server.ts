@@ -1,12 +1,13 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 
+import { routes } from "./route/routes.ts";
+
 export function runHttpServer() {
   const app = new Hono();
 
-  app.get("/", (c) => c.text("Hello Node.js!"));
+  routes(app);
 
-  // Graceful shutdown
   const server = serve({
     fetch: app.fetch,
     port: 3000,
