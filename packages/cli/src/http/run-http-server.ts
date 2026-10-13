@@ -10,7 +10,7 @@ export function runHttpServer() {
 
   const server = serve({
     fetch: app.fetch,
-    port: 3000,
+    port: Number(process.env.PORT ?? 3000),
   });
 
   // graceful shutdown

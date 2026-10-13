@@ -4,7 +4,7 @@ ENV HUSKY=0
 
 RUN apk upgrade --no-cache && apk add --no-cache curl make
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@12.9.1
 
 RUN mkdir -p /app/packages && chown node:node /app /app/packages
 USER node
@@ -26,4 +26,4 @@ ENV PORT=3000
 
 WORKDIR /app/
 
-CMD ["pnpm", "--filter", "@linkx-integration/cli", "run", "run:server"]
+CMD ["node", "packages/cli/src/main-server.ts"]
