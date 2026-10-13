@@ -13,12 +13,6 @@
 {$SERVER_NAME:localhost} {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
-		# Redact the authorization query parameter that can be set by Mercure
-		format filter {
-			request>uri query {
-				replace authorization REDACTED
-			}
-		}
 	}
 
 	root /app/public
@@ -29,7 +23,6 @@
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
 	@phpRoute {
-		not path /.well-known/mercure*
 		not file {path}
 	}
 	rewrite @phpRoute index.php
