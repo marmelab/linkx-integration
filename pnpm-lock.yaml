@@ -210,10 +210,6 @@ catalogs:
 importers:
 
   .:
-    dependencies:
-      node-dijkstra:
-        specifier: 'catalog:'
-        version: 2.5.1
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -251,6 +247,9 @@ importers:
       hono-openapi:
         specifier: 'catalog:'
         version: 1.3.5(hono@4.13.13)(zod@4.6.5)
+      node-dijkstra:
+        specifier: 'catalog:'
+        version: 2.5.1
       zod:
         specifier: 'catalog:'
         version: 4.6.5

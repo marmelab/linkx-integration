@@ -7,15 +7,10 @@ import { displayGame } from "./cli/display-game.ts";
 import { getArguments } from "./cli/get-arguments.ts";
 import { playThroughCli } from "./cli/play-through-cli.ts";
 import { runGame } from "./domain/game/run-game.ts";
-import { runHttpServer } from "./http/run-http-server.ts";
 
 const commandArgs = getArguments();
 
-if (commandArgs.isServer) {
-  runHttpServer();
-} else {
-  startCliGame(commandArgs);
-}
+startCliGame(commandArgs);
 
 function startCliGame(commandArgs: CommandArguments) {
   let fileContent = "";

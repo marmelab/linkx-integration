@@ -23,7 +23,7 @@ test-watch:
 	@pnpm test:watch
 
 run:
-	@pnpm --filter @linkx-integration/cli run run --file=$(file)
+	@pnpm --filter @linkx-integration/cli run run:cli --file=$(file)
 
-run-server:
-	@pnpm --filter @linkx-integration/cli run run
+dev:
+	@docker compose up -d

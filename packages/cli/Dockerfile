@@ -26,4 +26,4 @@ ENV PORT=3000
 
 WORKDIR /app/
 
-CMD ["make", "run-server"]
+CMD ["pnpm", "--filter", "@linkx-integration/cli", "run", "run:server"]
