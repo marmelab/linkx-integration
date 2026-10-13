@@ -50,8 +50,18 @@ export function httpGetGameState(app: Hono) {
     (context) => {
       const sanitizedQuery = context.req.valid("query");
 
-      const game = runGame(sanitizedQuery.state);
-      return context.json({ gameState: game });
+      try {
+        const game = runGame(sanitizedQuery.state);
+        return context.json({ gameState: game });
+      } catch (err: any) {
+        return context.json(
+          {
+            message: err.message,
+            additionalContext: err.additionalContext ?? {},
+          },
+          400,
+        );
+      }
     },
   );
 }

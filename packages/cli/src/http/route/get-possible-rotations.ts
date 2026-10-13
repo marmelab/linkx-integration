@@ -33,9 +33,9 @@ export function httpGetPiecePossibleRotations(app: Hono) {
         },
       },
     }),
-    validator("query", pieceValidator),
+    validator("param", pieceValidator),
     (context) => {
-      const sanitizedQuery = context.req.valid("query");
+      const sanitizedQuery = context.req.valid("param");
 
       const possibleRotations = getPossibleShapesForPiece(
         sanitizedQuery.piece as Piece,
