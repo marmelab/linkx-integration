@@ -6,6 +6,11 @@ services:
       dockerfile: packages/cli/Dockerfile
     ports:
       - 3000:3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
   swagger-ui:
     depends_on:
       - node-linkx
