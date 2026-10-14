@@ -20,16 +20,6 @@ services:
       - "8080:8080"
     environment:
       SWAGGER_JSON_URL: "http://localhost:3000/"
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
   php:
     build:
       context: .
@@ -62,10 +52,6 @@ services:
         target: 443
         published: ${HTTPS_PORT:-443}
         protocol: tcp
-      - name: http3
-        target: 443
-        published: ${HTTP3_PORT:-443}
-        protocol: udp
   postgres-dev:
     image: postgres:18
     container_name: postgres-dev

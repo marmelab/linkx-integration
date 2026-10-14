@@ -15,7 +15,6 @@ linkx-integration.marmelab.com {
         reverse_proxy swagger-ui:8080 # TODO Remove exposition of node API once tests are OK
     }
     handle {
-        # reverse_proxy php:443
-        respond "Hello, world!"
+        reverse_proxy php:443
     }
 }
