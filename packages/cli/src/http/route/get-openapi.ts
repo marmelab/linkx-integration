@@ -13,7 +13,10 @@ export function httpGetOpenApi(app: Hono) {
           description: "API for the business logic of the linkx game",
         },
         servers: [
-          { url: "http://localhost:3000", description: "Local Server" },
+          {
+            url: process.env.BASE_URL ?? "http://localhost:3000",
+            description: "Local Server",
+          },
         ],
       },
     }),

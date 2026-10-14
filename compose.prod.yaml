@@ -2,6 +2,8 @@
 services:
   node-linkx:
     image: node-linkx-integration:prod
+    environment:
+      - BASE_URL=https://${DEFAULT_URI}/api/
     healthcheck:
       test: ["CMD", "curl", "-f", "http://node-linkx:3000/health"]
       interval: 30s
@@ -13,7 +15,7 @@ services:
     image: swaggerapi/swagger-ui
     container_name: "swagger-ui-container"
     environment:
-      SWAGGER_JSON_URL: "https://linkx-integration.marmelab.com/api/"
+      SWAGGER_JSON_URL: "https://${DEFAULT_URI}/api/"
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
