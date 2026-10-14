@@ -9,19 +9,13 @@ Official rules: <https://www.jeux-abstraits.fr/wp-content/uploads/2026/07/lynkx.
 You need a working **docker** and **docker-compose**.
 
 ```bash
-docker compose up
-```
-
-or
-
-```bash
-docker-compose up
+make dev
 ```
 
 Api: http://localhost:3000
 Swagger: http://localhost:8080
 
-After modifying the node files, you need to rebuild :
+After modifying the node files, you need to rebuild:
 
 ```bash
 docker-compose build && docker-compose up
@@ -85,4 +79,12 @@ Before pushing:
 ```bash
 make lint
 make test
+```
+
+## Deploying
+
+**Make sure you are on main before deploying**
+
+```bash
+DOMAIN=linkx-integration.marmelab.com make deploy
 ```
