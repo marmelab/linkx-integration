@@ -3,6 +3,7 @@ import type { Hono } from "hono";
 import { describeRoute, resolver, validator } from "hono-openapi";
 import * as zod from "zod";
 
+import { GRID_MAX_HEIGHT, type Game } from "../../domain/game/game.ts";
 import { POSSIBLE_COLORS, POSSIBLE_PIECES } from "../../domain/game/move.ts";
 import { runGame } from "../../domain/game/run-game.ts";
 
@@ -51,7 +52,7 @@ export function httpGetGameState(app: Hono) {
       const sanitizedQuery = context.req.valid("query");
 
       try {
-        const game = runGame(sanitizedQuery.state);
+        const game = rotateGridInNaturalOrder(runGame(sanitizedQuery.state));
         return context.json({ gameState: game });
       } catch (err: any) {
         return context.json(
@@ -64,4 +65,26 @@ export function httpGetGameState(app: Hono) {
       }
     },
   );
+}
+
+function rotateGridInNaturalOrder(game: Game) {
+  const rotatedGrid: string[][] = game.grid.map((column) =>
+    Array.from({ length: column.length }),
+  );
+
+  game.grid.forEach((column, gridX) => {
+    column.forEach((cell, gridY) => {
+      const modifiedX = GRID_MAX_HEIGHT - gridY;
+      const modifiedY = gridX;
+
+      if (rotatedGrid[modifiedX]) {
+        rotatedGrid[modifiedX][modifiedY] = cell;
+      }
+    });
+  });
+
+  return {
+    ...game,
+    grid: rotatedGrid,
+  } satisfies Game;
 }

@@ -6,7 +6,7 @@ export type Game = {
   availablePieces: Array<PieceCount>;
   turnOfPlayer: Color;
   lastMove?: Move;
-  victory: string[] | false;
+  victory: string[] | null;
 };
 
 export type PieceCount = {
