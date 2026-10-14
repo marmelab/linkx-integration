@@ -23,4 +23,13 @@ test-watch:
 	@pnpm test:watch
 
 run:
-	@pnpm --filter @linkx-integration/cli run run --file=$(file)
+	@pnpm --filter @linkx-integration/cli run run:cli --file=$(file)
+
+dev:
+	@docker compose up -d
+
+stop:
+	@docker compose down
+
+deploy:	## Deploy over SSH (requires DOMAIN=...)
+	@DOMAIN=$(DOMAIN) ./infra/scripts/deploy.sh

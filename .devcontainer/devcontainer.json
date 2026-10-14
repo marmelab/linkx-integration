@@ -35,7 +35,7 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": ["oxc.oxc-vscode"],
+      "extensions": ["oxc.oxc-vscode", "bmewburn.vscode-intelephense-client"],
       "settings": {
         "dev.containers.dockerCredentialHelper": false,
         "dev.containers.copyGitConfig": false

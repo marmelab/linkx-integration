@@ -4,10 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "run": "node src/main.ts"
+    "run:cli": "node src/main-cli.ts",
+    "run:server": "node src/main-server.ts"
   },
   "dependencies": {
-    "chalk": "catalog:"
+    "@hono/node-server": "catalog:",
+    "@hono/standard-validator": "catalog:",
+    "chalk": "catalog:",
+    "hono": "catalog:",
+    "hono-openapi": "catalog:",
+    "node-dijkstra": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

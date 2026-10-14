@@ -1,5 +1,35 @@
 ---
 services:
+  node-linkx:
+    build:
+      context: .
+      dockerfile: packages/cli/Dockerfile
+    ports:
+      - 3000:3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  swagger-ui:
+    depends_on:
+      - node-linkx
+    image: swaggerapi/swagger-ui
+    container_name: "swagger-ui-container"
+    ports:
+      - "8080:8080"
+    environment:
+      SWAGGER_JSON_URL: "http://localhost:3000/"
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
   php:
     build:
       context: .
