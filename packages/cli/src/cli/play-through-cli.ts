@@ -7,6 +7,7 @@ import type { Game } from "../domain/game/game.ts";
 import { getPossibleMoves } from "../domain/game/get-possibles-moves.ts";
 import { gameReducer } from "../domain/game/run-game.ts";
 import { parseSingularMove } from "../domain/state/gamestate-parser.ts";
+import { largestArea } from "../domain/state/largest-area.ts";
 import { displayGame } from "./display-game.ts";
 
 export function playThroughCli(rl: readline.Interface, game: Game) {
@@ -28,10 +29,15 @@ export function playThroughCli(rl: readline.Interface, game: Game) {
       color: game.turnOfPlayer,
     };
     if (game.lastMove?.skipped) {
-      // TODO calculate biggest area in future ticket
-      console.log(
-        "Game ended in a draw: both players cannot play legal moves anymore.",
-      );
+      console.log("Game ended: both players cannot play legal moves anymore.");
+      const victoryByArea = largestArea(game.grid);
+      if (victoryByArea) {
+        console.log(`Victory of player ${color} !`);
+      } else {
+        console.log(
+          "Draw: both players have the same number of blocks in their biggest area.",
+        );
+      }
       rl.close();
       return;
     }
