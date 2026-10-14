@@ -11,6 +11,9 @@
 
 .pnpm-store
 
+# Composer 
+**/vendor
+packages/web/config/reference.php
 
 # Symfony
 # Cache and logs (Symfony2)
