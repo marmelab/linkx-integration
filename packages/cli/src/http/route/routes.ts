@@ -6,7 +6,7 @@ import { httpGetGameState } from "./get-game-state.ts";
 import { httpGetHealth } from "./get-health.ts";
 import { httpGetOpenApi } from "./get-openapi.ts";
 import { httpGetPossibleMoves } from "./get-possible-moves.ts";
-import { httpGetPiecePossibleRotations } from "./get-possible-rotations.ts";
+import { httpGetPiecePossiblePieces } from "./get-possibles-pieces.ts";
 
 export function routes(app: Hono) {
   app.use(
@@ -24,5 +24,5 @@ export function routes(app: Hono) {
   httpGetOpenApi(app);
   httpGetGameState(app);
   httpGetPossibleMoves(app);
-  httpGetPiecePossibleRotations(app);
+  httpGetPiecePossiblePieces(app);
 }
