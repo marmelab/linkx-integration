@@ -2,3 +2,5 @@
 .git
 .pnpm-store
 infra
+**/vendor
+packages/web/config/reference.php
