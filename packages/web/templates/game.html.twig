@@ -22,7 +22,6 @@
             
         </h2>
         <main id="game"> 
-            <div class="padder">&nbsp;</div>
             <div class="grid">
                 {% for y in 8..0 %}
                     {% for x in 0..8 %}
@@ -43,7 +42,50 @@
                     {% endfor %}
                 {% endfor %}
             </div>
-            <div class="padder">&nbsp;</div>
+            <div id="playing-pieces">
+                {% set colorClass = game.turnOfPlayer === 'blue' ? ' cell-blue' : ' cell-white' %}
+                {% for piece in pieces %}                  
+                    {% set selectedClass = ((selectedPiece is defined and selectedPiece.piece === piece.piece) ? ' selected-piece' : '') %}
+                    <article class="possible-piece">
+                        <h4>{{ piece.piece }}</h4>
+                        <div class="matrix">
+                            {% for y in 2..0 %}
+                                {% for x in 0..2 %}
+                                    {% if piece.possibleMatrices[0].matrix[x][y] is defined and piece.possibleMatrices[0].matrix[x][y] === 1 %}
+                                        <div class="cell{{ colorClass }}{{ selectedClass }}">&nbsp;</div>
+                                    {% else %}
+                                        <div class="cell empty-cell">&nbsp;</div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <input type="submit" class="selection-button" value="Select"></button>
+                    </article>
+                {% endfor %}
+                <article id="rotation-preview">
+                    <h3>Prévisulation</h3>
+                    <div class="controls">
+                        <div class="matrix">
+                            {% if selectedPiece is defined %}
+                                {% for y in 2..0 %}
+                                    {% for x in 0..2 %}
+                                        {% if selectedPiece.possibleMatrices[0].matrix[x][y] is defined and selectedPiece.possibleMatrices[0].matrix[x][y] === 1 %}
+                                            <div class="cell{{ colorClass }} selected-piece">&nbsp;</div>
+                                        {% else %}
+                                            <div class="cell empty-cell">&nbsp;</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="actions">
+                            <input class="button" type="submit" value="< Rotate" />
+                            <input class="button" type="submit" value="Mirror" />
+                            <input class="button" type="submit" value="Rotate >" />
+                        </div>
+                    </div>
+                </article>
+            </div>
         </main>
         <div class="padder">&nbsp;</div>
     </div>

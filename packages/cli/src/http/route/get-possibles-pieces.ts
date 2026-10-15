@@ -10,11 +10,13 @@ export function httpGetPiecePossiblePieces(app: Hono) {
     possiblePieces: zod.array(
       zod.object({
         piece: zod.string(),
-        possiblesMatrices: zod.object({
-          rotations: zod.array(zod.number()),
-          mirrored: zod.array(zod.number()),
-          matrix: zod.array(zod.array(zod.number())),
-        }),
+        possiblesMatrices: zod.array(
+          zod.object({
+            rotations: zod.array(zod.number()),
+            mirrored: zod.array(zod.number()),
+            matrix: zod.array(zod.array(zod.number())),
+          }),
+        ),
       }),
     ),
   });

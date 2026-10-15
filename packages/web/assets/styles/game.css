@@ -34,6 +34,8 @@ body {
 #game {
   display: flex;
   flex: 1;
+  padding-left: 3rem;
+  gap: 1.5rem;
 }
 
 #game .grid {
@@ -44,19 +46,19 @@ body {
   height: calc(100cqmin - 8rem);
 }
 
-#game .grid .cell {
+.cell {
   border: #383838 solid 1px;
   user-select: none;
 }
 
-#game .grid .cell-empty {
+.cell-empty {
   background: #fafafa;
 }
-#game .grid .cell-white {
+.cell-white {
   background: #b85143;
   border: #111 solid 1px;
 }
-#game .grid .cell-blue {
+.cell-blue {
   background: #0077b2;
   border: #111 solid 1px;
 }
@@ -75,6 +77,80 @@ body {
 #game .grid .cell-white.victory-path {
   animation: victory-white 2.5s linear infinite;
   transition-timing-function: ease-in-out;
+}
+
+#playing-pieces {
+  flex: 2;
+  display: flex;
+  max-width: 60%;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+#playing-pieces .cell {
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.possible-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+  height: fit-content;
+}
+
+#playing-pieces h4,
+#playing-pieces h3 {
+  margin: 0;
+}
+
+.matrix {
+  border: #383838 solid 1px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  aspect-ratio: 1 / 1;
+}
+
+.selection-button {
+  height: 1.8em;
+  width: 100%;
+}
+
+#rotation-preview {
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+}
+
+#rotation-preview .controls {
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1 / 1;
+  gap: 0.7em;
+}
+
+#rotation-preview .matrix {
+  flex: 1 0;
+}
+
+#rotation-preview .cell {
+  min-width: 50px;
+  min-height: 50px;
+}
+
+#rotation-preview .actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#rotation-preview .actions .button {
+  padding: 0.35em;
 }
 
 @keyframes blink-white {

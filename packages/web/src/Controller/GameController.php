@@ -19,6 +19,13 @@ class GameController extends AbstractController
         $state = $request->query->get("state");
         try {
             $game = $rulesService->getGameFromStringState($state);
+            $pieces = $rulesService->getPiecesMatrices();
+            foreach ($pieces as $piece) {
+                $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($piece) {
+                    return $availablePiece['piece'] === $piece->getPiece();
+                })['count'];
+                $piece->setCount($pieceCount);
+            }
             $canPlay = $this->canThePlayersPlay($game, $rulesService, $state);
         } catch (ClientExceptionInterface $exception) {
             // TODO render last state instead (in a ticket where you can play)
@@ -40,7 +47,9 @@ class GameController extends AbstractController
 
         return $this->render('game.html.twig', [
             'game' => $game,
+            'pieces' => $pieces,
             'canPlay' => $canPlay,
+            'selectedPiece' => $pieces[0], // TODO
         ]);
     }
 
