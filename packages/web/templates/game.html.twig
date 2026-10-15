@@ -9,84 +9,42 @@
 
 {% block body %}
     <div id="container">
-        <h2 class="dark-block game-title">
-            {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
-                <span>Victory of player <span class="text-blue">Blue</span> !</span>
-            {% elseif game.victory and game.lastMove and game.lastMove.color === "white" %}
-                <span>Victory of player <span class="text-white">White</span> !</span>
-            {% elseif not game.victory and not canPlay["blue"] and not canPlay["white"] %}
-                <span>It's a draw !</span>
-            {% else %}
-                <span>Game in progress</span>
+        <form action="/game" method="get">
+            {% if state is defined and state is not null %}
+                <input type="hidden" name="state" value="{{ state }}" />
             {% endif %}
-            
-        </h2>
-        <main id="game"> 
-            <div class="grid">
-                {% for y in 8..0 %}
-                    {% for x in 0..8 %}
-                        {% set cell = game.grid[x][y] %}
-                        {% set victoryClass = (x ~ "." ~ y) in game.victory ? ' victory-path' : '' %}
-                        
-                        {% if cell === '.' %}
-                            <div class="cell cell-empty{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'w' %}
-                            <div class="cell cell-white{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'W' %}
-                            <div class="cell cell-white last-move{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'b' %}
-                            <div class="cell cell-blue{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'B' %}
-                            <div class="cell cell-blue last-move{{victoryClass}}">&nbsp;</div>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
+            {% if selectedPiece is not null %}
+                <input type="hidden" name="selected" value="{{ selectedPiece.piece }}" />
+                <input type="hidden" name="mirror-piece" value="{{ selectedMirrored }}" />
+                <input type="hidden" name="rotate-piece" value="{{ selectedRotation }}" />
+            {% endif %}
+            <h2 class="dark-block game-title">
+                {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
+                    <span>Victory of player <span class="text-blue">Blue</span> !</span>
+                {% elseif game.victory and game.lastMove and game.lastMove.color === "white" %}
+                    <span>Victory of player <span class="text-white">White</span> !</span>
+                {% elseif isDraw %}
+                    <span>It's a draw !</span>
+                {% else %}
+                    <span>Game in progress</span>
+                {% endif %}
+            </h2>
+            <main id="game"> 
+                {% include "game/main-grid.html.twig" %}
+                {% if game.victory is null and (canPlay["blue"] or canPlay["white"]) %}
+                    {% include "game/pieces-controls.html.twig" %}
+                {% endif %}
+            </main>
+            <div id="message-container">
+                {% if not isDraw %}
+                    {% if infoMessage is defined and infoMessage is not null %}
+                        <div class="message message-info">{{ infoMessage }}</div>
+                    {% endif %}
+                    {% if errorMessage is defined and errorMessage is not null %}
+                        <div class="message message-error">{{ errorMessage }}</div>
+                    {% endif %}
+                {% endif %}
             </div>
-            <div id="playing-pieces">
-                {% set colorClass = game.turnOfPlayer === 'blue' ? ' cell-blue' : ' cell-white' %}
-                {% for piece in pieces %}                  
-                    {% set selectedClass = ((selectedPiece is defined and selectedPiece.piece === piece.piece) ? ' selected-piece' : '') %}
-                    <article class="possible-piece">
-                        <h4>{{ piece.piece }}</h4>
-                        <div class="matrix">
-                            {% for y in 2..0 %}
-                                {% for x in 0..2 %}
-                                    {% if piece.possibleMatrices[0].matrix[x][y] is defined and piece.possibleMatrices[0].matrix[x][y] === 1 %}
-                                        <div class="cell{{ colorClass }}{{ selectedClass }}">&nbsp;</div>
-                                    {% else %}
-                                        <div class="cell empty-cell">&nbsp;</div>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
-                        <input type="submit" class="selection-button" value="Select"></button>
-                    </article>
-                {% endfor %}
-                <article id="rotation-preview">
-                    <h3>Prévisulation</h3>
-                    <div class="controls">
-                        <div class="matrix">
-                            {% if selectedPiece is defined %}
-                                {% for y in 2..0 %}
-                                    {% for x in 0..2 %}
-                                        {% if selectedPiece.possibleMatrices[0].matrix[x][y] is defined and selectedPiece.possibleMatrices[0].matrix[x][y] === 1 %}
-                                            <div class="cell{{ colorClass }} selected-piece">&nbsp;</div>
-                                        {% else %}
-                                            <div class="cell empty-cell">&nbsp;</div>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                        <div class="actions">
-                            <input class="button" type="submit" value="< Rotate" />
-                            <input class="button" type="submit" value="Mirror" />
-                            <input class="button" type="submit" value="Rotate >" />
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </main>
-        <div class="padder">&nbsp;</div>
+        </form>
     </div>
 {% endblock %}

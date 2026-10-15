@@ -6,10 +6,15 @@ body {
 }
 
 #container {
-  display: flex;
-  flex-direction: column;
   height: 100%;
   width: 100%;
+}
+
+#container form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .padder {
@@ -19,7 +24,7 @@ body {
 .dark-block {
   background-color: #526172;
   color: #eee;
-  height: 8rem;
+  height: 3.75rem;
 }
 
 .game-title {
@@ -36,14 +41,20 @@ body {
   flex: 1;
   padding-left: 3rem;
   gap: 1.5rem;
+  justify-content: center;
 }
 
 #game .grid {
-  border: #383838 solid 1px;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
-  width: calc(100cqmin - 8rem);
-  height: calc(100cqmin - 8rem);
+  width: calc(80cqmin - 3.75rem);
+  height: calc(80cqmin - 3.75rem);
+}
+
+.column-button {
+  height: 80%;
+  width: 80%;
+  border-radius: 13%;
 }
 
 .cell {
@@ -113,6 +124,33 @@ body {
   aspect-ratio: 1 / 1;
 }
 
+.piece-count {
+  width: 100%;
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.piece-count-mark {
+  border-radius: 50%;
+  height: 1.75em;
+  width: 1.75em;
+}
+
+.mark-blue {
+  border: solid 3px #005179;
+}
+.mark-white {
+  border: solid 3px #7d372d;
+}
+
+.filled-blue {
+  background-color: #0077b2;
+}
+.filled-white {
+  background-color: #b85143;
+}
+
 .selection-button {
   height: 1.8em;
   width: 100%;
@@ -124,10 +162,11 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.7em;
+  align-self: stretch;
 }
 
 #rotation-preview .controls {
-  flex: 1 0;
+  flex: 0;
   display: flex;
   flex-direction: column;
   aspect-ratio: 1 / 1;
@@ -145,12 +184,37 @@ body {
 
 #rotation-preview .actions {
   width: 100%;
+  flex: 1 1 44px;
   display: flex;
   justify-content: space-between;
 }
 
 #rotation-preview .actions .button {
   padding: 0.35em;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+#message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  padding: 0.75rem 0;
+  height: 4rem;
+}
+.message {
+  padding: 0.5em 1.25em;
+  border-radius: 8px;
+  font-size: 1.2em;
+}
+.message-info {
+  background-color: #b1dbef;
+  border: #1993d0 solid 2px;
+}
+.message-error {
+  background-color: #ffc8c0;
+  border: #e26352 solid 2px;
 }
 
 @keyframes blink-white {

@@ -20,16 +20,20 @@ class LinkxRules
     }
 
     public function getGameFromStringState(?string $state): Game {
-        $queryParams = !empty($state) ? "?state=$state" : "";
+        $queryParams = !is_null($state) ? ['state'=>$state] : [];
         $response = $this->client->request(
             'GET',
-            self::BASE_URI . "/game-state$queryParams"
+            self::BASE_URI . "/game-state",
+            [
+                'query' => $queryParams,
+            ]
         );
 
         return $this->serializer->denormalize($response->toArray()['gameState'], Game::class);
     }
 
     public function getPossibleMoves(?string $state): array {
+        $state = urlencode($state);
         $queryParams = !empty($state) ? "?state=$state" : "";
         $response = $this->client->request(
             'GET',
@@ -47,4 +51,5 @@ class LinkxRules
 
         return $this->serializer->denormalize($response->toArray()['possiblePieces'], Piece::class . '[]');
     }
+
 }

@@ -40,7 +40,7 @@ export function parseSaveFile(input?: string): Array<Move> {
 
 export function parseSingularMove(color: Color, moveInput: string) {
   try {
-    if (moveInput === "--") {
+    if (moveInput === "") {
       return {
         skipped: true,
         color,
