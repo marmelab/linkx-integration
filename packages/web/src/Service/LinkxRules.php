@@ -2,15 +2,16 @@
 
 namespace App\Service;
 
-use App\Entity\Game;
-use App\Entity\Move;
+use App\Model\Game;
+use App\Model\Move;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LinkxRules
 {
     public function __construct(
         private HttpClientInterface $client, 
-        private Mapper $mapper,
+        private DenormalizerInterface $serializer,
     )
     {
     }
@@ -22,9 +23,7 @@ class LinkxRules
             "http://node-linkx:3000/game-state$queryParams"
         );
 
-        $content = json_decode($response->getContent(true))->gameState;
-        
-        return $this->mapper->json->map($content, Game::class);
+        return $this->serializer->denormalize($response->toArray()['gameState'], Game::class);
     }
 
     public function getPossibleMoves(?string $state): array {
@@ -34,8 +33,6 @@ class LinkxRules
             "http://node-linkx:3000/game-state/possible-moves$queryParams"
         );
 
-        $content = json_decode($response->getContent(true))->possibleMoves;
-        
-        return $this->mapper->json->mapArray($content, [], Move::class);
+        return $this->serializer->denormalize($response->toArray()['possibleMoves'], Move::class . '[]');
     }
 }

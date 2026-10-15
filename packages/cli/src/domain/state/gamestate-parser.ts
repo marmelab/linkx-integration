@@ -39,21 +39,28 @@ export function parseSaveFile(input?: string): Array<Move> {
 }
 
 export function parseSingularMove(color: Color, moveInput: string) {
-  if (moveInput === "--") {
-    return {
-      skipped: true,
-      color,
-    } satisfies Move;
-  }
+  try {
+    if (moveInput === "--") {
+      return {
+        skipped: true,
+        color,
+      } satisfies Move;
+    }
 
-  return {
-    skipped: false,
-    color,
-    piece: extractPiece(moveInput),
-    column: extractColumn(moveInput),
-    rotation: extractRotation(moveInput),
-    mirrored: /m/i.test(moveInput),
-  } satisfies Move;
+    return {
+      skipped: false,
+      color,
+      piece: extractPiece(moveInput),
+      column: extractColumn(moveInput),
+      rotation: extractRotation(moveInput),
+      mirrored: /m/i.test(moveInput),
+    } satisfies Move;
+  } catch (error: any) {
+    error.additionalContext = {
+      move: moveInput,
+    };
+    throw error;
+  }
 }
 
 function extractPiece(moveInput: string): Piece {

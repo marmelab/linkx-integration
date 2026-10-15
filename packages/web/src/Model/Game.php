@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Entity;
+namespace App\Model;
 
 class Game {
     private array $grid = [];
     private array $availablePieces = [];
     private string $turnOfPlayer = "blue";
-    private ?Move $lastMove;
+    private ?Move $lastMove = null;
     private ?array $victory = [];
 
     public function __construct()
