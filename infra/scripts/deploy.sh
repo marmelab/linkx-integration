@@ -9,11 +9,12 @@ SSH_USER="ubuntu"
 SSH_OPTS="-i ${SSH_CERTIFICATE} -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15"
 
 docker build --platform linux/amd64 -f packages/cli/Dockerfile -t node-linkx-integration:prod .
+docker build --platform linux/amd64 -f packages/web/Dockerfile -t frankenphp_prod .
 
 ssh $SSH_OPTS "$SSH_USER@$SSH_HOST" \
 	'cloud-init status --wait >/dev/null 2>&1 || true; until docker compose version >/dev/null 2>&1; do sleep 5; done'
 
-docker save node-linkx-integration:prod \
+docker save node-linkx-integration:prod frankenphp_prod \
 	| gzip | ssh $SSH_OPTS "$SSH_USER@$SSH_HOST" 'docker load'
 
 scp $SSH_OPTS ./compose.prod.yaml infra/config/Caddyfile "$SSH_USER@$SSH_HOST:~/"

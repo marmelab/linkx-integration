@@ -10,7 +10,8 @@
 
 {$CADDY_EXTRA_CONFIG}
 
-{$SERVER_NAME:localhost} {
+# Http is acceptable because every message is within the docker virtual network
+http://{$SERVER_NAME:localhost} {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 	}

@@ -11,9 +11,9 @@ const SIDE_LEFT = "LEFT";
 const SIDE_RIGHT = "RIGHT";
 
 // TODO : switch from boolean to path + color in next ticket
-export function detectVictory(grid: Grid, lastMove: Move): false | string[] {
+export function detectVictory(grid: Grid, lastMove: Move): null | string[] {
   if (!lastMove || lastMove?.skipped) {
-    return false;
+    return null;
   }
 
   const color = lastMove.color;

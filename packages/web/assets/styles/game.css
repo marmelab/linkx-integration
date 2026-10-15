@@ -1,0 +1,115 @@
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.padder {
+  flex: 1;
+}
+
+.dark-block {
+  background-color: #526172;
+  color: #eee;
+}
+
+.game-title {
+  flex: 2 0 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 1rem;
+  margin: 0 0 2rem 0;
+  max-height: 8em;
+}
+
+#game {
+  display: flex;
+  width: 100%;
+}
+
+#game .grid {
+  border: #383838 solid 1px;
+  display: grid;
+  grid-template-columns: repeat(9, max(70px, 4vw));
+}
+
+#game .grid .cell {
+  height: max(70px, 4vw);
+  border: #383838 solid 1px;
+  user-select: none;
+}
+
+#game .grid .cell-empty {
+  background: #fafafa;
+}
+#game .grid .cell-white {
+  background: #b85143;
+  border: #111 solid 1px;
+}
+#game .grid .cell-blue {
+  background: #0077b2;
+  border: #111 solid 1px;
+}
+#game .grid .cell-white.last-move:not(.victory-path) {
+  animation: blink-white 2s linear infinite;
+}
+#game .grid .cell-blue.last-move:not(.victory-path) {
+  animation: blink-blue 2s linear infinite;
+}
+
+#game .grid .cell-blue.victory-path {
+  animation: victory-blue 2.5s linear infinite;
+  transition-timing-function: ease-in-out;
+}
+
+#game .grid .cell-white.victory-path {
+  animation: victory-white 2.5s linear infinite;
+  transition-timing-function: ease-in-out;
+}
+
+@keyframes blink-white {
+  0%,
+  100% {
+    background: #fafafa;
+  }
+  50% {
+    background: #b85143;
+  }
+}
+@keyframes blink-blue {
+  0%,
+  100% {
+    background: #fafafa;
+  }
+  50% {
+    background: #0077b2;
+  }
+}
+
+@keyframes victory-blue {
+  0%,
+  100% {
+    background: #0077b2;
+  }
+  50% {
+    background: #003c5a;
+  }
+}
+@keyframes victory-white {
+  0%,
+  100% {
+    background: #b85143;
+  }
+  50% {
+    background: #5d2822;
+  }
+}

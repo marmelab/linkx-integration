@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/game.css') }}" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div id="container">
+        <h2 class="dark-block game-title">
+            {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
+                <span>Victory of player <span class="text-blue">Blue</span> !</span>
+            {% elseif game.victory and game.lastMove and game.lastMove.color === "white" %}
+                <span>Victory of player <span class="text-white">White</span> !</span>
+            {% elseif not game.victory and not canPlay["blue"] and not canPlay["white"] %}
+                <span>It's a draw !</span>
+            {% else %}
+                <span>Game in progress</span>
+            {% endif %}
+            
+        </h2>
+        <main id="game"> 
+            <div class="padder">&nbsp;</div>
+            <div class="grid">
+                {% for y in 8..0 %}
+                    {% for x in 0..8 %}
+                        {% set cell = game.grid[x][y] %}
+                        {% set victoryClass = (x ~ "." ~ y) in game.victory ? ' victory-path' : '' %}
+                        
+                        {% if cell === '.' %}
+                            <div class="cell cell-empty{{victoryClass}}">&nbsp;</div>
+                        {% elseif cell === 'w' %}
+                            <div class="cell cell-white{{victoryClass}}">&nbsp;</div>
+                        {% elseif cell === 'W' %}
+                            <div class="cell cell-white last-move{{victoryClass}}">&nbsp;</div>
+                        {% elseif cell === 'b' %}
+                            <div class="cell cell-blue{{victoryClass}}">&nbsp;</div>
+                        {% elseif cell === 'B' %}
+                            <div class="cell cell-blue last-move{{victoryClass}}">&nbsp;</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            <div class="padder">&nbsp;</div>
+        </main>
+        <div class="padder">&nbsp;</div>
+    </div>
+{% endblock %}

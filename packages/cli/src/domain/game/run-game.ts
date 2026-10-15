@@ -22,7 +22,7 @@ export function runGame(stringifiedState?: string): Game {
     grid: initGrid(),
     availablePieces: initAvailablePieces(),
     turnOfPlayer,
-    victory: false,
+    victory: null,
   };
 
   return moves.reduce(gameReducer, game);

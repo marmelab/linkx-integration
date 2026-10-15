@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h2>{{ errorMessage }}</h2>
+{% if move is defined %}
+    <p>Move with a problem: {{ move }}</p>
+{% endif %}
+
+{% endblock %}
