@@ -1,3 +1,6 @@
-body {
-  background-color: skyblue;
+.text-blue {
+  color: #0077b2;
+}
+.text-white {
+  color: #b85143;
 }
