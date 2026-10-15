@@ -12,7 +12,7 @@ You need a working **docker** and **docker-compose**.
 make dev
 ```
 
-Web version: https://localhost
+Web version: https://localhost/game
 Api: http://localhost:3000
 Swagger: http://localhost:8080
 
