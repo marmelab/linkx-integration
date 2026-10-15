@@ -84,7 +84,7 @@ COPY --link packages/web/composer.* packages/web/symfony.* ./
 RUN composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
 
 # copy sources
-COPY --link --exclude=packages/web/frankenphp/ . ./
+COPY --link --exclude=packages/web/frankenphp/ ./packages/web ./
 
 RUN <<-EOF
 	mkdir -p var/cache var/log var/share
@@ -145,7 +145,7 @@ ENV  OPENSSL_CONF=/etc/ssl/openssl.cnf XDG_CONFIG_HOME=/config XDG_DATA_HOME=/da
 
 RUN <<-EOF
 	mkdir -p /data/caddy /config/caddy
-	chown -R www-data:www-data /data /configs
+	chown -R www-data:www-data /data /config
 	# Remove setuid/setgid bits
 	find / -perm /6000 -type f -exec chmod a-s {} + 2>/dev/null || true
 EOF
