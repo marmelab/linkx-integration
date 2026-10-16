@@ -78,7 +78,16 @@ class GameController extends AbstractController
         }
         if (is_null($gameEntity->getPlayer2Sessid()) 
             && $gameEntity->getPlayer1Sessid() !== $session->get("playerId")) {
-            $gameEntity->setPlayer2Sessid($session->get("playerId"));
+            if (!empty($request->query->get('join'))) {
+                $gameEntity->setPlayer2Sessid($session->get("playerId"));
+            } else {
+                return $this->render('join-game.html.twig', [
+                    'id' => $id,
+                ]);
+            }
+        } else if ($gameEntity->getPlayer1Sessid() !== $session->get("playerId")
+            && $gameEntity->getPlayer2Sessid() !== $session->get("playerId")) {
+            $infoMessage = "You are a spectator of this game.";
         }
 
         $selected = $request->query->get("selected");
@@ -95,7 +104,7 @@ class GameController extends AbstractController
             $selectedRotation,
             $column,
             null,
-            null,
+            $infoMessage ?? null,
         );
 
         $gameEntity->setState($state);
