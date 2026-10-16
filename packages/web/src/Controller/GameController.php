@@ -49,9 +49,16 @@ class GameController extends AbstractController
         return $render;
     }
 
-    #[Route('/online-game')]
-    public function createOnlineGame(SessionInterface $session): Response
+    #[Route('/online-game', methods: ['POST'])]
+    public function createOnlineGame(Request $request, SessionInterface $session): Response
     {
+        $csrfToken = $request->getPayload()->get('csrf-token');
+        if (!$this->isCsrfTokenValid('create-game', $csrfToken)) {
+            $this->render('error.html.twig', [
+                'message' => "Invalid CSRF token provided.",
+            ]);
+        }
+
         if (empty($session->get("playerId"))) {
             $session->set("playerId", uniqid());
         }
@@ -63,25 +70,25 @@ class GameController extends AbstractController
         return $this->redirect("/online-game/{$gameEntity->getId()}");
     }
 
-    #[Route('/online-game/{id}')]
-    public function onlineGame(Request $request, SessionInterface $session, int $id): Response
+    #[Route('/online-game/{id}', methods: ['GET', 'POST'])]
+    public function onlineGame(Request $request, SessionInterface $session, GameEntity $gameEntity): Response
     {
-        $gameEntity = $this->gameRepository->find($id);
-        if (is_null($gameEntity)) {
-            return $this->render('error.html.twig', [
-                "errorMessage" => "This game couldn't be found."
-            ]);
-        }
         if (empty($session->get("playerId"))) {
             $session->set("playerId", uniqid());
         }
-        if (is_null($gameEntity->getPlayer2Sessid()) 
+        if (is_null($gameEntity->getPlayer2Sessid())
             && $gameEntity->getPlayer1Sessid() !== $session->get("playerId")) {
-            if (!empty($request->query->get('join'))) {
+            if (!empty($request->getPayload()->get('join'))) {
+                $csrfToken = $request->getPayload()->get('csrf-token');
+                if (!$this->isCsrfTokenValid('join-game', $csrfToken)) {
+                    $this->render('error.html.twig', [
+                        'message' => "Invalid CSRF token provided.",
+                    ]);
+                }
                 $gameEntity->setPlayer2Sessid($session->get("playerId"));
             } else {
                 return $this->render('join-game.html.twig', [
-                    'id' => $id,
+                    'id' => $gameEntity->getId(),
                 ]);
             }
         } else if ($gameEntity->getPlayer1Sessid() !== $session->get("playerId")
@@ -96,7 +103,7 @@ class GameController extends AbstractController
 
         [$render, $state] = $this->runAndRenderGame(
             $session,
-            $id,
+            $gameEntity,
             $gameEntity->getState(),
             $selected, 
             $selectedMirrored,
@@ -107,15 +114,17 @@ class GameController extends AbstractController
         );
 
         $gameEntity->setState($state);
-        $this->em->persist($gameEntity);
-        $this->em->flush();
+        if ($gameEntity->getPlayer1Sessid() === $session->get("playerId")
+            || $gameEntity->getPlayer2Sessid() === $session->get("playerId")) {
+            $this->em->flush();
+        }
 
         return $render;
     }
 
     private function runAndRenderGame(
         SessionInterface $session,
-        ?int $id,
+        ?GameEntity $gameEntity,
         ?string $state,
         ?string $selected,
         ?bool $selectedMirrored,
@@ -126,9 +135,6 @@ class GameController extends AbstractController
     {
         try {
             $game = $this->rulesService->getGameFromStringState($state);
-            if ($id) {
-                $gameEntity = $this->gameRepository->find($id);
-            }
             
             if (!empty($gameEntity)) {
                 $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue" 
@@ -158,7 +164,7 @@ class GameController extends AbstractController
                     'pieces' => $pieces,
                     'canPlay' => $canPlay,
                     'selectedMatrix' => null,
-                    'id' => $id,
+                    'id' => $gameEntity ? $gameEntity->getId() : null,
                     'game' => $game,
                     'selectedPiece' => null,
                     'isDraw' => false,
@@ -181,16 +187,16 @@ class GameController extends AbstractController
                 }
                 $errorMessage = $response["message"];
                 $state = $this->stateUpdater->keepOnlyUntilMove($state, $errorMove);
-                return $this->runAndRenderGame($session, $id, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
+                return $this->runAndRenderGame($session, $gameEntity, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
             } else {
-                return $this->render('error.html.twig', [
+                return [$this->render('error.html.twig', [
                     "errorMessage" => $response["message"]
-                ]);
+                ]), $state];
             }
         } catch (ServerExceptionInterface $exception) {
-            return $this->render('error.html.twig', [
+            return [$this->render('error.html.twig', [
                 "errorMessage" => "The server appears to be unavailable. Please contact an administrator.",
-            ]);
+            ]), $state];
         }
 
         /** @var Piece $selectedPiece */
@@ -205,13 +211,13 @@ class GameController extends AbstractController
             if (!$canPlay[$game->getTurnOfPlayer()] && $canPlay[$otherColor]) {
                 $state .= " --";
                 $infoMessage = "The turn of {$game->getTurnOfPlayer()} was skipped because there was no legal move to play.";
-                return $this->runAndRenderGame($session, $id, $state, null, null, null, null, null, $infoMessage);
+                return $this->runAndRenderGame($session, $gameEntity, $state, null, null, null, null, null, $infoMessage);
             } else if (!empty($column)) {
                 if (!empty($state)) {
                     $state .= " ";
                 }
                 $state .= $this->stateUpdater->stringifyMove(false, $selected, $selectedRotation, $selectedMirrored, $column);
-                return $this->runAndRenderGame($session, $id, $state, null, null, null, null, null, null);
+                return $this->runAndRenderGame($session, $gameEntity, $state, null, null, null, null, null, null);
             }
         }
         if (!$infoMessage && !$isYourTurn) {
@@ -219,10 +225,10 @@ class GameController extends AbstractController
         }
 
         return [$this->render('game.html.twig', [
-            'id' => $id,
+            'id' => $gameEntity ? $gameEntity->getId() : null,
             'state' => $state,
             'game' => $game,
-            'isYourTurn' => $isYourTurn,
+            'isYourTurn' => $isYourTurn && $canPlay[$game->getTurnOfPlayer()],
             'pieces' => $pieces,
             'canPlay' => $canPlay,
             'isDraw' => !$canPlay["blue"] and !$canPlay["white"], 

@@ -9,11 +9,13 @@
 
 {% block body %}
     <div id="container">
-        <form action="/game" method="GET">
+        <form action="/game" method="POST">
+            <!-- No CSRF as no action is done on the server except for rendering -->
             <button type="submit">Jouer sur le même ordinateur</button>
             <input type="text" name="state" value="" placeholder="Reprendre depuis un état existant...">
         </form>
-        <form action="/online-game">
+        <form action="/online-game" method="POST">
+            <input type="hidden" name="csrf-token" value="{{ csrf_token('create-game') }}">
             <button type="submit">Jouer à distance</button>
         </form>
     </div>

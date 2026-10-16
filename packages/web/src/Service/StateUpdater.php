@@ -13,6 +13,7 @@ class StateUpdater {
     }
 
     public function keepOnlyUntilMove(string $state, string $move) {
-        return mb_trim(mb_strstr($state, $move, true));
+        $indexOfLastOccurence = mb_strrpos($state, $move);
+        return mb_trim(mb_substr($state, 0, $indexOfLastOccurence, "utf8"));
     }
 }
