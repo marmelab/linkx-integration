@@ -132,8 +132,7 @@ class GameController extends AbstractController
             }
             
             if (!empty($gameEntity)) {
-                $currentPlayer = (count(explode(" ", $state)) % 2) + 1;
-                $sessidOfTurnPlayer = $currentPlayer === 1 
+                $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue" 
                     ? $gameEntity->getPlayer1Sessid() 
                     : $gameEntity->getPlayer2Sessid();
             }
