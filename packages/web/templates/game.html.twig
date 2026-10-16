@@ -31,9 +31,7 @@
             </h2>
             <main id="game"> 
                 {% include "game/main-grid.html.twig" %}
-                {% if game.victory is null and (canPlay["blue"] or canPlay["white"]) %}
-                    {% include "game/pieces-controls.html.twig" %}
-                {% endif %}
+                {% include "game/pieces-controls.html.twig" %}
             </main>
             <div id="message-container">
                 {% if not isDraw %}

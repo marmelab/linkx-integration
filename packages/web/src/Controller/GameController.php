@@ -44,7 +44,7 @@ class GameController extends AbstractController
         $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
         $column = $request->query->get("column");
 
-        [$render, $state] = $this->runAndRenderGame($session, null, $state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
+        [$render] = $this->runAndRenderGame($session, null, $state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
 
         return $render;
     }
@@ -142,16 +142,6 @@ class GameController extends AbstractController
                 $state = $game->getTurnOfPlayer() === "white" ? "W" : "";
             }
 
-            if (!empty($game->getVictory())) {
-                return [$this->render('game.html.twig', [
-                    'isYourTurn' => false,
-                    'id' => $id,
-                    'game' => $game,
-                    'selectedPiece' => null,
-                    'isDraw' => false,
-                ]), $state];
-            }
-
             $pieces = $this->rulesService->getPiecesMatrices();
             foreach ($pieces as $piece) {
                 $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($game, $piece) {
@@ -161,8 +151,20 @@ class GameController extends AbstractController
                 $piece->setCount($pieceCount);
             }
             $canPlay = $this->canThePlayersPlay($game, $state);
+
+            if (!empty($game->getVictory())) {
+                return [$this->render('game.html.twig', [
+                    'isYourTurn' => false,
+                    'pieces' => $pieces,
+                    'canPlay' => $canPlay,
+                    'selectedMatrix' => null,
+                    'id' => $id,
+                    'game' => $game,
+                    'selectedPiece' => null,
+                    'isDraw' => false,
+                ]), $state];
+            }
         } catch (ClientExceptionInterface $exception) {
-            // TODO render last state instead (in a ticket where you can play)
             $response = $exception->getResponse()->toArray(false);
             if (!empty($response["additionalContext"]["move"])) {
                 $errorMoveResponse = $response["additionalContext"]["move"];

@@ -48,13 +48,13 @@
             </div>
             <div class="actions">
                 {% if isYourTurn and selectedCanRotate is defined and selectedCanRotate %}
-                    <button class="button" name="rotate-piece" type="submit" value="{{ selectedRotation - 1 }}"> &lt; </button>
+                    <button class="button" name="rotate-piece" type="submit" value="{{ selectedRotation - 1 }}"> ⭯ </button>
                 {% endif %}
                 {% if isYourTurn and selectedCanMirror is defined and selectedCanMirror %}
                     <button class="button" name="mirror-piece" type="submit" value="{{ not selectedMirrored }}"> Mirror </button>
                 {% endif %}
                 {% if isYourTurn and selectedCanRotate is defined and selectedCanRotate %}
-                    <button class="button" name="rotate-piece" type="submit" value="{{ selectedRotation + 1 }}"> &gt; </button>
+                    <button class="button" name="rotate-piece" type="submit" value="{{ selectedRotation + 1 }}"> ⭮ </button>
                 {% endif %}
             </div>
         </div>
