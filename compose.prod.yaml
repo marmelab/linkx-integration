@@ -20,6 +20,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
   php:
+    image: frankenphp_prod
     restart: unless-stopped
     depends_on:
       postgres-dev:
@@ -58,3 +59,5 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  linkx_postgres:
+    name: linkx_postgres
