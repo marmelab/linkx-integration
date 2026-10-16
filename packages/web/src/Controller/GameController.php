@@ -33,8 +33,7 @@ class GameController extends AbstractController
     #[Route('/')]
     public function home(Request $request, SessionInterface $session): Response
     {
-        // TODO buttons to create games
-        return $this->render("base.html.twig");
+        return $this->render("landing.html.twig");
     }
 
     #[Route('/game')]
@@ -119,7 +118,9 @@ class GameController extends AbstractController
     {
         try {
             $game = $this->rulesService->getGameFromStringState($state);
-            $gameEntity = $this->gameRepository->find($id);
+            if ($id) {
+                $gameEntity = $this->gameRepository->find($id);
+            }
             
             if (!empty($gameEntity)) {
                 $currentPlayer = (count(explode(" ", $state)) % 2) + 1;
