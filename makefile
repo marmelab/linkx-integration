@@ -34,5 +34,8 @@ stop:
 build:
 	@docker compose build
 
+make-migration: # Requires make dev
+	@docker container exec linkx-integration-1-php-1 php bin/console make:migration
+
 deploy:	## Deploy over SSH (requires DOMAIN=...)
 	@DOMAIN=$(DOMAIN) ./infra/scripts/deploy.sh

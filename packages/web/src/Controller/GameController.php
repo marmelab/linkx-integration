@@ -2,9 +2,12 @@
 namespace App\Controller;
 
 use App\Model\Game;
+use App\Entity\Game as GameEntity;
 use App\Model\Piece;
+use App\Repository\GameRepository;
 use App\Service\LinkxRules as ServiceLinkxRules;
 use App\Service\StateUpdater;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +19,10 @@ class GameController extends AbstractController
 {
 
     public function __construct(
-        private StateUpdater $stateUpdater,
-        private ServiceLinkxRules $rulesService
+        protected StateUpdater $stateUpdater,
+        protected ServiceLinkxRules $rulesService,
+        protected GameRepository $gameRepository,
+        protected EntityManager $em,
     )
     {
     }
@@ -31,10 +36,50 @@ class GameController extends AbstractController
         $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
         $column = $request->query->get("column");
 
-        return $this->renderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
+        [$render, $state] = $this->runAndRenderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
+
+        return $render;
     }
 
-    function renderGame(?string $state, ?string $selected, ?bool $selectedMirrored, ?int $selectedRotation, ?string $column, ?string $errorMessage, ?string $infoMessage)
+    #[Route('/online-game')]
+    public function onlineGame(Request $request): Response
+    {
+        if (!empty($id = $request->query->get("id"))) {
+            $gameEntity = $this->gameRepository->find($id);
+        } else {
+            $gameEntity = new GameEntity();
+        }
+
+        $selected = $request->query->get("selected");
+        $selectedMirrored = $request->query->get("mirror-piece") ?? false;
+        $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
+        $column = $request->query->get("column");
+
+        [$render, $state] = $this->runAndRenderGame(
+            $gameEntity->getState(),
+            $selected, 
+            $selectedMirrored,
+            $selectedRotation,
+            $column,
+            null,
+            null,
+        );
+
+        $gameEntity->setState($state);
+        $this->gameRepository->persist($gameEntity);
+        $this->em->flush();
+
+        return $render;
+    }
+
+    protected function runAndRenderGame(
+        ?string $state,
+        ?string $selected,
+        ?bool $selectedMirrored,
+        ?int $selectedRotation,
+        ?string $column,
+        ?string $errorMessage,
+        ?string $infoMessage)
     {
         try {
             $game = $this->rulesService->getGameFromStringState($state);
@@ -45,11 +90,11 @@ class GameController extends AbstractController
             }
 
             if (!empty($game->getVictory())) {
-                return $this->render('game.html.twig', [
+                return [$this->render('game.html.twig', [
                     'game' => $game,
                     'selectedPiece' => null,
                     'isDraw' => false,
-                ]);
+                ]), $state];
             }
 
             $pieces = $this->rulesService->getPiecesMatrices();
@@ -78,7 +123,7 @@ class GameController extends AbstractController
                 }
                 $errorMessage = $response["message"];
                 $state = $this->stateUpdater->keepOnlyUntilMove($state, $errorMove);
-                return $this->renderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
+                return $this->runAndRenderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
             } else {
                 return $this->render('error.html.twig', [
                     "errorMessage" => $response["message"]
@@ -100,16 +145,16 @@ class GameController extends AbstractController
         if (!$canPlay[$game->getTurnOfPlayer()] && $canPlay[$otherColor]) {
             $state .= " --";
             $infoMessage = "The turn of {$game->getTurnOfPlayer()} was skipped because there was no legal move to play.";
-            return $this->renderGame($state, null, null, null, null, null, $infoMessage);
+            return $this->runAndRenderGame($state, null, null, null, null, null, $infoMessage);
         } else if (!empty($column)) {
             if (!empty($state)) {
                 $state .= " ";
             }
             $state .= $this->stateUpdater->stringifyMove(false, $selected, $selectedRotation, $selectedMirrored, $column);
-            return $this->renderGame($state, null, null, null, null, null, null);
+            return $this->runAndRenderGame($state, null, null, null, null, null, null);
         }
 
-        return $this->render('game.html.twig', [
+        return [$this->render('game.html.twig', [
             'state' => $state,
             'game' => $game,
             'pieces' => $pieces,
@@ -126,7 +171,7 @@ class GameController extends AbstractController
                 return in_array($selectedMirrored, $matrix->getMirrored())
                     && in_array($selectedRotation, $matrix->getRotations());
             }) : null,
-        ]);
+        ]), $state];
     }
 
     function canThePlayersPlay(Game $game, ?string $state) {
