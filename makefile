@@ -31,5 +31,8 @@ dev:
 stop:
 	@docker compose down
 
+build:
+	@docker compose build
+
 deploy:	## Deploy over SSH (requires DOMAIN=...)
 	@DOMAIN=$(DOMAIN) ./infra/scripts/deploy.sh

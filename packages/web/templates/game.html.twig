@@ -9,42 +9,42 @@
 
 {% block body %}
     <div id="container">
-        <h2 class="dark-block game-title">
-            {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
-                <span>Victory of player <span class="text-blue">Blue</span> !</span>
-            {% elseif game.victory and game.lastMove and game.lastMove.color === "white" %}
-                <span>Victory of player <span class="text-white">White</span> !</span>
-            {% elseif not game.victory and not canPlay["blue"] and not canPlay["white"] %}
-                <span>It's a draw !</span>
-            {% else %}
-                <span>Game in progress</span>
+        <form action="/game" method="get">
+            {% if state is defined and state is not null %}
+                <input type="hidden" name="state" value="{{ state }}" />
             {% endif %}
-            
-        </h2>
-        <main id="game"> 
-            <div class="padder">&nbsp;</div>
-            <div class="grid">
-                {% for y in 8..0 %}
-                    {% for x in 0..8 %}
-                        {% set cell = game.grid[x][y] %}
-                        {% set victoryClass = (x ~ "." ~ y) in game.victory ? ' victory-path' : '' %}
-                        
-                        {% if cell === '.' %}
-                            <div class="cell cell-empty{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'w' %}
-                            <div class="cell cell-white{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'W' %}
-                            <div class="cell cell-white last-move{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'b' %}
-                            <div class="cell cell-blue{{victoryClass}}">&nbsp;</div>
-                        {% elseif cell === 'B' %}
-                            <div class="cell cell-blue last-move{{victoryClass}}">&nbsp;</div>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
+            {% if selectedPiece is not null %}
+                <input type="hidden" name="selected" value="{{ selectedPiece.piece }}" />
+                <input type="hidden" name="mirror-piece" value="{{ selectedMirrored }}" />
+                <input type="hidden" name="rotate-piece" value="{{ selectedRotation }}" />
+            {% endif %}
+            <h2 class="dark-block game-title">
+                {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
+                    <span>Victory of player <span class="text-blue">Blue</span> !</span>
+                {% elseif game.victory and game.lastMove and game.lastMove.color === "white" %}
+                    <span>Victory of player <span class="text-white">White</span> !</span>
+                {% elseif isDraw %}
+                    <span>It's a draw !</span>
+                {% else %}
+                    <span>Game in progress</span>
+                {% endif %}
+            </h2>
+            <main id="game"> 
+                {% include "game/main-grid.html.twig" %}
+                {% if game.victory is null and (canPlay["blue"] or canPlay["white"]) %}
+                    {% include "game/pieces-controls.html.twig" %}
+                {% endif %}
+            </main>
+            <div id="message-container">
+                {% if not isDraw %}
+                    {% if infoMessage is defined and infoMessage is not null %}
+                        <div class="message message-info">{{ infoMessage }}</div>
+                    {% endif %}
+                    {% if errorMessage is defined and errorMessage is not null %}
+                        <div class="message message-error">{{ errorMessage }}</div>
+                    {% endif %}
+                {% endif %}
             </div>
-            <div class="padder">&nbsp;</div>
-        </main>
-        <div class="padder">&nbsp;</div>
+        </form>
     </div>
 {% endblock %}

@@ -2,7 +2,9 @@
 namespace App\Controller;
 
 use App\Model\Game;
+use App\Model\Piece;
 use App\Service\LinkxRules as ServiceLinkxRules;
+use App\Service\StateUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,40 +15,123 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 class GameController extends AbstractController
 {
 
+    public function __construct(
+        private StateUpdater $stateUpdater,
+        private ServiceLinkxRules $rulesService
+    )
+    {
+    }
+
     #[Route('/game')]
-    public function state(ServiceLinkxRules $rulesService, Request $request): Response
+    public function state(Request $request): Response
     {
         $state = $request->query->get("state");
+        $selected = $request->query->get("selected");
+        $selectedMirrored = $request->query->get("mirror-piece") ?? false;
+        $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
+        $column = $request->query->get("column");
+
+        return $this->renderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
+    }
+
+    function renderGame(?string $state, ?string $selected, ?bool $selectedMirrored, ?int $selectedRotation, ?string $column, ?string $errorMessage, ?string $infoMessage)
+    {
         try {
-            $game = $rulesService->getGameFromStringState($state);
-            $canPlay = $this->canThePlayersPlay($game, $rulesService, $state);
+            $game = $this->rulesService->getGameFromStringState($state);
+            
+            // Anchoring the color of the first move
+            if (is_null($state)) {
+                $state = $game->getTurnOfPlayer() === "white" ? "W" : "";
+            }
+
+            if (!empty($game->getVictory())) {
+                return $this->render('game.html.twig', [
+                    'game' => $game,
+                    'selectedPiece' => null,
+                    'isDraw' => false,
+                ]);
+            }
+
+            $pieces = $this->rulesService->getPiecesMatrices();
+            foreach ($pieces as $piece) {
+                $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($piece) {
+                    return $availablePiece['piece'] === $piece->getPiece();
+                })['count'];
+                $piece->setCount($pieceCount);
+            }
+            $canPlay = $this->canThePlayersPlay($game, $state);
         } catch (ClientExceptionInterface $exception) {
             // TODO render last state instead (in a ticket where you can play)
             $response = $exception->getResponse()->toArray(false);
             if (!empty($response["additionalContext"]["move"])) {
+                $errorMoveResponse = $response["additionalContext"]["move"];
+                if (is_array($errorMoveResponse)) {
+                    $errorMove = $this->stateUpdater->stringifyMove(
+                        $errorMoveResponse['skipped'],
+                        $errorMoveResponse['piece'], 
+                        $errorMoveResponse['rotation'], 
+                        $errorMoveResponse['mirrored'], 
+                        intval($errorMoveResponse['column']) + 1
+                    );
+                } else {
+                    $errorMove = $errorMoveResponse;
+                }
+                $errorMessage = $response["message"];
+                $state = $this->stateUpdater->keepOnlyUntilMove($state, $errorMove);
+                return $this->renderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
+            } else {
                 return $this->render('error.html.twig', [
-                    "errorMessage" => $response["message"],
-                    "move" => $response["additionalContext"]["move"],
+                    "errorMessage" => $response["message"]
                 ]);
             }
-            return $this->render('error.html.twig', [
-                "errorMessage" => $response["message"],
-            ]);
         } catch (ServerExceptionInterface $exception) {
             return $this->render('error.html.twig', [
                 "errorMessage" => "The server appears to be unavailable. Please contact an administrator.",
             ]);
         }
 
+        /** @var Piece $selectedPiece */
+        $selectedPiece = array_find($pieces, function ($piece) use ($selected) {
+            return $piece->getPiece() === $selected;
+        });
+
+        $otherColor = $game->getTurnOfPlayer() === "blue" ? "white" : "blue";
+
+        if (!$canPlay[$game->getTurnOfPlayer()] && $canPlay[$otherColor]) {
+            $state .= " --";
+            $infoMessage = "The turn of {$game->getTurnOfPlayer()} was skipped because there was no legal move to play.";
+            return $this->renderGame($state, null, null, null, null, null, $infoMessage);
+        } else if (!empty($column)) {
+            if (!empty($state)) {
+                $state .= " ";
+            }
+            $state .= $this->stateUpdater->stringifyMove(false, $selected, $selectedRotation, $selectedMirrored, $column);
+            return $this->renderGame($state, null, null, null, null, null, null);
+        }
+
         return $this->render('game.html.twig', [
+            'state' => $state,
             'game' => $game,
+            'pieces' => $pieces,
             'canPlay' => $canPlay,
+            'isDraw' => !$canPlay["blue"] and !$canPlay["white"], 
+            'infoMessage' => $infoMessage,
+            'errorMessage' => $errorMessage,
+            'selectedPiece' => $selectedPiece,
+            'selectedCanRotate' => $selectedPiece ? count($selectedPiece->getPossibleMatrices()) > 1 : false,
+            'selectedCanMirror' => $selectedPiece ? count($selectedPiece->getPossibleMatrices()[0]->getMirrored()) === 1 : false,
+            'selectedMirrored' => !empty($selectedPiece) ? $selectedMirrored : false,
+            'selectedRotation' => !empty($selectedPiece) ? $selectedRotation : false,
+            'selectedMatrix' => !empty($selectedPiece) ? array_find($selectedPiece->getPossibleMatrices(), function ($matrix) use ($selectedRotation, $selectedMirrored) {
+                return in_array($selectedMirrored, $matrix->getMirrored())
+                    && in_array($selectedRotation, $matrix->getRotations());
+            }) : null,
         ]);
     }
 
-    function canThePlayersPlay(Game $game, ServiceLinkxRules $rulesService, ?string $state) {
+    function canThePlayersPlay(Game $game, ?string $state) {
         $canPlay = ["blue" => true, "white" => true];
-        $currentPossibleMoves = $rulesService->getPossibleMoves($state);
+        $currentPossibleMoves = $this->rulesService->getPossibleMoves($state);
 
         if ($game->getLastMove() && $game->getLastMove()->getColor() === "blue") {
             if ($game->getLastMove()->getSkipped()) {
@@ -67,5 +152,14 @@ class GameController extends AbstractController
         }
 
         return $canPlay;
+    }
+
+    function formatRotation(?string $rotation) {
+        $rotation = intval($rotation);
+        $rotation = $rotation % 4;
+        if ($rotation < 0) {
+            return 4 + $rotation;
+        }
+        return $rotation;
     }
 }

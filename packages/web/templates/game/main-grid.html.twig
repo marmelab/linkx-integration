@@ -1,0 +1,31 @@
+<div class="grid">
+    {% for x in 1..9 %}
+        {% if selectedPiece is not null %}
+            <div class="centered">
+                <button class="column-button" name="column" type="submit" value="{{ x }}">{{ x }}</button>
+            </div>
+        {% else %}
+            <div class="centered">
+                {{ x }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    {% for y in 8..0 %}
+        {% for x in 0..8 %}
+            {% set cell = game.grid[x][y] %}
+            {% set victoryClass = (x ~ "." ~ y) in game.victory ? ' victory-path' : '' %}
+            
+            {% if cell === '.' %}
+                <div class="cell cell-empty{{victoryClass}}">&nbsp;</div>
+            {% elseif cell === 'w' %}
+                <div class="cell cell-white{{victoryClass}}">&nbsp;</div>
+            {% elseif cell === 'W' %}
+                <div class="cell cell-white last-move{{victoryClass}}">&nbsp;</div>
+            {% elseif cell === 'b' %}
+                <div class="cell cell-blue{{victoryClass}}">&nbsp;</div>
+            {% elseif cell === 'B' %}
+                <div class="cell cell-blue last-move{{victoryClass}}">&nbsp;</div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</div>
