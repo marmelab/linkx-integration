@@ -53,7 +53,7 @@ services:
       interval: 10s
       retries: 5
       start_period: 30s
-      timeout: 10sCHORE]
+      timeout: 10s
 
 volumes:
   caddy_data:
