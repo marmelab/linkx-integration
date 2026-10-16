@@ -9,8 +9,8 @@
 
 {% block body %}
     <div id="container">
-        <form action="/game" method="get">
-            {% if state is defined and state is not null %}
+        <form action="{{ id is not null ? '/online-game/' ~ id : '/game' }}" method="get">
+            {% if id is null and state is defined and state is not null %}
                 <input type="hidden" name="state" value="{{ state }}" />
             {% endif %}
             {% if selectedPiece is not null %}
@@ -22,7 +22,7 @@
                 {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
                     <span>Victory of player <span class="text-blue">Blue</span> !</span>
                 {% elseif game.victory and game.lastMove and game.lastMove.color === "white" %}
-                    <span>Victory of player <span class="text-white">White</span> !</span>
+                    <span>Victory of player <span class="text-white">Red</span> !</span>
                 {% elseif isDraw %}
                     <span>It's a draw !</span>
                 {% else %}
@@ -31,14 +31,12 @@
             </h2>
             <main id="game"> 
                 {% include "game/main-grid.html.twig" %}
-                {% if game.victory is null and (canPlay["blue"] or canPlay["white"]) %}
-                    {% include "game/pieces-controls.html.twig" %}
-                {% endif %}
+                {% include "game/pieces-controls.html.twig" %}
             </main>
             <div id="message-container">
                 {% if not isDraw %}
                     {% if infoMessage is defined and infoMessage is not null %}
-                        <div class="message message-info">{{ infoMessage }}</div>
+                        <div class="message message-info">{{ infoMessage }} <button class="button" type="submit">Refresh ⟳</button></div>
                     {% endif %}
                     {% if errorMessage is defined and errorMessage is not null %}
                         <div class="message message-error">{{ errorMessage }}</div>

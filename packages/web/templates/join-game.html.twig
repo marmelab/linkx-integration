@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="{{ asset('styles/landing.css') }}" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div id="container">
+        <form action="/online-game/{{ id }}">
+            <input type="hidden" name="csrf-token" value="{{ csrf_token('join-game') }}">
+            <button type="submit" name="join" value="true">Rejoindre la partie</button>
+        </form>
+    </div>
+{% endblock %}
