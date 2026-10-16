@@ -37,5 +37,8 @@ build:
 make-migration: # Requires make dev
 	@docker container exec linkx-integration-1-php-1 php bin/console make:migration
 
+migrate:
+	@docker container exec linkx-integration-1-php-1 php bin/console d:m:m
+
 deploy:	## Deploy over SSH (requires DOMAIN=...)
 	@DOMAIN=$(DOMAIN) ./infra/scripts/deploy.sh

@@ -27,7 +27,7 @@
                     <div class="piece-count-mark mark-{{ game.turnOfPlayer }} filled-{{ game.turnOfPlayer }}">&nbsp;</div>
                 {% endif %}
             </div>
-            {% if piece.count > 0 %}
+            {% if piece.count > 0 and isYourTurn %}
                 <button name="selected" type="submit" class="selection-button" value="{{ piece.piece }}">Select</button>
             {% endif %}
         </article>
@@ -47,13 +47,13 @@
                 {% endfor %}
             </div>
             <div class="actions">
-                {% if selectedCanRotate is defined and selectedCanRotate %}
+                {% if isYourTurn and selectedCanRotate is defined and selectedCanRotate %}
                     <button class="button" name="rotate-piece" type="submit" value="{{ selectedRotation - 1 }}"> &lt; </button>
                 {% endif %}
-                {% if selectedCanMirror is defined and selectedCanMirror %}
+                {% if isYourTurn and selectedCanMirror is defined and selectedCanMirror %}
                     <button class="button" name="mirror-piece" type="submit" value="{{ not selectedMirrored }}"> Mirror </button>
                 {% endif %}
-                {% if selectedCanRotate is defined and selectedCanRotate %}
+                {% if isYourTurn and selectedCanRotate is defined and selectedCanRotate %}
                     <button class="button" name="rotate-piece" type="submit" value="{{ selectedRotation + 1 }}"> &gt; </button>
                 {% endif %}
             </div>

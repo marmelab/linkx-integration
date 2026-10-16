@@ -7,11 +7,13 @@ use App\Model\Piece;
 use App\Repository\GameRepository;
 use App\Service\LinkxRules as ServiceLinkxRules;
 use App\Service\StateUpdater;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\Uuid;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
@@ -19,16 +21,24 @@ class GameController extends AbstractController
 {
 
     public function __construct(
-        protected StateUpdater $stateUpdater,
-        protected ServiceLinkxRules $rulesService,
-        protected GameRepository $gameRepository,
-        protected EntityManager $em,
+        private StateUpdater $stateUpdater,
+        private ServiceLinkxRules $rulesService,
+        private GameRepository $gameRepository,
+        private EntityManagerInterface $em,
     )
     {
     }
 
+
+    #[Route('/')]
+    public function home(Request $request, SessionInterface $session): Response
+    {
+        // TODO buttons to create games
+        return $this->render("base.html.twig");
+    }
+
     #[Route('/game')]
-    public function state(Request $request): Response
+    public function state(Request $request, SessionInterface $session): Response
     {
         $state = $request->query->get("state");
         $selected = $request->query->get("selected");
@@ -36,18 +46,40 @@ class GameController extends AbstractController
         $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
         $column = $request->query->get("column");
 
-        [$render, $state] = $this->runAndRenderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
+        [$render, $state] = $this->runAndRenderGame($session, null, $state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
 
         return $render;
     }
 
     #[Route('/online-game')]
-    public function onlineGame(Request $request): Response
+    public function createOnlineGame(SessionInterface $session): Response
     {
-        if (!empty($id = $request->query->get("id"))) {
-            $gameEntity = $this->gameRepository->find($id);
-        } else {
-            $gameEntity = new GameEntity();
+        if (empty($session->get("playerId"))) {
+            $session->set("playerId", uniqid());
+        }
+        $gameEntity = new GameEntity();
+        $gameEntity->setPlayer1Sessid($session->get("playerId"));
+        $this->em->persist($gameEntity);
+        $this->em->flush();
+
+        return $this->redirect("/online-game/{$gameEntity->getId()}");
+    }
+
+    #[Route('/online-game/{id}')]
+    public function onlineGame(Request $request, SessionInterface $session, int $id): Response
+    {
+        $gameEntity = $this->gameRepository->find($id);
+        if (is_null($gameEntity)) {
+            return $this->render('error.html.twig', [
+                "errorMessage" => "This game couldn't be found."
+            ]);
+        }
+        if (empty($session->get("playerId"))) {
+            $session->set("playerId", uniqid());
+        }
+        if (is_null($gameEntity->getPlayer2Sessid()) 
+            && $gameEntity->getPlayer1Sessid() !== $session->get("playerId")) {
+            $gameEntity->setPlayer2Sessid($session->get("playerId"));
         }
 
         $selected = $request->query->get("selected");
@@ -56,6 +88,8 @@ class GameController extends AbstractController
         $column = $request->query->get("column");
 
         [$render, $state] = $this->runAndRenderGame(
+            $session,
+            $id,
             $gameEntity->getState(),
             $selected, 
             $selectedMirrored,
@@ -66,13 +100,15 @@ class GameController extends AbstractController
         );
 
         $gameEntity->setState($state);
-        $this->gameRepository->persist($gameEntity);
+        $this->em->persist($gameEntity);
         $this->em->flush();
 
         return $render;
     }
 
-    protected function runAndRenderGame(
+    private function runAndRenderGame(
+        SessionInterface $session,
+        ?int $id,
         ?string $state,
         ?string $selected,
         ?bool $selectedMirrored,
@@ -83,7 +119,16 @@ class GameController extends AbstractController
     {
         try {
             $game = $this->rulesService->getGameFromStringState($state);
+            $gameEntity = $this->gameRepository->find($id);
             
+            if (!empty($gameEntity)) {
+                $currentPlayer = (count(explode(" ", $state)) % 2) + 1;
+                $sessidOfTurnPlayer = $currentPlayer === 1 
+                    ? $gameEntity->getPlayer1Sessid() 
+                    : $gameEntity->getPlayer2Sessid();
+            }
+            $isYourTurn = !empty($gameEntity) ? ($sessidOfTurnPlayer === $session->get("playerId")) : true;
+
             // Anchoring the color of the first move
             if (is_null($state)) {
                 $state = $game->getTurnOfPlayer() === "white" ? "W" : "";
@@ -91,6 +136,8 @@ class GameController extends AbstractController
 
             if (!empty($game->getVictory())) {
                 return [$this->render('game.html.twig', [
+                    'isYourTurn' => false,
+                    'id' => $id,
                     'game' => $game,
                     'selectedPiece' => null,
                     'isDraw' => false,
@@ -123,7 +170,7 @@ class GameController extends AbstractController
                 }
                 $errorMessage = $response["message"];
                 $state = $this->stateUpdater->keepOnlyUntilMove($state, $errorMove);
-                return $this->runAndRenderGame($state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
+                return $this->runAndRenderGame($session, $id, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
             } else {
                 return $this->render('error.html.twig', [
                     "errorMessage" => $response["message"]
@@ -142,21 +189,29 @@ class GameController extends AbstractController
 
         $otherColor = $game->getTurnOfPlayer() === "blue" ? "white" : "blue";
 
-        if (!$canPlay[$game->getTurnOfPlayer()] && $canPlay[$otherColor]) {
-            $state .= " --";
-            $infoMessage = "The turn of {$game->getTurnOfPlayer()} was skipped because there was no legal move to play.";
-            return $this->runAndRenderGame($state, null, null, null, null, null, $infoMessage);
-        } else if (!empty($column)) {
-            if (!empty($state)) {
-                $state .= " ";
+        // We just ignore out of turn plays to avoid refreshes displaying an error message
+        if ($isYourTurn) {
+            if (!$canPlay[$game->getTurnOfPlayer()] && $canPlay[$otherColor]) {
+                $state .= " --";
+                $infoMessage = "The turn of {$game->getTurnOfPlayer()} was skipped because there was no legal move to play.";
+                return $this->runAndRenderGame($session, $id, $state, null, null, null, null, null, $infoMessage);
+            } else if (!empty($column)) {
+                if (!empty($state)) {
+                    $state .= " ";
+                }
+                $state .= $this->stateUpdater->stringifyMove(false, $selected, $selectedRotation, $selectedMirrored, $column);
+                return $this->runAndRenderGame($session, $id, $state, null, null, null, null, null, null);
             }
-            $state .= $this->stateUpdater->stringifyMove(false, $selected, $selectedRotation, $selectedMirrored, $column);
-            return $this->runAndRenderGame($state, null, null, null, null, null, null);
+        }
+        if (!$infoMessage && !$isYourTurn) {
+            $infoMessage = "Waiting for your opponent to play...";
         }
 
         return [$this->render('game.html.twig', [
+            'id' => $id,
             'state' => $state,
             'game' => $game,
+            'isYourTurn' => $isYourTurn,
             'pieces' => $pieces,
             'canPlay' => $canPlay,
             'isDraw' => !$canPlay["blue"] and !$canPlay["white"], 

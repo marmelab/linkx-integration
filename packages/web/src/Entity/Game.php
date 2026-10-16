@@ -16,8 +16,11 @@ class Game
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $state = null;
 
-    #[ORM\Column]
-    private ?bool $hasEnded = null;
+    #[ORM\Column(length: 255)]
+    private ?string $player_1_sessid = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $player_2_sessid = null;
 
     public function getId(): ?int
     {
@@ -36,14 +39,26 @@ class Game
         return $this;
     }
 
-    public function hasEnded(): ?bool
+    public function getPlayer1Sessid(): ?string
     {
-        return $this->hasEnded;
+        return $this->player_1_sessid;
     }
 
-    public function setHasEnded(bool $hasEnded): static
+    public function setPlayer1Sessid(string $player_1_sessid): static
     {
-        $this->hasEnded = $hasEnded;
+        $this->player_1_sessid = $player_1_sessid;
+
+        return $this;
+    }
+
+    public function getPlayer2Sessid(): ?string
+    {
+        return $this->player_2_sessid;
+    }
+
+    public function setPlayer2Sessid(?string $player_2_sessid): static
+    {
+        $this->player_2_sessid = $player_2_sessid;
 
         return $this;
     }
