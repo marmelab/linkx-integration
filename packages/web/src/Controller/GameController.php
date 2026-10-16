@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Constraints\Uuid;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
@@ -155,8 +154,9 @@ class GameController extends AbstractController
 
             $pieces = $this->rulesService->getPiecesMatrices();
             foreach ($pieces as $piece) {
-                $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($piece) {
-                    return $availablePiece['piece'] === $piece->getPiece();
+                $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($game, $piece) {
+                    return $availablePiece['color'] === $game->getTurnOfPlayer() 
+                        && $availablePiece['piece'] === $piece->getPiece();
                 })['count'];
                 $piece->setCount($pieceCount);
             }
