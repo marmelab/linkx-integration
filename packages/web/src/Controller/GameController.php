@@ -27,7 +27,7 @@ class GameController extends AbstractController
     ) {}
 
 
-    #[Route('/')]
+    #[Route(path: '/', name: 'app_home')]
     public function home(Request $request, SessionInterface $session): Response
     {
         return $this->render("landing.html.twig");
