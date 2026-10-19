@@ -9,7 +9,7 @@
 
 {% block body %}
     <div id="container">
-        <form action="/online-game/{{ id }}">
+        <form action="/online-game/{{ id }}", method="POST">
             <input type="hidden" name="csrf-token" value="{{ csrf_token('join-game') }}">
             <button type="submit" name="join" value="true">Rejoindre la partie</button>
         </form>

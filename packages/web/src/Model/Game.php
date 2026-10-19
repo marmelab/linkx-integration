@@ -2,16 +2,18 @@
 
 namespace App\Model;
 
-class Game {
+class Game
+{
     private array $grid = [];
+    /**@var Piece[] */
     private array $availablePieces = [];
     private string $turnOfPlayer = "blue";
     private ?Move $lastMove = null;
     private ?array $victory = [];
+    private ?array $canPlay = ["white" => true, "blue" => true];
+    private ?string $state = null;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function getVictory()
     {
@@ -54,6 +56,9 @@ class Game {
         return $this->availablePieces;
     }
 
+    /**
+     * @param Piece[] $availablePieces
+     */
     public function setAvailablePieces(array $availablePieces)
     {
         $this->availablePieces = $availablePieces;
@@ -70,6 +75,28 @@ class Game {
     {
         $this->grid = $grid;
 
+        return $this;
+    }
+
+    public function getCanPlay()
+    {
+        return $this->canPlay;
+    }
+
+    public function setCanPlay(array $canPlay): self
+    {
+        $this->canPlay = $canPlay;
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(?string $state): self
+    {
+        $this->state = $state;
         return $this;
     }
 }
