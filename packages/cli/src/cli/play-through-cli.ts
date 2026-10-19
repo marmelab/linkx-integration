@@ -32,7 +32,9 @@ export function playThroughCli(rl: readline.Interface, game: Game) {
       console.log("Game ended: both players cannot play legal moves anymore.");
       const victoryByArea = largestArea(game.grid);
       if (victoryByArea) {
-        console.log(`Victory of player ${color} !`);
+        console.log(
+          `Victory of player ${victoryByArea.color} through the largest area!`,
+        );
       } else {
         console.log(
           "Draw: both players have the same number of blocks in their biggest area.",

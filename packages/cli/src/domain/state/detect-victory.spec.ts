@@ -5,7 +5,7 @@ describe("detect-victory", () => {
     const input = "3I1 4L4 3I7 11 4Tr14 11 16";
     const game = runGame(input);
 
-    expect(game.victory).toBe(false);
+    expect(game.victory).toBe(null);
   });
 
   it("should detect a simple victory", () => {

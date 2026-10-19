@@ -1,10 +1,9 @@
 import Graph from "node-dijkstra";
 
-import type { Victory } from "../game/game.ts";
 import type { Move } from "../game/move.ts";
 import type { Adjacencies, Grid } from "./grid.ts";
 
-import { GRID_MAX_HEIGHT } from "../game/game.ts";
+import { GRID_MAX_HEIGHT, type Victory } from "../game/game.ts";
 
 const SIDE_UP = "UP";
 const SIDE_DOWN = "DOWN";
@@ -65,6 +64,12 @@ export function detectVictory(grid: Grid, lastMove: Move): Victory {
         );
 
         if (adjacencies) {
+          if (gridX === GRID_MAX_HEIGHT) {
+            adjacencies.targetNodes[SIDE_RIGHT] = 1;
+          }
+          if (gridY === GRID_MAX_HEIGHT) {
+            adjacencies.targetNodes[SIDE_UP] = 1;
+          }
           route.addNode(adjacencies.sourceTag, adjacencies.targetNodes);
         }
       }
@@ -107,12 +112,6 @@ export function getAdjacencies(
         adjacencies.targetNodes[nodeTag] = 1;
       }
     }
-  }
-  if (gridX === GRID_MAX_HEIGHT) {
-    adjacencies.targetNodes[SIDE_RIGHT] = 1;
-  }
-  if (gridY === GRID_MAX_HEIGHT) {
-    adjacencies.targetNodes[SIDE_UP] = 1;
   }
 
   if (Object.entries(adjacencies.targetNodes).length === 0) {

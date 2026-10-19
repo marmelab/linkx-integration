@@ -16,15 +16,15 @@
             {% set victoryClass = (x ~ "." ~ y) in game.victory ? ' victory-path' : '' %}
             {% set lastMoveClass = game.victory is null ? 'last-move' : '' %}
             {% if cell === '.' %}
-                <div class="cell cell-empty{{victoryClass}}">&nbsp;</div>
+                <div class="cell cell-empty{{ victoryClass }}">&nbsp;</div>
             {% elseif cell === 'w' %}
-                <div class="cell cell-white{{victoryClass}}">&nbsp;</div>
+                <div class="cell cell-white{{ victoryClass }}">{{ x ~ "." ~ y }}</div>
             {% elseif cell === 'W' %}
-                <div class="cell cell-white {{ lastMoveClass }}{{victoryClass}}">&nbsp;</div>
+                <div class="cell cell-white {{ lastMoveClass }}{{ victoryClass }}">&nbsp;</div>
             {% elseif cell === 'b' %}
-                <div class="cell cell-blue{{victoryClass}}">&nbsp;</div>
+                <div class="cell cell-blue{{ victoryClass }}">&nbsp;</div>
             {% elseif cell === 'B' %}
-                <div class="cell cell-blue {{ lastMoveClass }}{{victoryClass}}">&nbsp;</div>
+                <div class="cell cell-blue {{ lastMoveClass }}{{ victoryClass }}">&nbsp;</div>
             {% endif %}
         {% endfor %}
     {% endfor %}

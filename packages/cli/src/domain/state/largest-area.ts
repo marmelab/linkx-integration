@@ -1,4 +1,4 @@
-import type { Victory } from "../game/game.ts";
+import type { VictoryByArea } from "../game/game.ts";
 import type { Color } from "../game/move.ts";
 import type { Grid } from "./grid.ts";
 
@@ -10,12 +10,17 @@ type LargestArea = {
   largestBlueArea: string[];
 };
 
+type AreaResult = {
+  visited: boolean[][];
+  path: string[];
+};
+
 /**
  *
  * @param grid
- * @returns The path with every block of the largest area, false in case of a draw.
+ * @returns The path with every block of the largest area, null in case of a draw.
  */
-export function largestArea(grid: Grid): Victory {
+export function largestArea(grid: Grid): VictoryByArea {
   const largestAreas: LargestArea = grid.reduce(
     (rowResult: LargestArea, column, gridX) => {
       return column.reduce((colResult: LargestArea, cell, gridY) => {
@@ -27,30 +32,25 @@ export function largestArea(grid: Grid): Victory {
         }
         const color = /b/i.test(cell) ? "blue" : "white";
 
-        const fullArea = getFullArea(
+        const areaResult = getAreaResult(
           grid,
           gridX,
           gridY,
           colResult.visited,
           color,
         );
-        const visited = mergeBooleanArrayWithLogicalOr(
-          colResult.visited,
-          fullArea,
-        );
-        const areaPath = areaToPath(fullArea);
 
         return {
-          visited,
+          visited: areaResult.visited,
           largestWhiteArea:
             color === "white" &&
-            areaPath.length > colResult.largestWhiteArea.length
-              ? areaPath
+            areaResult.path.length > colResult.largestWhiteArea.length
+              ? areaResult.path
               : colResult.largestWhiteArea,
           largestBlueArea:
             color === "blue" &&
-            areaPath.length > colResult.largestBlueArea.length
-              ? areaPath
+            areaResult.path.length > colResult.largestBlueArea.length
+              ? areaResult.path
               : colResult.largestBlueArea,
         } satisfies LargestArea;
       }, rowResult);
@@ -65,87 +65,57 @@ export function largestArea(grid: Grid): Victory {
   if (
     largestAreas.largestWhiteArea.length === largestAreas.largestBlueArea.length
   ) {
-    return false;
+    return null;
   } else if (
     largestAreas.largestWhiteArea.length > largestAreas.largestBlueArea.length
   ) {
     return {
       color: "white",
-      path: largestAreas.largestWhiteArea,
+      path: largestAreas.largestWhiteArea.sort(),
     };
   } else {
     return {
       color: "blue",
-      path: largestAreas.largestBlueArea,
+      path: largestAreas.largestBlueArea.sort(),
     };
   }
 }
 
-function getFullArea(
+function getAreaResult(
   grid: Grid,
-  gridX: number,
-  gridY: number,
+  startX: number,
+  startY: number,
   visited: boolean[][],
   color: Color,
-): boolean[][] {
+): AreaResult {
   const isBlockOfSameColor =
     color === "blue"
       ? (c: string) => /b/i.test(c)
       : (c: string) => /w/i.test(c);
 
-  const emptyVisitedForArea = getEmptyVisited(grid);
+  const updatedVisited = visited.map((c) => c.map((e) => e));
+  const area: string[] = [];
+  const toVisit = [getNodeTag(startX, startY)];
+  updatedVisited[startX]![startY] = true;
 
-  return visitAdjacencies(
-    grid,
-    gridX,
-    gridY,
-    visited,
-    emptyVisitedForArea,
-    isBlockOfSameColor,
-  );
-}
-
-function visitAdjacencies(
-  grid: Grid,
-  gridX: number,
-  gridY: number,
-  totalVisited: boolean[][],
-  visitedForArea: boolean[][],
-  isBlockOfSameColor: Function,
-): boolean[][] {
-  if (totalVisited[gridX] && totalVisited[gridX][gridY]) {
-    return visitedForArea;
-  }
-
-  const adjacencies = getAdjacencies(grid, gridX, gridY, isBlockOfSameColor);
-
-  const updatedTotalVisited = totalVisited.map((column, x) =>
-    column.map((isVisited, y) => {
-      return isVisited || (x === gridX && y === gridY);
-    }),
-  );
-
-  let updatedVisitedForArea = visitedForArea.map((column, x) =>
-    column.map((isVisited, y) => {
-      return isVisited || (x === gridX && y === gridY);
-    }),
-  );
-
-  if (adjacencies?.targetNodes) {
-    for (let adjacencyTag in adjacencies.targetNodes) {
-      const coords = tagToCoordinates(adjacencyTag);
-      updatedVisitedForArea = visitAdjacencies(
-        grid,
-        coords.x,
-        coords.y,
-        updatedTotalVisited,
-        updatedVisitedForArea,
-        isBlockOfSameColor,
-      );
+  while (toVisit.length) {
+    const tag = toVisit.pop()!;
+    area.push(tag);
+    const { x, y } = tagToCoordinates(tag);
+    const neighbours =
+      getAdjacencies(grid, x, y, isBlockOfSameColor)?.targetNodes ?? {};
+    for (const neighbour of Object.keys(neighbours)) {
+      const n = tagToCoordinates(neighbour);
+      if (!updatedVisited[n.x]![n.y]) {
+        updatedVisited[n.x]![n.y] = true;
+        toVisit.push(neighbour);
+      }
     }
   }
-
-  return updatedVisitedForArea;
+  return {
+    path: area,
+    visited: updatedVisited,
+  };
 }
 
 function tagToCoordinates(tag: string): { x: number; y: number } {
@@ -164,28 +134,4 @@ function tagToCoordinates(tag: string): { x: number; y: number } {
 
 function getEmptyVisited(grid: Grid) {
   return grid.map((column) => column.map(() => false));
-}
-
-function mergeBooleanArrayWithLogicalOr(
-  arrayA: boolean[][],
-  arrayB: boolean[][],
-): boolean[][] {
-  return arrayA.map((visitedCol, visitedX) =>
-    visitedCol.map((visitedValue, visitedY) => {
-      return visitedValue || (arrayB[visitedX]?.at(visitedY) ?? false);
-    }),
-  );
-}
-
-function areaToPath(area: boolean[][]): string[] {
-  return area.reduce(
-    (colPath: string[], column, gridX) =>
-      column.reduce((path, cellValue, gridY) => {
-        if (cellValue) {
-          return [...path, getNodeTag(gridX, gridY)];
-        }
-        return path;
-      }, colPath),
-    [],
-  );
 }
