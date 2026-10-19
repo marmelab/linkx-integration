@@ -54,7 +54,7 @@ class GameController extends AbstractController
         $csrfToken = $request->getPayload()->get('csrf-token');
         if (!$this->isCsrfTokenValid('create-game', $csrfToken)) {
             return $this->render('error.html.twig', [
-                'message' => "Invalid CSRF token provided.",
+                'errorMessage' => "Invalid CSRF token provided.",
             ]);
         }
 
@@ -83,7 +83,7 @@ class GameController extends AbstractController
                 $csrfToken = $request->getPayload()->get('csrf-token');
                 if (!$this->isCsrfTokenValid('join-game', $csrfToken)) {
                     return $this->render('error.html.twig', [
-                        'message' => "Invalid CSRF token provided.",
+                        'errorMessage' => "Invalid CSRF token provided.",
                     ]);
                 }
                 $gameEntity->setPlayer2Sessid($session->get("playerId"));
