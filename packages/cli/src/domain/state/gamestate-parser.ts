@@ -27,6 +27,11 @@ export function parseSaveFile(input?: string): Array<Move> {
       if (moveInput.toUpperCase() === "W") {
         return undefined;
       }
+      if (!moveInput) {
+        throw new Error(
+          "Blank moves are not allowed. Please verify you do not have a double whitespace in the given state.",
+        );
+      }
 
       return parseSingularMove(color, moveInput);
     })
@@ -34,21 +39,28 @@ export function parseSaveFile(input?: string): Array<Move> {
 }
 
 export function parseSingularMove(color: Color, moveInput: string) {
-  if (moveInput === "--") {
-    return {
-      skipped: true,
-      color,
-    } satisfies Move;
-  }
+  try {
+    if (moveInput === "--") {
+      return {
+        skipped: true,
+        color,
+      } satisfies Move;
+    }
 
-  return {
-    skipped: false,
-    color,
-    piece: extractPiece(moveInput),
-    column: extractColumn(moveInput),
-    rotation: extractRotation(moveInput),
-    mirrored: /m/i.test(moveInput),
-  } satisfies Move;
+    return {
+      skipped: false,
+      color,
+      piece: extractPiece(moveInput),
+      column: extractColumn(moveInput),
+      rotation: extractRotation(moveInput),
+      mirrored: /m/i.test(moveInput),
+    } satisfies Move;
+  } catch (error: any) {
+    error.additionalContext = {
+      move: moveInput,
+    };
+    throw error;
+  }
 }
 
 function extractPiece(moveInput: string): Piece {
@@ -74,7 +86,7 @@ function extractRotation(moveInput: string): Rotation {
     const rotationNumber = Number.parseInt(rotationInput[0].charAt(1));
     if (Number.isNaN(rotationNumber)) {
       throw new Error(
-        "The rotation is indicated by a 'r' followed by a number between 0 and 3.",
+        `Rotation not recognized.\nThe rotation is indicated by a 'r' followed by a number between 0 and 3.`,
       );
     }
     return (rotationNumber % 4) as Rotation;

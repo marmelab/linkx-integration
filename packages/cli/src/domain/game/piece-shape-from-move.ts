@@ -264,3 +264,7 @@ export type PossibleShape = {
   mirrored: boolean[];
   matrix: number[][];
 };
+
+export function getPossiblesPieces() {
+  return correspondenceTable;
+}

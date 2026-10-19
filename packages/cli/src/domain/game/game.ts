@@ -6,7 +6,7 @@ export type Game = {
   availablePieces: Array<PieceCount>;
   turnOfPlayer: Color;
   lastMove?: Move;
-  victory: Victory;
+  victory: string[] | null;
 };
 
 export type PieceCount = {
@@ -15,11 +15,6 @@ export type PieceCount = {
   count: number;
 };
 
-export type Victory =
-  | {
-      path: string[];
-      color: Color;
-    }
-  | false;
+export type Victory = string[] | null;
 
 export const GRID_MAX_HEIGHT = 8;

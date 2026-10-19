@@ -1,0 +1,12 @@
+.text-blue {
+  color: #0077b2;
+}
+.text-white {
+  color: #b85143;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

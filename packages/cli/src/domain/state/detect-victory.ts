@@ -14,7 +14,7 @@ const SIDE_RIGHT = "RIGHT";
 // TODO : switch from boolean to path + color in next ticket
 export function detectVictory(grid: Grid, lastMove: Move): Victory {
   if (!lastMove || lastMove?.skipped) {
-    return false;
+    return null;
   }
 
   const color = lastMove.color;
@@ -75,20 +75,14 @@ export function detectVictory(grid: Grid, lastMove: Move): Victory {
 
   const leftToRightPath = route.path(SIDE_LEFT, SIDE_RIGHT, pathOptions);
   if (leftToRightPath) {
-    return {
-      path: leftToRightPath,
-      color: lastMove.color,
-    };
+    return leftToRightPath;
   }
   const bottomToTopPath = route.path(SIDE_DOWN, SIDE_UP, pathOptions);
   if (bottomToTopPath) {
-    return {
-      path: bottomToTopPath,
-      color: lastMove.color,
-    };
+    return bottomToTopPath;
   }
 
-  return false;
+  return null;
 }
 
 export function getNodeTag(x: number, y: number): string {

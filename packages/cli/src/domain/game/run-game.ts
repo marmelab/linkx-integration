@@ -12,7 +12,7 @@ import { gridReducer } from "../state/grid-reducer.ts";
 export function runGame(stringifiedState?: string): Game {
   const moves = parseSaveFile(stringifiedState);
   let turnOfPlayer: Color;
-  if (stringifiedState) {
+  if (stringifiedState !== undefined) {
     turnOfPlayer = /^W/i.test(stringifiedState) ? "white" : "blue";
   } else {
     turnOfPlayer = randomInt(2) === 0 ? "blue" : "white";
@@ -22,28 +22,37 @@ export function runGame(stringifiedState?: string): Game {
     grid: initGrid(),
     availablePieces: initAvailablePieces(),
     turnOfPlayer,
-    victory: false,
+    victory: null,
   };
 
   return moves.reduce(gameReducer, game);
 }
 
 export function gameReducer(game: Game, move: Move): Game {
-  if (move.color !== game.turnOfPlayer) {
-    throw new Error("This is not your turn to play.");
-  }
-  if (game.victory) {
-    throw new Error("This game has already been won.");
-  }
+  try {
+    if (move.color !== game.turnOfPlayer) {
+      throw new Error("This is not your turn to play.");
+    }
+    if (game.victory) {
+      throw new Error(
+        "This game has already been won; you cannot play anymore moves.",
+      );
+    }
 
-  const updatedGrid = gridReducer(game.grid, move);
-  return {
-    grid: updatedGrid,
-    availablePieces: availablePiecesReducer(game.availablePieces, move),
-    turnOfPlayer: reverseColor(move.color),
-    lastMove: move,
-    victory: detectVictory(updatedGrid, move),
-  };
+    const updatedGrid = gridReducer(game.grid, move);
+    return {
+      grid: updatedGrid,
+      availablePieces: availablePiecesReducer(game.availablePieces, move),
+      turnOfPlayer: reverseColor(move.color),
+      lastMove: move,
+      victory: detectVictory(updatedGrid, move),
+    };
+  } catch (error: any) {
+    error.additionalContext = {
+      move,
+    };
+    throw error;
+  }
 }
 
 export function initGrid(): Grid {

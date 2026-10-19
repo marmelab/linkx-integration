@@ -1,0 +1,258 @@
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  height: 100vh;
+  width: 100vw;
+}
+
+#container {
+  height: 100%;
+  width: 100%;
+}
+
+#container form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.padder {
+  flex: 1 1 0px;
+}
+
+.dark-block {
+  background-color: #526172;
+  color: #eee;
+  height: 3.75rem;
+}
+
+.game-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 1rem;
+  margin: 0 0 2rem 0;
+}
+
+#game {
+  display: flex;
+  flex: 1;
+  padding-left: 3rem;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+#game .grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: calc(80cqmin - 3.75rem);
+  height: calc(80cqmin - 3.75rem);
+}
+
+.column-button {
+  height: 80%;
+  width: 80%;
+  border-radius: 13%;
+}
+
+.cell {
+  border: #383838 solid 1px;
+  user-select: none;
+}
+
+.cell-empty {
+  background: #fafafa;
+}
+.cell-white {
+  background: #b85143;
+  border: #111 solid 1px;
+}
+.cell-blue {
+  background: #0077b2;
+  border: #111 solid 1px;
+}
+#game .grid .cell-white.last-move:not(.victory-path) {
+  animation: blink-white 2s linear infinite;
+}
+#game .grid .cell-blue.last-move:not(.victory-path) {
+  animation: blink-blue 2s linear infinite;
+}
+
+#game .grid .cell-blue.victory-path {
+  animation: victory-blue 2.5s linear infinite;
+  transition-timing-function: ease-in-out;
+}
+
+#game .grid .cell-white.victory-path {
+  animation: victory-white 2.5s linear infinite;
+  transition-timing-function: ease-in-out;
+}
+
+#playing-pieces {
+  flex: 2;
+  display: flex;
+  max-width: 60%;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+#playing-pieces .cell {
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.possible-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+  height: fit-content;
+}
+
+#playing-pieces h4,
+#playing-pieces h3 {
+  margin: 0;
+}
+
+.matrix {
+  border: #383838 solid 1px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  aspect-ratio: 1 / 1;
+}
+
+.piece-count {
+  width: 100%;
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.piece-count-mark {
+  border-radius: 50%;
+  height: 1.75em;
+  width: 1.75em;
+}
+
+.mark-blue {
+  border: solid 3px #005179;
+}
+.mark-white {
+  border: solid 3px #7d372d;
+}
+
+.filled-blue {
+  background-color: #0077b2;
+}
+.filled-white {
+  background-color: #b85143;
+}
+
+.selection-button {
+  height: 1.8em;
+  width: 100%;
+}
+
+#rotation-preview {
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+  align-self: stretch;
+}
+
+#rotation-preview .controls {
+  flex: 0;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1 / 1;
+  gap: 0.7em;
+}
+
+#rotation-preview .matrix {
+  flex: 1 0;
+}
+
+#rotation-preview .cell {
+  min-width: 50px;
+  min-height: 50px;
+}
+
+#rotation-preview .actions {
+  width: 100%;
+  flex: 1 1 44px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#rotation-preview .actions .button {
+  padding: 0.35em;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+#message-container {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  padding: 0.75rem 0 0.75rem 3rem;
+  height: 4rem;
+}
+.message {
+  padding: 0.5em 1.25em;
+  border-radius: 8px;
+  font-size: 1.2em;
+}
+.message-info {
+  background-color: #b1dbef;
+  border: #1993d0 solid 2px;
+}
+.message-error {
+  background-color: #ffc8c0;
+  border: #e26352 solid 2px;
+}
+.message-info button {
+  padding: 0.45rem 0.65rem;
+}
+
+@keyframes blink-white {
+  0%,
+  100% {
+    background: #fafafa;
+  }
+  50% {
+    background: #b85143;
+  }
+}
+@keyframes blink-blue {
+  0%,
+  100% {
+    background: #fafafa;
+  }
+  50% {
+    background: #0077b2;
+  }
+}
+
+@keyframes victory-blue {
+  0%,
+  100% {
+    background: #0077b2;
+  }
+  50% {
+    background: #003c5a;
+  }
+}
+@keyframes victory-white {
+  0%,
+  100% {
+    background: #b85143;
+  }
+  50% {
+    background: #5d2822;
+  }
+}

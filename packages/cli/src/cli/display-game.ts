@@ -40,7 +40,7 @@ export function getGridAsStrings(game: Game): Array<string> {
       if (!rows[relevantRow]) {
         rows[relevantRow] = "";
       }
-      if (game.victory && game.victory.path.includes(getNodeTag(x, y))) {
+      if (game.victory && game.victory.includes(getNodeTag(x, y))) {
         rows[relevantRow] += stringCellToChalkDisplay(cellToVictoryCell(cell));
       } else {
         rows[relevantRow] += stringCellToChalkDisplay(cell);

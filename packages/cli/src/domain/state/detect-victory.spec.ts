@@ -14,7 +14,7 @@ describe("detect-victory", () => {
 
     expect(game.victory).toBeTruthy();
     if (game.victory) {
-      expect(game.victory.path).toStrictEqual([
+      expect(game.victory).toStrictEqual([
         "0.0",
         "1.0",
         "2.0",
@@ -35,7 +35,7 @@ describe("detect-victory", () => {
 
     expect(game.victory).toBeTruthy();
     if (game.victory) {
-      expect(game.victory.path).toStrictEqual([
+      expect(game.victory).toStrictEqual([
         "0.0",
         "1.1",
         "2.1",
