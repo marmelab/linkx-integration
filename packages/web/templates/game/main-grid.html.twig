@@ -18,7 +18,7 @@
             {% if cell === '.' %}
                 <div class="cell cell-empty{{ victoryClass }}">&nbsp;</div>
             {% elseif cell === 'w' %}
-                <div class="cell cell-white{{ victoryClass }}">{{ x ~ "." ~ y }}</div>
+                <div class="cell cell-white{{ victoryClass }}">&nbsp;</div>
             {% elseif cell === 'W' %}
                 <div class="cell cell-white {{ lastMoveClass }}{{ victoryClass }}">&nbsp;</div>
             {% elseif cell === 'b' %}
