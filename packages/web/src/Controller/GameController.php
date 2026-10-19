@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Controller;
 
 use App\Model\Game;
@@ -24,9 +25,7 @@ class GameController extends AbstractController
         private ServiceLinkxRules $rulesService,
         private GameRepository $gameRepository,
         private EntityManagerInterface $em,
-    )
-    {
-    }
+    ) {}
 
 
     #[Route('/')]
@@ -54,7 +53,7 @@ class GameController extends AbstractController
     {
         $csrfToken = $request->getPayload()->get('csrf-token');
         if (!$this->isCsrfTokenValid('create-game', $csrfToken)) {
-            $this->render('error.html.twig', [
+            return $this->render('error.html.twig', [
                 'message' => "Invalid CSRF token provided.",
             ]);
         }
@@ -76,12 +75,14 @@ class GameController extends AbstractController
         if (empty($session->get("playerId"))) {
             $session->set("playerId", uniqid());
         }
-        if (is_null($gameEntity->getPlayer2Sessid())
-            && $gameEntity->getPlayer1Sessid() !== $session->get("playerId")) {
+        if (
+            is_null($gameEntity->getPlayer2Sessid())
+            && $gameEntity->getPlayer1Sessid() !== $session->get("playerId")
+        ) {
             if (!empty($request->getPayload()->get('join'))) {
                 $csrfToken = $request->getPayload()->get('csrf-token');
                 if (!$this->isCsrfTokenValid('join-game', $csrfToken)) {
-                    $this->render('error.html.twig', [
+                    return $this->render('error.html.twig', [
                         'message' => "Invalid CSRF token provided.",
                     ]);
                 }
@@ -91,8 +92,10 @@ class GameController extends AbstractController
                     'id' => $gameEntity->getId(),
                 ]);
             }
-        } else if ($gameEntity->getPlayer1Sessid() !== $session->get("playerId")
-            && $gameEntity->getPlayer2Sessid() !== $session->get("playerId")) {
+        } else if (
+            $gameEntity->getPlayer1Sessid() !== $session->get("playerId")
+            && $gameEntity->getPlayer2Sessid() !== $session->get("playerId")
+        ) {
             $infoMessage = "You are a spectator of this game.";
         }
 
@@ -105,7 +108,7 @@ class GameController extends AbstractController
             $session,
             $gameEntity,
             $gameEntity->getState(),
-            $selected, 
+            $selected,
             $selectedMirrored,
             $selectedRotation,
             $column,
@@ -114,8 +117,10 @@ class GameController extends AbstractController
         );
 
         $gameEntity->setState($state);
-        if ($gameEntity->getPlayer1Sessid() === $session->get("playerId")
-            || $gameEntity->getPlayer2Sessid() === $session->get("playerId")) {
+        if (
+            $gameEntity->getPlayer1Sessid() === $session->get("playerId")
+            || $gameEntity->getPlayer2Sessid() === $session->get("playerId")
+        ) {
             $this->em->flush();
         }
 
@@ -131,14 +136,14 @@ class GameController extends AbstractController
         ?int $selectedRotation,
         ?string $column,
         ?string $errorMessage,
-        ?string $infoMessage)
-    {
+        ?string $infoMessage
+    ) {
         try {
             $game = $this->rulesService->getGameFromStringState($state);
-            
+
             if (!empty($gameEntity)) {
-                $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue" 
-                    ? $gameEntity->getPlayer1Sessid() 
+                $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue"
+                    ? $gameEntity->getPlayer1Sessid()
                     : $gameEntity->getPlayer2Sessid();
             }
             $isYourTurn = !empty($gameEntity) ? ($sessidOfTurnPlayer === $session->get("playerId")) : true;
@@ -151,7 +156,7 @@ class GameController extends AbstractController
             $pieces = $this->rulesService->getPiecesMatrices();
             foreach ($pieces as $piece) {
                 $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($game, $piece) {
-                    return $availablePiece['color'] === $game->getTurnOfPlayer() 
+                    return $availablePiece['color'] === $game->getTurnOfPlayer()
                         && $availablePiece['piece'] === $piece->getPiece();
                 })['count'];
                 $piece->setCount($pieceCount);
@@ -177,9 +182,9 @@ class GameController extends AbstractController
                 if (is_array($errorMoveResponse)) {
                     $errorMove = $this->stateUpdater->stringifyMove(
                         $errorMoveResponse['skipped'],
-                        $errorMoveResponse['piece'], 
-                        $errorMoveResponse['rotation'], 
-                        $errorMoveResponse['mirrored'], 
+                        $errorMoveResponse['piece'],
+                        $errorMoveResponse['rotation'],
+                        $errorMoveResponse['mirrored'],
                         intval($errorMoveResponse['column']) + 1
                     );
                 } else {
@@ -231,7 +236,7 @@ class GameController extends AbstractController
             'isYourTurn' => $isYourTurn && $canPlay[$game->getTurnOfPlayer()],
             'pieces' => $pieces,
             'canPlay' => $canPlay,
-            'isDraw' => !$canPlay["blue"] and !$canPlay["white"], 
+            'isDraw' => !$canPlay["blue"] and !$canPlay["white"],
             'infoMessage' => $infoMessage,
             'errorMessage' => $errorMessage,
             'selectedPiece' => $selectedPiece,
@@ -246,7 +251,8 @@ class GameController extends AbstractController
         ]), $state];
     }
 
-    function canThePlayersPlay(Game $game, ?string $state) {
+    function canThePlayersPlay(Game $game, ?string $state)
+    {
         $canPlay = ["blue" => true, "white" => true];
         $currentPossibleMoves = $this->rulesService->getPossibleMoves($state);
 
@@ -271,7 +277,8 @@ class GameController extends AbstractController
         return $canPlay;
     }
 
-    function formatRotation(?string $rotation) {
+    function formatRotation(?string $rotation)
+    {
         $rotation = intval($rotation);
         $rotation = $rotation % 4;
         if ($rotation < 0) {

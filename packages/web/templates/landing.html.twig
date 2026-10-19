@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-    <link href="{{ asset('styles/landing.css') }}" rel="stylesheet" />
+    <link href="{{ asset('styles/landing.css') }}" rel="stylesheet"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -9,14 +9,14 @@
 
 {% block body %}
     <div id="container">
-        <form action="/game" method="POST">
+        <form action="/game">
             <!-- No CSRF as no action is done on the server except for rendering -->
-            <button type="submit">Jouer sur le même ordinateur</button>
-            <input type="text" name="state" value="" placeholder="Reprendre depuis un état existant...">
+            <button type="submit">Play on the same computer</button>
+            <input type="text" name="state" value="" placeholder="Start from an existing state...">
         </form>
         <form action="/online-game" method="POST">
             <input type="hidden" name="csrf-token" value="{{ csrf_token('create-game') }}">
-            <button type="submit">Jouer à distance</button>
+            <button type="submit">Play remotely</button>
         </form>
     </div>
 {% endblock %}
