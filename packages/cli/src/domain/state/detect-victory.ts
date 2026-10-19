@@ -3,7 +3,7 @@ import Graph from "node-dijkstra";
 import type { Move } from "../game/move.ts";
 import type { Adjacencies, Grid } from "./grid.ts";
 
-import { GRID_MAX_HEIGHT } from "../game/game.ts";
+import { GRID_MAX_HEIGHT, type Victory } from "../game/game.ts";
 
 const SIDE_UP = "UP";
 const SIDE_DOWN = "DOWN";
@@ -11,7 +11,7 @@ const SIDE_LEFT = "LEFT";
 const SIDE_RIGHT = "RIGHT";
 
 // TODO : switch from boolean to path + color in next ticket
-export function detectVictory(grid: Grid, lastMove: Move): null | string[] {
+export function detectVictory(grid: Grid, lastMove: Move): Victory {
   if (!lastMove || lastMove?.skipped) {
     return null;
   }
@@ -64,6 +64,12 @@ export function detectVictory(grid: Grid, lastMove: Move): null | string[] {
         );
 
         if (adjacencies) {
+          if (gridX === GRID_MAX_HEIGHT) {
+            adjacencies.targetNodes[SIDE_RIGHT] = 1;
+          }
+          if (gridY === GRID_MAX_HEIGHT) {
+            adjacencies.targetNodes[SIDE_UP] = 1;
+          }
           route.addNode(adjacencies.sourceTag, adjacencies.targetNodes);
         }
       }
@@ -76,14 +82,19 @@ export function detectVictory(grid: Grid, lastMove: Move): null | string[] {
   if (leftToRightPath) {
     return leftToRightPath;
   }
-  return route.path(SIDE_DOWN, SIDE_UP, pathOptions);
+  const bottomToTopPath = route.path(SIDE_DOWN, SIDE_UP, pathOptions);
+  if (bottomToTopPath) {
+    return bottomToTopPath;
+  }
+
+  return null;
 }
 
 export function getNodeTag(x: number, y: number): string {
   return `${x}.${y}`;
 }
 
-function getAdjacencies(
+export function getAdjacencies(
   grid: Grid,
   gridX: number,
   gridY: number,
@@ -101,12 +112,6 @@ function getAdjacencies(
         adjacencies.targetNodes[nodeTag] = 1;
       }
     }
-  }
-  if (gridX === GRID_MAX_HEIGHT) {
-    adjacencies.targetNodes[SIDE_RIGHT] = 1;
-  }
-  if (gridY === GRID_MAX_HEIGHT) {
-    adjacencies.targetNodes[SIDE_UP] = 1;
   }
 
   if (Object.entries(adjacencies.targetNodes).length === 0) {
