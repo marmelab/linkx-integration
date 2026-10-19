@@ -4,7 +4,7 @@ help:									## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 install:
-	@pnpm install
+	@pnpm install && cd packages/web/ && composer install
 
 lint: generate
 	@pnpm lint:apply
@@ -17,7 +17,7 @@ lint-staged:
 	@($(STAGED) | grep -E '\.(js|json|ts|tsx|md)$$' | xargs -r pnpm oxfmt)
 
 test:
-	@pnpm test
+	@pnpm test && cd packages/web/ && php vendor/bin/phpunit  
 
 test-watch:
 	@pnpm test:watch

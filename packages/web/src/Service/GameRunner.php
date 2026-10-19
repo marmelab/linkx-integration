@@ -38,11 +38,12 @@ class GameRunner
 
     public function playTurn(Game $game, ?string $selected, ?int $selectedRotation, ?bool $selectedMirrored, ?int $column): Game
     {
-        $otherColor = $game->getTurnOfPlayer() === "blue" ? "white" : "blue";
         $state = $game->getState();
 
-
-        if (!$game->getCanPlay()[$game->getTurnOfPlayer()] && $game->getCanPlay()[$otherColor]) {
+        if (!$game->getCanPlay()[$game->getTurnOfPlayer()]) {
+            if (!empty($state)) {
+                $state .= " ";
+            }
             $state .= "--";
         } else if (isset($column) && !is_null($column) && $column >= 0) {
             if (!empty($state)) {
@@ -58,7 +59,7 @@ class GameRunner
     public function undoTurn(Game $game, Move|string $moveToUndo)
     {
         // First move case
-        if (empty($game->getState())) {
+        if (empty($game->getState()) || $game->getState() === 'W') {
             return $game;
         }
 
@@ -85,15 +86,15 @@ class GameRunner
             }
             $canPlay["white"] = count($currentPossibleMoves) > 0;
         } else if ($game->getLastMove() && $game->getLastMove()->getColor() === "white") {
+            $canPlay["blue"] = count($currentPossibleMoves) > 0;
             if ($game->getLastMove()->getSkipped()) {
                 $canPlay["white"] = false;
             }
-            $canPlay["blue"] = count($currentPossibleMoves) > 0;
         } else if ($state === "W") {
-            $canPlay["white"] = $currentPossibleMoves;
             $canPlay["blue"] = true;
+            $canPlay["white"] = count($currentPossibleMoves) > 0;
         } else {
-            $canPlay["blue"] = $currentPossibleMoves;
+            $canPlay["blue"] = count($currentPossibleMoves) > 0;
             $canPlay["white"] = true;
         }
 
