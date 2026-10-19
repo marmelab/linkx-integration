@@ -52,8 +52,8 @@ class GameController extends AbstractController
     {
         $csrfToken = $request->getPayload()->get('csrf-token');
         if (!$this->isCsrfTokenValid('create-game', $csrfToken)) {
-            $this->render('error.html.twig', [
-                'message' => "Invalid CSRF token provided.",
+            return $this->render('error.html.twig', [
+                'errorMessage' => "Invalid CSRF token provided.",
             ]);
         }
 
@@ -81,8 +81,8 @@ class GameController extends AbstractController
             if (!empty($request->getPayload()->get('join'))) {
                 $csrfToken = $request->getPayload()->get('csrf-token');
                 if (!$this->isCsrfTokenValid('join-game', $csrfToken)) {
-                    $this->render('error.html.twig', [
-                        'message' => "Invalid CSRF token provided.",
+                    return $this->render('error.html.twig', [
+                        'errorMessage' => "Invalid CSRF token provided.",
                     ]);
                 }
                 $gameEntity->setPlayer2Sessid($session->get("playerId"));
@@ -148,8 +148,14 @@ class GameController extends AbstractController
                 if ($game->getLastMove() && $game->getLastMove()->getSkipped()) {
                     $infoMessage = "The turn of {$game->getLastMove()->getColor()} was skipped because there was no legal move to play.";
                 }
-                // If a turn was played, change the turn
-                $isYourTurn = $this->isYourTurn($gameEntity, $game, $session);
+                if (!is_null($column)) {
+                    // If a turn was played, change the turn
+                    $isYourTurn = $this->isYourTurn($gameEntity, $game, $session);
+                    $selected = null;
+                    $selectedRotation = null;
+                    $selectedMirrored = null;
+                    $column = null;
+                }
             }
 
             $piecesOfCurrentPlayer = array_filter($game->getAvailablePieces(), function ($piece) use ($game) {
