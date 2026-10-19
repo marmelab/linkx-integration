@@ -10,20 +10,21 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LinkxRules
 {
-    const BASE_URI = "http://node-linkx:3000";
+    readonly string $baseURI;
 
     public function __construct(
-        private HttpClientInterface $client, 
+        private HttpClientInterface $client,
         private DenormalizerInterface $serializer,
-    )
-    {
+    ) {
+        $this->baseURI = $_ENV['RULES_SERVICE_URI'];
     }
 
-    public function getGameFromStringState(?string $state): Game {
-        $queryParams = !is_null($state) ? ['state'=>$state] : [];
+    public function getGameFromStringState(?string $state): Game
+    {
+        $queryParams = !is_null($state) ? ['state' => $state] : [];
         $response = $this->client->request(
             'GET',
-            self::BASE_URI . "/game-state",
+            $this->baseURI . "/game-state",
             [
                 'query' => $queryParams,
             ]
@@ -32,24 +33,25 @@ class LinkxRules
         return $this->serializer->denormalize($response->toArray()['gameState'], Game::class);
     }
 
-    public function getPossibleMoves(?string $state): array {
+    public function getPossibleMoves(?string $state): array
+    {
         $state = urlencode($state);
         $queryParams = !empty($state) ? "?state=$state" : "";
         $response = $this->client->request(
             'GET',
-            self::BASE_URI . "/game-state/possible-moves$queryParams"
+            $this->baseURI . "/game-state/possible-moves$queryParams"
         );
 
         return $this->serializer->denormalize($response->toArray()['possibleMoves'], Move::class . '[]');
     }
 
-    public function getPiecesMatrices(): array {
+    public function getPiecesMatrices(): array
+    {
         $response = $this->client->request(
             'GET',
-            self::BASE_URI . "/pieces"
+            $this->baseURI . "/pieces"
         );
 
         return $this->serializer->denormalize($response->toArray()['possiblePieces'], Piece::class . '[]');
     }
-
 }
