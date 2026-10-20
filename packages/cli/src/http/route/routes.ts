@@ -14,7 +14,7 @@ export function routes(app: Hono) {
     "/*",
     cors({
       origin: [
-        "http://localhost:8080",
+        "http://localhost:3080",
         "http://localhost:80",
         "https://localhost:443",
       ],

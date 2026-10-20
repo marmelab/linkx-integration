@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Model\Game;
 use App\Entity\Game as GameEntity;
+use App\Model\Move;
 use App\Model\Piece;
 use App\Repository\GameRepository;
-use App\Service\LinkxRules as ServiceLinkxRules;
-use App\Service\StateUpdater;
+use App\Service\GameRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,14 +21,13 @@ class GameController extends AbstractController
 {
 
     public function __construct(
-        private StateUpdater $stateUpdater,
-        private ServiceLinkxRules $rulesService,
+        private GameRunner $gameRunner,
         private GameRepository $gameRepository,
         private EntityManagerInterface $em,
     ) {}
 
 
-    #[Route('/')]
+    #[Route(path: '/', name: 'app_home')]
     public function home(Request $request, SessionInterface $session): Response
     {
         return $this->render("landing.html.twig");
@@ -139,49 +138,80 @@ class GameController extends AbstractController
         ?string $infoMessage
     ) {
         try {
-            $game = $this->rulesService->getGameFromStringState($state);
+            $game = $this->gameRunner->getGame($state);
 
-            if (!empty($gameEntity)) {
-                $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue"
-                    ? $gameEntity->getPlayer1Sessid()
-                    : $gameEntity->getPlayer2Sessid();
-            }
-            $isYourTurn = !empty($gameEntity) ? ($sessidOfTurnPlayer === $session->get("playerId")) : true;
+            $isYourTurn = $this->isYourTurn($gameEntity, $game, $session);
 
-            // Anchoring the color of the first move
-            if (is_null($state)) {
-                $state = $game->getTurnOfPlayer() === "white" ? "W" : "";
+            // We just ignore out of turn plays to avoid refreshes displaying an error message
+            if ($isYourTurn && !$errorMessage) {
+                $game = $this->gameRunner->playTurn($game, $selected, $selectedRotation, $selectedMirrored, $column - 1);
+                if ($game->getLastMove() && $game->getLastMove()->getSkipped()) {
+                    $infoMessage = "The turn of {$game->getLastMove()->getColor()} was skipped because there was no legal move to play.";
+                }
+                if (!is_null($column)) {
+                    // If a turn was played, change the turn
+                    $isYourTurn = $this->isYourTurn($gameEntity, $game, $session);
+                    $selected = null;
+                    $selectedRotation = null;
+                    $selectedMirrored = null;
+                    $column = null;
+                }
             }
 
-            $pieces = $this->rulesService->getPiecesMatrices();
-            foreach ($pieces as $piece) {
-                $pieceCount = array_find($game->getAvailablePieces(), function ($availablePiece) use ($game, $piece) {
-                    return $availablePiece['color'] === $game->getTurnOfPlayer()
-                        && $availablePiece['piece'] === $piece->getPiece();
-                })['count'];
-                $piece->setCount($pieceCount);
-            }
-            $canPlay = $this->canThePlayersPlay($game, $state);
+            $piecesOfCurrentPlayer = array_filter($game->getAvailablePieces(), function ($piece) use ($game) {
+                return $game->getTurnOfPlayer() === $piece->getColor();
+            });
 
             if (!empty($game->getVictory())) {
                 return [$this->render('game.html.twig', [
                     'isYourTurn' => false,
-                    'pieces' => $pieces,
-                    'canPlay' => $canPlay,
+                    'pieces' => $piecesOfCurrentPlayer,
+                    'canPlay' => $game->getCanPlay(),
                     'selectedMatrix' => null,
                     'id' => $gameEntity ? $gameEntity->getId() : null,
                     'game' => $game,
                     'selectedPiece' => null,
                     'isDraw' => false,
-                ]), $state];
+                ]), $game->getState()];
             }
+
+            if (!$infoMessage && !$isYourTurn) {
+                $infoMessage = "Waiting for your opponent to play...";
+            }
+
+            /** @var Piece $selectedPiece */
+            $selectedPiece = array_find($game->getAvailablePieces(), function ($piece) use ($selected) {
+                return $piece->getPiece() === $selected;
+            });
+
+            return [$this->render('game.html.twig', [
+                'id' => $gameEntity ? $gameEntity->getId() : null,
+                'state' => $game->getState(),
+                'game' => $game,
+                'isYourTurn' => $isYourTurn && $game->getCanPlay()[$game->getTurnOfPlayer()],
+                'pieces' => $piecesOfCurrentPlayer,
+                'canPlay' => $game->getCanPlay(),
+                'isDraw' => !$game->getCanPlay()["blue"] && !$game->getCanPlay()["white"],
+                'infoMessage' => $infoMessage,
+                'errorMessage' => $errorMessage,
+                'selectedPiece' => $selectedPiece,
+                'selectedCanRotate' => $selectedPiece ? count($selectedPiece->getPossibleMatrices()) > 1 : false,
+                'selectedCanMirror' => $selectedPiece ? count($selectedPiece->getPossibleMatrices()[0]->getMirrored()) === 1 : false,
+                'selectedMirrored' => !empty($selectedPiece) ? $selectedMirrored : false,
+                'selectedRotation' => !empty($selectedPiece) ? $selectedRotation : false,
+                'selectedMatrix' => !empty($selectedPiece) ? array_find($selectedPiece->getPossibleMatrices(), function ($matrix) use ($selectedRotation, $selectedMirrored) {
+                    return in_array($selectedMirrored, $matrix->getMirrored())
+                        && in_array($selectedRotation, $matrix->getRotations());
+                }) : null,
+            ]), $game->getState()];
         } catch (ClientExceptionInterface $exception) {
             $response = $exception->getResponse()->toArray(false);
             if (!empty($response["additionalContext"]["move"])) {
                 $errorMoveResponse = $response["additionalContext"]["move"];
                 if (is_array($errorMoveResponse)) {
-                    $errorMove = $this->stateUpdater->stringifyMove(
+                    $errorMove = new Move(
                         $errorMoveResponse['skipped'],
+                        "ignored",
                         $errorMoveResponse['piece'],
                         $errorMoveResponse['rotation'],
                         $errorMoveResponse['mirrored'],
@@ -191,7 +221,7 @@ class GameController extends AbstractController
                     $errorMove = $errorMoveResponse;
                 }
                 $errorMessage = $response["message"];
-                $state = $this->stateUpdater->keepOnlyUntilMove($state, $errorMove);
+                $game = $this->gameRunner->undoTurn($game, $errorMove);
                 return $this->runAndRenderGame($session, $gameEntity, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
             } else {
                 return [$this->render('error.html.twig', [
@@ -203,79 +233,8 @@ class GameController extends AbstractController
                 "errorMessage" => "The server appears to be unavailable. Please contact an administrator.",
             ]), $state];
         }
-
-        /** @var Piece $selectedPiece */
-        $selectedPiece = array_find($pieces, function ($piece) use ($selected) {
-            return $piece->getPiece() === $selected;
-        });
-
-        $otherColor = $game->getTurnOfPlayer() === "blue" ? "white" : "blue";
-
-        // We just ignore out of turn plays to avoid refreshes displaying an error message
-        if ($isYourTurn) {
-            if (!$canPlay[$game->getTurnOfPlayer()] && $canPlay[$otherColor]) {
-                $state .= " --";
-                $infoMessage = "The turn of {$game->getTurnOfPlayer()} was skipped because there was no legal move to play.";
-                return $this->runAndRenderGame($session, $gameEntity, $state, null, null, null, null, null, $infoMessage);
-            } else if (!empty($column)) {
-                if (!empty($state)) {
-                    $state .= " ";
-                }
-                $state .= $this->stateUpdater->stringifyMove(false, $selected, $selectedRotation, $selectedMirrored, $column);
-                return $this->runAndRenderGame($session, $gameEntity, $state, null, null, null, null, null, null);
-            }
-        }
-        if (!$infoMessage && !$isYourTurn) {
-            $infoMessage = "Waiting for your opponent to play...";
-        }
-
-        return [$this->render('game.html.twig', [
-            'id' => $gameEntity ? $gameEntity->getId() : null,
-            'state' => $state,
-            'game' => $game,
-            'isYourTurn' => $isYourTurn && $canPlay[$game->getTurnOfPlayer()],
-            'pieces' => $pieces,
-            'canPlay' => $canPlay,
-            'isDraw' => !$canPlay["blue"] and !$canPlay["white"],
-            'infoMessage' => $infoMessage,
-            'errorMessage' => $errorMessage,
-            'selectedPiece' => $selectedPiece,
-            'selectedCanRotate' => $selectedPiece ? count($selectedPiece->getPossibleMatrices()) > 1 : false,
-            'selectedCanMirror' => $selectedPiece ? count($selectedPiece->getPossibleMatrices()[0]->getMirrored()) === 1 : false,
-            'selectedMirrored' => !empty($selectedPiece) ? $selectedMirrored : false,
-            'selectedRotation' => !empty($selectedPiece) ? $selectedRotation : false,
-            'selectedMatrix' => !empty($selectedPiece) ? array_find($selectedPiece->getPossibleMatrices(), function ($matrix) use ($selectedRotation, $selectedMirrored) {
-                return in_array($selectedMirrored, $matrix->getMirrored())
-                    && in_array($selectedRotation, $matrix->getRotations());
-            }) : null,
-        ]), $state];
     }
 
-    function canThePlayersPlay(Game $game, ?string $state)
-    {
-        $canPlay = ["blue" => true, "white" => true];
-        $currentPossibleMoves = $this->rulesService->getPossibleMoves($state);
-
-        if ($game->getLastMove() && $game->getLastMove()->getColor() === "blue") {
-            if ($game->getLastMove()->getSkipped()) {
-                $canPlay["blue"] = false;
-            }
-            $canPlay["white"] = count($currentPossibleMoves) > 0;
-        } else if ($game->getLastMove() && $game->getLastMove()->getColor() === "white") {
-            if ($game->getLastMove()->getSkipped()) {
-                $canPlay["white"] = false;
-            }
-            $canPlay["blue"] = count($currentPossibleMoves) > 0;
-        } else if ($state === "W") {
-            $canPlay["white"] = $currentPossibleMoves;
-            $canPlay["blue"] = true;
-        } else {
-            $canPlay["blue"] = $currentPossibleMoves;
-            $canPlay["white"] = true;
-        }
-
-        return $canPlay;
-    }
 
     function formatRotation(?string $rotation)
     {
@@ -285,5 +244,16 @@ class GameController extends AbstractController
             return 4 + $rotation;
         }
         return $rotation;
+    }
+
+    function isYourTurn(?GameEntity $gameEntity, Game $game, SessionInterface $session)
+    {
+        // Determine with session id whether it's your turn to play
+        if (!empty($gameEntity)) {
+            $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue"
+                ? $gameEntity->getPlayer1Sessid()
+                : $gameEntity->getPlayer2Sessid();
+        }
+        return !empty($gameEntity) ? ($sessidOfTurnPlayer === $session->get("playerId")) : true;
     }
 }

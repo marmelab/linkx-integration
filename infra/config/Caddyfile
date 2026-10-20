@@ -6,14 +6,6 @@
 }
 
 linkx-integration.marmelab.com {
-    redir /api /api/
-    redir /api-docs /api-docs/
-    handle_path /api/* {
-        reverse_proxy node-linkx:3000 # TODO Remove exposition of node API once tests are OK
-    }
-    handle_path /api-docs/* {
-        reverse_proxy swagger-ui:8080 # TODO Remove exposition of node API once tests are OK
-    }
     handle {
         # Http is acceptable because every message is within the docker virtual network
         reverse_proxy http://php

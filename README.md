@@ -13,8 +13,8 @@ make dev
 ```
 
 Web version: https://localhost/game
-Api: http://localhost:3000
-Swagger: http://localhost:8080
+Api: http://localhost:3005
+Swagger: http://localhost:3080
 
 After modifying the node files, you need to rebuild:
 

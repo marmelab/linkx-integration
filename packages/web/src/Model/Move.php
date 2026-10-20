@@ -2,13 +2,16 @@
 
 namespace App\Model;
 
-class Move {
-    private bool $skipped;
-    private string $color;
-    private ?string $piece;
-    private ?int $column;
-    private ?int $rotation;
-    private ?bool $mirrored;
+class Move
+{
+    public function __construct(
+        private bool $skipped,
+        private string $color,
+        private ?string $piece,
+        private ?int $column,
+        private ?int $rotation,
+        private ?bool $mirrored,
+    ) {}
 
     public function getSkipped()
     {
