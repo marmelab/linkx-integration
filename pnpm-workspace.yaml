@@ -5,8 +5,12 @@ allowBuilds:
   esbuild: true
 
 catalog:
-  '@hono/node-server': ^2.1.4
-  '@hono/standard-validator': ^0.4.0
+  "@hono/node-server": ^2.1.4
+  "@hono/standard-validator": ^0.4.0
+  '@tanstack/ai': ^0.69.0
+  '@tanstack/ai-openai': ^0.30.0
+  '@tanstack/ai-react': ^0.30.4
+  "@tanstack/react-query": ^5.104.3
   "@types/node": ^26.6.4
   chalk: ^6.0.1
   hono: ^4.13.13
@@ -23,22 +27,33 @@ catalogMode: strict
 
 minimumReleaseAge: 4320
 
-minimumReleaseAgeExclude:
-  - '@expo/cli@58.1.13'
-  - '@expo/metro-config@58.0.15'
-  - '@expo/router-server@58.0.15'
-  - '@expo/ui@58.0.21'
-  - babel-preset-expo@58.0.18
-  - expo-asset@58.0.17
-  - expo-file-system@58.0.10
-  - expo-font@58.0.9
-  - expo-image@58.0.16
-  - expo-modules-cli@0.3.1
-  - expo-modules-core@58.0.23
-  - expo-modules-jsi@58.0.16
-  - expo-router@58.0.24
-  - expo@58.0.16
 trustPolicy: no-downgrade
 
 trustPolicyExclude:
   - semver@6.3.1
+  - "@expo/cli@57.0.31"
+  - "@expo/config-plugins@57.0.10"
+  - "@expo/config@57.0.10"
+  - "@expo/fingerprint@0.20.14"
+  - "@expo/image-utils@0.11.6"
+  - "@expo/inline-modules@0.1.8"
+  - "@expo/local-build-cache-provider@57.0.9"
+  - "@expo/metro-config@57.0.13"
+  - "@expo/metro-file-map@57.0.4"
+  - "@expo/metro-runtime@57.0.17"
+  - "@expo/prebuild-config@57.0.19"
+  - "@expo/require-utils@57.0.6"
+  - "@expo/router-server@57.0.13"
+  - "@expo/ui@57.0.25"
+  - babel-preset-expo@57.0.16
+  - expo-asset@57.0.20
+  - expo-constants@57.0.22
+  - expo-linking@57.0.13
+  - expo-modules-autolinking@57.0.16
+  - expo-modules-core@57.0.23
+  - expo-modules-jsi@57.1.2
+  - expo-router@57.0.28
+  - expo-splash-screen@57.0.10
+  - expo@57.0.30
+  - ua-parser-js@0.7.41
+  - ua-parser-js@1.0.41

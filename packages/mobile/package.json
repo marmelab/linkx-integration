@@ -1,5 +1,5 @@
 {
-  "name": "linkx-integration",
+  "name": "@linkx-integration/mobile",
   "version": "1.0.0",
   "private": true,
   "main": "expo-router/entry",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/ui": "~57.0.25",
+    "@tanstack/react-query": "catalog:",
     "expo": "~57.0.30",
     "expo-constants": "~57.0.22",
     "expo-device": "~57.0.2",
