@@ -7,6 +7,7 @@ Official rules: <https://www.jeux-abstraits.fr/wp-content/uploads/2026/07/lynkx.
 ## Getting started
 
 You need a working **docker** and **docker-compose**.
+You will also need **npm** for the mobile version.
 
 ```bash
 make dev

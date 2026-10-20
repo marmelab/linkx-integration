@@ -28,6 +28,9 @@ run:
 dev:
 	@docker compose up -d
 
+mobile:
+	@cd packages/mobile && pnpm exec expo start
+
 stop:
 	@docker compose down
 
