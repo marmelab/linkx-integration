@@ -14,7 +14,7 @@ final class Version20261019120458 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Added Symfony\'s default User entity with a token and unique username.';
     }
 
     public function up(Schema $schema): void

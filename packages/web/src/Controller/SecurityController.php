@@ -51,10 +51,8 @@ class SecurityController extends AbstractController
                 return $this->redirect('/login');
             }
         } catch (ValidationFailedException $exception) {
-            $error = "The form was not completed correctly.";
+            $error = "There was an error on the form.";
             $errorList = $exception->getViolations();
-        } catch (UniqueConstraintViolationException $exception) {
-            $error = "This username is already taken";
         }
 
         return $this->render("security/register.html.twig", [
