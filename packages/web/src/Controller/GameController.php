@@ -4,16 +4,18 @@ namespace App\Controller;
 
 use App\Model\Game;
 use App\Entity\Game as GameEntity;
+use App\Entity\User;
 use App\Model\Move;
 use App\Model\Piece;
 use App\Repository\GameRepository;
+use App\Service\GamePersister;
 use App\Service\GameRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
@@ -22,19 +24,18 @@ class GameController extends AbstractController
 
     public function __construct(
         private GameRunner $gameRunner,
-        private GameRepository $gameRepository,
-        private EntityManagerInterface $em,
+        private GamePersister $gamePersister,
     ) {}
 
 
     #[Route(path: '/', name: 'app_home')]
-    public function home(Request $request, SessionInterface $session): Response
+    public function home(): Response
     {
         return $this->render("landing.html.twig");
     }
 
     #[Route('/game')]
-    public function state(Request $request, SessionInterface $session): Response
+    public function state(Request $request, #[CurrentUser] User $user): Response
     {
         $state = $request->query->get("state");
         $selected = $request->query->get("selected");
@@ -42,13 +43,13 @@ class GameController extends AbstractController
         $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
         $column = $request->query->get("column");
 
-        [$render] = $this->runAndRenderGame($session, null, $state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
+        [$render] = $this->runAndRenderGame($user, null, $state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
 
         return $render;
     }
 
     #[Route('/online-game', methods: ['POST'])]
-    public function createOnlineGame(Request $request, SessionInterface $session): Response
+    public function createOnlineGame(Request $request, #[CurrentUser] User $user): Response
     {
         $csrfToken = $request->getPayload()->get('csrf-token');
         if (!$this->isCsrfTokenValid('create-game', $csrfToken)) {
@@ -57,26 +58,17 @@ class GameController extends AbstractController
             ]);
         }
 
-        if (empty($session->get("playerId"))) {
-            $session->set("playerId", uniqid());
-        }
-        $gameEntity = new GameEntity();
-        $gameEntity->setPlayer1Sessid($session->get("playerId"));
-        $this->em->persist($gameEntity);
-        $this->em->flush();
+        $gameEntity = $this->gamePersister->initGame($user);
 
         return $this->redirect("/online-game/{$gameEntity->getId()}");
     }
 
     #[Route('/online-game/{id}', methods: ['GET', 'POST'])]
-    public function onlineGame(Request $request, SessionInterface $session, GameEntity $gameEntity): Response
+    public function onlineGame(Request $request, #[CurrentUser] User $user, GameEntity $gameEntity): Response
     {
-        if (empty($session->get("playerId"))) {
-            $session->set("playerId", uniqid());
-        }
         if (
-            is_null($gameEntity->getPlayer2Sessid())
-            && $gameEntity->getPlayer1Sessid() !== $session->get("playerId")
+            is_null($gameEntity->getSecondPlayer())
+            && $gameEntity->getFirstPlayer()->getId() !== $user->getId()
         ) {
             if (!empty($request->getPayload()->get('join'))) {
                 $csrfToken = $request->getPayload()->get('csrf-token');
@@ -85,15 +77,15 @@ class GameController extends AbstractController
                         'errorMessage' => "Invalid CSRF token provided.",
                     ]);
                 }
-                $gameEntity->setPlayer2Sessid($session->get("playerId"));
+                $gameEntity->setSecondPlayer($user);
             } else {
                 return $this->render('join-game.html.twig', [
                     'id' => $gameEntity->getId(),
                 ]);
             }
         } else if (
-            $gameEntity->getPlayer1Sessid() !== $session->get("playerId")
-            && $gameEntity->getPlayer2Sessid() !== $session->get("playerId")
+            $gameEntity->getFirstPlayer()->getId() !== $user->getId()
+            && $gameEntity->getSecondPlayer()->getId() !== $user->getId()
         ) {
             $infoMessage = "You are a spectator of this game.";
         }
@@ -103,8 +95,8 @@ class GameController extends AbstractController
         $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
         $column = $request->query->get("column");
 
-        [$render, $state] = $this->runAndRenderGame(
-            $session,
+        [$render, $game] = $this->runAndRenderGame(
+            $user,
             $gameEntity,
             $gameEntity->getState(),
             $selected,
@@ -115,19 +107,13 @@ class GameController extends AbstractController
             $infoMessage ?? null,
         );
 
-        $gameEntity->setState($state);
-        if (
-            $gameEntity->getPlayer1Sessid() === $session->get("playerId")
-            || $gameEntity->getPlayer2Sessid() === $session->get("playerId")
-        ) {
-            $this->em->flush();
-        }
+        $this->gamePersister->saveGame($user, $gameEntity, $game);
 
         return $render;
     }
 
     private function runAndRenderGame(
-        SessionInterface $session,
+        User $user,
         ?GameEntity $gameEntity,
         ?string $state,
         ?string $selected,
@@ -140,7 +126,7 @@ class GameController extends AbstractController
         try {
             $game = $this->gameRunner->getGame($state);
 
-            $isYourTurn = $this->isYourTurn($gameEntity, $game, $session);
+            $isYourTurn = $this->isYourTurn($gameEntity, $game, $user);
 
             // We just ignore out of turn plays to avoid refreshes displaying an error message
             if ($isYourTurn && !$errorMessage) {
@@ -150,7 +136,7 @@ class GameController extends AbstractController
                 }
                 if (!is_null($column)) {
                     // If a turn was played, change the turn
-                    $isYourTurn = $this->isYourTurn($gameEntity, $game, $session);
+                    $isYourTurn = $this->isYourTurn($gameEntity, $game, $user);
                     $selected = null;
                     $selectedRotation = null;
                     $selectedMirrored = null;
@@ -172,7 +158,7 @@ class GameController extends AbstractController
                     'game' => $game,
                     'selectedPiece' => null,
                     'isDraw' => false,
-                ]), $game->getState()];
+                ]), $game];
             }
 
             if (!$infoMessage && !$isYourTurn) {
@@ -203,7 +189,7 @@ class GameController extends AbstractController
                     return in_array($selectedMirrored, $matrix->getMirrored())
                         && in_array($selectedRotation, $matrix->getRotations());
                 }) : null,
-            ]), $game->getState()];
+            ]), $game];
         } catch (ClientExceptionInterface $exception) {
             $response = $exception->getResponse()->toArray(false);
             if (!empty($response["additionalContext"]["move"])) {
@@ -222,16 +208,16 @@ class GameController extends AbstractController
                 }
                 $errorMessage = $response["message"];
                 $game = $this->gameRunner->undoTurn($game, $errorMove);
-                return $this->runAndRenderGame($session, $gameEntity, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
+                return [$this->runAndRenderGame($user, $gameEntity, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null), $game];
             } else {
                 return [$this->render('error.html.twig', [
                     "errorMessage" => $response["message"]
-                ]), $state];
+                ]), null];
             }
         } catch (ServerExceptionInterface $exception) {
             return [$this->render('error.html.twig', [
                 "errorMessage" => "The server appears to be unavailable. Please contact an administrator.",
-            ]), $state];
+            ]), null];
         }
     }
 
@@ -246,14 +232,13 @@ class GameController extends AbstractController
         return $rotation;
     }
 
-    function isYourTurn(?GameEntity $gameEntity, Game $game, SessionInterface $session)
+    function isYourTurn(?GameEntity $gameEntity, Game $game, User $user)
     {
-        // Determine with session id whether it's your turn to play
         if (!empty($gameEntity)) {
-            $sessidOfTurnPlayer = $game->getTurnOfPlayer() === "blue"
-                ? $gameEntity->getPlayer1Sessid()
-                : $gameEntity->getPlayer2Sessid();
+            $playerIdCurrentTurn = $game->getTurnOfPlayer() === "blue"
+                ? $gameEntity->getFirstPlayer()->getId()
+                : $gameEntity->getSecondPlayer()->getId();
         }
-        return !empty($gameEntity) ? ($sessidOfTurnPlayer === $session->get("playerId")) : true;
+        return !empty($gameEntity) ? ($playerIdCurrentTurn === $user->getId()) : true;
     }
 }

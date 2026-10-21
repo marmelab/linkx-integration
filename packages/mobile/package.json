@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@expo/ui": "~57.0.25",
-    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-query": "^5.104.3",
     "expo": "~57.0.30",
     "expo-constants": "~57.0.22",
     "expo-device": "~57.0.2",

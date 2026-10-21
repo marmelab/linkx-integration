@@ -2,15 +2,28 @@
 
 namespace App\Model;
 
+use Symfony\Component\Serializer\Attribute\Groups;
+
 class Game
 {
+    #[Groups(['game-view'])]
     private array $grid = [];
+
     /**@var Piece[] */
+    #[Groups(['game-view'])]
     private array $availablePieces = [];
+
+    #[Groups(['game-view'])]
     private string $turnOfPlayer = "blue";
+
     private ?Move $lastMove = null;
+
+    #[Groups(['game-view'])]
     private ?array $victory = [];
+
+    #[Groups(['game-view'])]
     private ?array $canPlay = ["white" => true, "blue" => true];
+
     private ?string $state = null;
 
     public function __construct() {}

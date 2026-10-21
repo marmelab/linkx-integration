@@ -2,12 +2,21 @@
 
 namespace App\Model;
 
+use Symfony\Component\Serializer\Attribute\Groups;
+
 class Piece
 {
+
+    #[Groups(['game-view'])]
     private string $piece;
+
     /** @var PiecePossibleMatrices[] */
     private array $possibleMatrices;
+
+    #[Groups(['game-view'])]
     private string $color;
+
+    #[Groups(['game-view'])]
     private int $count = 2;
 
     public function getPiece()

@@ -11,7 +11,8 @@
 {$CADDY_EXTRA_CONFIG}
 
 # Http is acceptable because every message is within the docker virtual network
-{$SERVER_NAME:localhost} {
+http://{$SERVER_NAME},
+http://{$SECONDARY_SERVER_NAME:localhost} {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 	}
