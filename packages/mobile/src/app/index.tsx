@@ -1,20 +1,21 @@
-import { Host } from "@expo/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import GameList from "@/components/game-list";
+import "../global.css";
+
+import Games from "@/components/games";
 
 export default function Index() {
   const queryClient = new QueryClient();
 
   return (
     <SafeAreaView>
-      <Host style={styles.container}>
+      <View style={styles.container}>
         <QueryClientProvider client={queryClient}>
-          <GameList />
+          <Games />
         </QueryClientProvider>
-      </Host>
+      </View>
     </SafeAreaView>
   );
 }
@@ -25,5 +26,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  gameListElement: {},
 });

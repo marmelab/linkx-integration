@@ -23,7 +23,16 @@ After modifying the node files, you need to rebuild:
 docker-compose build && docker-compose up
 ```
 
-## Getting started (cli mode)
+## On native mobile
+
+You need android studio with a working emulator.
+[Expo documentation](https://docs.expo.dev/workflow/android-studio-emulator/)
+
+```bash
+make mobile
+```
+
+## Using cli mode
 
 You need Node v26 (see `.nvmrc`) and pnpm 12. Or open the repository in the devcontainer, which ships with both.
 
