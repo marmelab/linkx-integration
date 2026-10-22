@@ -1,8 +1,15 @@
-import { Column, Host, Text } from "@expo/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Dimensions, FlatList, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Text } from "react-native";
+
+import type { GameModel, PieceModel } from "@/model/game";
 
 import { showGame } from "@/api";
 
@@ -12,12 +19,6 @@ export default function Game(param: any) {
     queryKey: ["game"],
     queryFn: () => showGame(param.id),
   });
-
-  const insets = useSafeAreaInsets();
-  const screenWidth =
-    Dimensions.get("screen").width - 20 - insets.left - insets.right;
-  const screenHeight =
-    Dimensions.get("screen").height - 20 - insets.bottom - insets.top;
 
   useEffect(() => {
     const timer = setInterval(
@@ -29,35 +30,35 @@ export default function Game(param: any) {
 
   if (isPending) {
     return (
-      <Host matchContents>
+      <View style={{ flex: 1 }}>
         <Text>Loading game...</Text>
-      </Host>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <Host matchContents>
+      <View style={{ flex: 1 }}>
         <Text>Error : couldn't fetch game.</Text>
-      </Host>
+      </View>
     );
   }
 
-  const game = data.game;
+  const game = data.game as GameModel;
   const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
   return (
-    <Host style={{ ...styles.game, width: screenWidth, height: screenHeight }}>
-      <Column style={{ width: screenWidth, height: screenHeight }}>
-        <Text>{gameTitle}</Text>
-        {GameLabel(game)}
-        {Grid(game.grid)}
-      </Column>
-    </Host>
+    <View style={styles.game}>
+      <Text style={styles.heading}>{gameTitle}</Text>
+      {GameLabel(game)}
+      {Grid(game.grid)}
+      {PiecesLeft(game.availablePieces)}
+    </View>
   );
 }
 
 function GameLabel(game: any) {
-  return <Text>Game in progress...</Text>; // TODO
+  let label = "Game in progress";
+  return <Text style={styles.subHeading}>{label}</Text>; // TODO
 }
 
 function Grid(grid: string[][]) {
@@ -98,6 +99,42 @@ function Cell(cellValue: string) {
   }
 }
 
+function PiecesLeft(availablePieces: PieceModel[]) {
+  // TODO Carousel
+  return (
+    <View>
+      <ScrollView horizontal>
+        {availablePieces.map((piece) => Piece(piece))}
+      </ScrollView>
+    </View>
+  );
+}
+
+function Piece(piece: PieceModel) {
+  const cells = [];
+
+  const selectedMatrix = piece.possibleMatrices.find((possibleMatrix) => {
+    return possibleMatrix.mirrored.includes();
+  })?.matrix;
+
+  for (let y = 2; y >= 0; y--) {
+    for (let x = 0; x <= 2; x++) {
+      cells.push({
+        value: selectedMatrix[x][y],
+        x: x,
+        y: y,
+      });
+    }
+  }
+
+  const key = `${piece.piece}-${piece.color}`;
+  return (
+    <TouchableOpacity>
+      <Text key={key}>{piece.piece}</Text>
+    </TouchableOpacity>
+  );
+}
+
 const borderColor = "#333";
 const styles = StyleSheet.create({
   game: {
@@ -105,6 +142,17 @@ const styles = StyleSheet.create({
   },
   grid: {
     flex: 1,
+    marginTop: 18,
+    marginBottom: 18,
+  },
+  heading: {
+    textAlign: "center",
+    fontSize: 26,
+  },
+  subHeading: {
+    textAlign: "center",
+    fontSize: 20,
+    color: "#666",
   },
   cellWhite: {
     flex: 1,

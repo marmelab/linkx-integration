@@ -1,7 +1,14 @@
-import { Host, List, ListItem, Row, Text } from "@expo/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import type { GameModel } from "@/model/game";
 
 import { listGames } from "@/api";
 
@@ -16,25 +23,26 @@ export default function Games() {
     queryFn: listGames,
   });
 
-  const handleRefresh = async () =>
-    queryClient.invalidateQueries({ queryKey: ["games"] });
+  // TODO detect swipe
+  // const handleRefresh = async () =>
+  //   queryClient.invalidateQueries({ queryKey: ["games"] });
 
-  const [runningGame, setRunningGame] = useState(null);
+  const [runningGame, setRunningGame] = useState<GameModel | null>(null);
 
   if (isPending) {
     return (
-      <Host matchContents>
-        <Text textStyle={styles.basicText}>Loading elements...</Text>
-      </Host>
+      <View>
+        <Text style={styles.basicText}>Loading elements...</Text>
+      </View>
     );
   }
 
   if (error) {
     const message = `Could not load current games: ${error.message}`;
     return (
-      <Host matchContents>
-        <Text textStyle={styles.errorText}>{message}</Text>
-      </Host>
+      <View>
+        <Text style={styles.errorText}>{message}</Text>
+      </View>
     );
   }
 
@@ -47,16 +55,17 @@ export default function Games() {
     );
   } else {
     return (
-      <Host style={styles.container}>
-        <Text textStyle={styles.basicText}>Spectate:</Text>
-        <List onRefresh={() => handleRefresh()}>
-          {data.games.map((game: any) =>
-            GameListElement(game, (gameSelected: any) =>
+      <View style={styles.container}>
+        <Text style={styles.basicText}>Spectate:</Text>
+        <FlatList
+          data={data.games}
+          renderItem={(game) =>
+            GameListElement(game.item, (gameSelected: any) =>
               setRunningGame(gameSelected),
-            ),
-          )}
-        </List>
-      </Host>
+            )
+          }
+        ></FlatList>
+      </View>
     );
   }
 }
@@ -64,14 +73,11 @@ export default function Games() {
 function GameListElement(game: any, onGameSelection: Function) {
   const versusStr = `${game.firstPlayer.displayName} VS ${game.secondPlayer.displayName}`;
   return (
-    <ListItem key={game.id} onPress={() => onGameSelection(game)}>
-      <ListItem.Leading>
-        <Text>{game.id}</Text>
-      </ListItem.Leading>
-      <Row spacing={0}>
-        <Text>{versusStr}</Text>
-      </Row>
-    </ListItem>
+    <TouchableOpacity key={game.id} onPress={() => onGameSelection(game)}>
+      <View style={styles.listElement}>
+        <Text style={styles.basicText}>{versusStr}</Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -83,6 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     color: "#333333",
+    fontSize: 24,
   },
   errorText: {
     color: "#000",
@@ -95,10 +102,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listElement: {
-    flex: 1,
     flexDirection: "row",
     backgroundColor: "white",
     borderWidth: 1,
     borderColor: "black",
+    alignItems: "center",
+    height: 64,
+    marginBottom: 8,
   },
 });
