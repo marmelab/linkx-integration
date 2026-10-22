@@ -1,16 +1,15 @@
 import { Column, Host, Text } from "@expo/ui";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Dimensions, FlatList, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { showGame } from "@/api";
 
 export default function Game(param: any) {
-  const queryClient = useQueryClient();
   const { isPending, error, data } = useQuery({
-    queryKey: ["game"],
+    queryKey: ["game", param.id],
     queryFn: () => showGame(param.id),
+    refetchInterval: 1000,
   });
 
   const insets = useSafeAreaInsets();
@@ -18,14 +17,6 @@ export default function Game(param: any) {
     Dimensions.get("screen").width - 20 - insets.left - insets.right;
   const screenHeight =
     Dimensions.get("screen").height - 20 - insets.bottom - insets.top;
-
-  useEffect(() => {
-    const timer = setInterval(
-      () => queryClient.invalidateQueries({ queryKey: ["game"] }),
-      1,
-    );
-    return () => clearInterval(timer);
-  }, []);
 
   if (isPending) {
     return (
