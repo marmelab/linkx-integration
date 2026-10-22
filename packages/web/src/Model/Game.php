@@ -2,16 +2,39 @@
 
 namespace App\Model;
 
+use App\Entity\User;
+use Symfony\Component\Serializer\Attribute\Groups;
+
 class Game
 {
+    #[Groups(['game-view'])]
     private array $grid = [];
+
     /**@var Piece[] */
+    #[Groups(['game-view'])]
     private array $availablePieces = [];
+
+    #[Groups(['game-view'])]
     private string $turnOfPlayer = "blue";
+
     private ?Move $lastMove = null;
+
+    #[Groups(['game-view'])]
     private ?array $victory = [];
+
+    #[Groups(['game-view'])]
     private ?array $canPlay = ["white" => true, "blue" => true];
+
     private ?string $state = null;
+
+    #[Groups(['game-view'])]
+    private ?User $firstPlayer = null;
+
+    #[Groups(['game-view'])]
+    private ?User $secondPlayer = null;
+
+    #[Groups(['game-view'])]
+    private ?bool $completed = false;
 
     public function __construct() {}
 
@@ -97,6 +120,39 @@ class Game
     public function setState(?string $state): self
     {
         $this->state = $state;
+        return $this;
+    }
+
+    public function getFirstPlayer(): User
+    {
+        return $this->firstPlayer;
+    }
+
+    public function setFirstPlayer(User $firstPlayer): self
+    {
+        $this->firstPlayer = $firstPlayer;
+        return $this;
+    }
+
+    public function getSecondPlayer(): User
+    {
+        return $this->secondPlayer;
+    }
+
+    public function setSecondPlayer(User $secondPlayer): self
+    {
+        $this->secondPlayer = $secondPlayer;
+        return $this;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->completed ?? false;
+    }
+
+    public function setCompleted(bool $completed): self
+    {
+        $this->completed = $completed;
         return $this;
     }
 }

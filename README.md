@@ -7,6 +7,7 @@ Official rules: <https://www.jeux-abstraits.fr/wp-content/uploads/2026/07/lynkx.
 ## Getting started
 
 You need a working **docker** and **docker-compose**.
+You will also need **npm** for the mobile version.
 
 ```bash
 make dev
@@ -22,7 +23,16 @@ After modifying the node files, you need to rebuild:
 docker-compose build && docker-compose up
 ```
 
-## Getting started (cli mode)
+## On native mobile
+
+You need android studio with a working emulator.
+[Expo documentation](https://docs.expo.dev/workflow/android-studio-emulator/)
+
+```bash
+make mobile
+```
+
+## Using cli mode
 
 You need Node v26 (see `.nvmrc`) and pnpm 12. Or open the repository in the devcontainer, which ships with both.
 

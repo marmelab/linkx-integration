@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\GameRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 class Game
@@ -11,16 +12,24 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['list-view'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $state = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $player_1_sessid = null;
+    #[ORM\Column]
+    #[Groups(['list-view'])]
+    private ?bool $completed = false;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $player_2_sessid = null;
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[Groups(['list-view'])]
+    private ?User $firstPlayer = null;
+
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[Groups(['list-view'])]
+    private ?User $secondPlayer = null;
+
 
     public function getId(): ?int
     {
@@ -39,26 +48,38 @@ class Game
         return $this;
     }
 
-    public function getPlayer1Sessid(): ?string
+    public function isCompleted(): ?bool
     {
-        return $this->player_1_sessid;
+        return $this->completed;
     }
 
-    public function setPlayer1Sessid(string $player_1_sessid): static
+    public function setCompleted(bool $completed): static
     {
-        $this->player_1_sessid = $player_1_sessid;
+        $this->completed = $completed;
 
         return $this;
     }
 
-    public function getPlayer2Sessid(): ?string
+    public function getFirstPlayer(): ?User
     {
-        return $this->player_2_sessid;
+        return $this->firstPlayer;
     }
 
-    public function setPlayer2Sessid(?string $player_2_sessid): static
+    public function setFirstPlayer(User $firstPlayer): static
     {
-        $this->player_2_sessid = $player_2_sessid;
+        $this->firstPlayer = $firstPlayer;
+
+        return $this;
+    }
+
+    public function getSecondPlayer(): ?User
+    {
+        return $this->secondPlayer;
+    }
+
+    public function setSecondPlayer(User $secondPlayer): static
+    {
+        $this->secondPlayer = $secondPlayer;
 
         return $this;
     }

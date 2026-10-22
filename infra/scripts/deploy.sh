@@ -22,6 +22,6 @@ scp $SSH_OPTS ./compose.prod.yaml infra/config/Caddyfile "$SSH_USER@$SSH_HOST:~/
 ssh $SSH_OPTS "$SSH_USER@$SSH_HOST" \
 	'docker compose --env-file docker-compose.env -f compose.prod.yaml up -d --remove-orphans \
 	 && docker compose --env-file docker-compose.env -f compose.prod.yaml up -d --force-recreate --no-deps caddy node-linkx \
-	 && docker compose exec php php bin/console doctrine:migrations:migrate'
+	 && docker compose --env-file docker-compose.env -f compose.prod.yaml exec php php bin/console doctrine:migrations:migrate'
 
 echo "Deployed. https://$DOMAIN";
