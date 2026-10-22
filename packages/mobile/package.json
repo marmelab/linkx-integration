@@ -38,8 +38,6 @@
     "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
-    "@rozenite/metro": "^2.5.0",
-    "@rozenite/tanstack-query-plugin": "^2.5.0",
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
   }

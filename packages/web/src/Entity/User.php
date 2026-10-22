@@ -40,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['self', 'list-view'])]
+    #[Groups(['self', 'list-view', 'game-view'])]
     private ?string $displayName = null;
 
     #[ORM\Column(length: 64, nullable: true)]

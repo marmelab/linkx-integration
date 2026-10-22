@@ -29,6 +29,25 @@ class ApiGameController extends AbstractController
     public function showGame(Game $gameEntity, GameRepository $gameRepository, GameRunner $gameRunner): JsonResponse
     {
         $game = $gameRunner->getGame($gameEntity->getState());
-        return $this->json($game, Response::HTTP_OK, [], ['groups' => 'game-view']);
+        $game->setCompleted($gameEntity->isCompleted());
+        $game->setFirstPlayer($gameEntity->getFirstPlayer());
+        $game->setSecondPlayer($gameEntity->getSecondPlayer());
+        $game->setGrid(array_map(function ($column) {
+            return array_map(function ($cell) {
+                switch ($cell) {
+                    case "w":
+                        return "white";
+                    case "b":
+                        return "blue";
+                    case "W":
+                        return "whiteLastMove";
+                    case "B":
+                        return "blueLastMove";
+                    case ".":
+                        return ".";
+                }
+            }, $column);
+        }, $game->getGrid()));
+        return $this->json(['game' => $game], Response::HTTP_OK, [], ['groups' => 'game-view']);
     }
 }
