@@ -31,9 +31,10 @@ export default function Piece({
   )?.matrix;
 
   if (!selectedMatrix) {
-    throw new Error(
+    console.error(
       `Unknown configuration for piece {piece: ${pieceSelection.pieceModel.piece}, rotation: ${pieceSelection.selectedRotation}, mirrored: ${pieceSelection.mirrored} }`,
     );
+    return <></>;
   }
 
   for (let y = selectedMatrix[0].length - 1; y >= 0; y--) {
@@ -63,10 +64,7 @@ export default function Piece({
       onPressOut={(event) => onPress(event)}
     >
       <View style={[styles.piece, style]}>
-        <PieceCountIndicator
-          color={pieceSelection.pieceModel.color}
-          count={pieceSelection.pieceModel.count}
-        />
+        <PieceCountIndicator pieceModel={pieceSelection.pieceModel} />
         <FlatList
           scrollEnabled={false}
           data={cells}
