@@ -26,7 +26,7 @@ export default function Game({
   onRequestClose: () => void;
 }) {
   const { isPending, error, data } = useQuery({
-    queryKey: ["game"],
+    queryKey: ["game", id],
     queryFn: () => showGame(id),
     refetchInterval: 1500,
   });
