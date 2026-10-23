@@ -47,6 +47,15 @@ export default function Games() {
         <Game onRequestClose={() => setRunningGame(null)} id={id} />
       </View>
     );
+  } else if (data.games.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
+        <Text style={[styles.basicText, styles.subHeading]}>
+          There is no one currently playing.
+        </Text>
+      </View>
+    );
   } else {
     return (
       <View style={styles.container}>
@@ -90,6 +99,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  subHeading: {
+    textAlign: "center",
+    fontSize: 20,
+    color: "#666",
   },
   basicText: {
     textAlign: "center",
