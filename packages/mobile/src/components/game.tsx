@@ -90,13 +90,13 @@ export default function Game({
 function GameLabel(game: GameModel) {
   if (game.victory && game.lastMove?.color === "blue") {
     return (
-      <Text style={styles.heading}>
+      <Text style={[styles.heading, { flex: 0 }]}>
         Victory of {game.firstPlayer.displayName} !
       </Text>
     );
   } else if (game.victory) {
     return (
-      <Text style={styles.heading}>
+      <Text style={[styles.heading, { flex: 0 }]}>
         Victory of {game.secondPlayer?.displayName} !
       </Text>
     );
