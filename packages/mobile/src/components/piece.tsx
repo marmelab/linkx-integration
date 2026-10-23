@@ -1,4 +1,5 @@
-import type { GestureResponderEvent } from "react-native";
+import type { GestureResponderEvent, ViewStyle } from "react-native";
+import type { StyleProp } from "react-native";
 
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -11,12 +12,12 @@ export default function Piece({
   pieceSelection,
   onPress,
   width,
-  forceWidth,
+  style,
 }: {
   pieceSelection: PieceSelection;
   onPress: (event: GestureResponderEvent) => void;
   width: number;
-  forceWidth?: boolean | undefined;
+  style?: StyleProp<ViewStyle> | undefined;
 }) {
   const cells = [];
 
@@ -57,12 +58,11 @@ export default function Piece({
   const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
   return (
     <TouchableOpacity
-      style={forceWidth ? { width } : {}}
       key={key}
       disabled={true} // TODO change on ticket about playing
       onPressOut={(event) => onPress(event)}
     >
-      <View style={{ ...styles.piece }}>
+      <View style={[styles.piece, style]}>
         <PieceCountIndicator
           color={pieceSelection.pieceModel.color}
           count={pieceSelection.pieceModel.count}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 30,
+    gap: 10,
   },
   grid: {
     flex: 0,

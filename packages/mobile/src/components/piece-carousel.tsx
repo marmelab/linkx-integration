@@ -40,6 +40,7 @@ export default function PieceCarousel({
           const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
           return (
             <Piece
+              style={{ gap: 30 }}
               key={key}
               width={pieceWidth}
               pieceSelection={pieceSelection}

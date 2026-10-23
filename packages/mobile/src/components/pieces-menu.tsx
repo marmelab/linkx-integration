@@ -32,6 +32,7 @@ export default function PiecesMenu({
     (piece) => piece.pieceModel.color === "white",
   );
   const pieceWidth = Math.max(90, 0.23 * width);
+  let scrollView: ScrollView | null;
 
   return (
     <View style={styles.container}>
@@ -43,13 +44,20 @@ export default function PiecesMenu({
         onRequestClose={() => setMenuOpened(false)}
       >
         <View style={{ flex: 1 }}></View>
-        <ScrollView>
+        <ScrollView
+          ref={(ref) => {
+            scrollView = ref;
+          }}
+          onContentSizeChange={() =>
+            scrollView?.scrollToEnd({ animated: false })
+          }
+        >
           <View style={[styles.piecesContainer, styles.blueContainer]}>
             {bluePieces.map((piece) => {
               const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
               return (
                 <Piece
-                  forceWidth={true}
+                  style={{ width: pieceWidth }}
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}
@@ -63,7 +71,7 @@ export default function PiecesMenu({
               const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
               return (
                 <Piece
-                  forceWidth={true}
+                  style={{ width: pieceWidth }}
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}
@@ -115,18 +123,16 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     padding: 22,
     borderRadius: 15,
-    margin: 22,
+    margin: 11,
     gap: 16,
-    rowGap: 32,
   },
   button: {
     minWidth: 60,
     minHeight: 60,
     borderRadius: 20,
-    padding: 10,
     elevation: 2,
-    textAlign: "center",
     alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
   },
   buttonText: {

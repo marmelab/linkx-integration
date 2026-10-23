@@ -25,7 +25,7 @@ export default function Games() {
 
   if (isPending) {
     return (
-      <View>
+      <View style={styles.fullPageText}>
         <Text style={styles.basicText}>Loading elements...</Text>
       </View>
     );
@@ -34,7 +34,7 @@ export default function Games() {
   if (error) {
     const message = `Could not load current games: ${error.message}`;
     return (
-      <View>
+      <View style={styles.fullPageText}>
         <Text style={styles.errorText}>{message}</Text>
       </View>
     );
@@ -50,8 +50,10 @@ export default function Games() {
   } else {
     return (
       <View style={styles.container}>
-        <Text style={styles.basicText}>Spectate:</Text>
+        <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
         <FlatList
+          style={{ flex: 1 }}
+          contentContainerStyle={{ justifyContent: "flex-start" }}
           data={data.games}
           renderItem={(game) =>
             GameListElement(game.item, (gameSelected: any) =>
@@ -76,11 +78,20 @@ function GameListElement(game: any, onGameSelection: Function) {
 }
 
 const styles = StyleSheet.create({
+  fullPageText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
   },
+  heading: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
   basicText: {
-    flex: 1,
     textAlign: "center",
     color: "#333333",
     fontSize: 24,
@@ -101,6 +112,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     alignItems: "center",
+    justifyContent: "center",
     height: 64,
     marginBottom: 8,
   },
