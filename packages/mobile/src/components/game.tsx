@@ -9,8 +9,6 @@ import {
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { GameModel } from "@/model/game";
-
 import { showGame } from "@/api";
 import { RunningGameContext } from "@/context/running-game-context";
 
@@ -56,7 +54,7 @@ export default function Game({
   const width =
     Dimensions.get("screen").width - 20 - insets.left - insets.right;
 
-  const game = data.game as GameModel;
+  const game = data.game;
   const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
 
   const carouselKey = game.availablePieces.reduce((accumulator, piece) => {

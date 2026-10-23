@@ -34,7 +34,6 @@ export default function Games() {
   }
 
   if (runningGameId) {
-    console.log(runningGameId);
     return (
       <View style={styles.container}>
         <Game
@@ -44,7 +43,9 @@ export default function Games() {
         />
       </View>
     );
-  } else if (data.games.length === 0) {
+  }
+
+  if (data.games.length === 0) {
     return (
       <View style={styles.container}>
         <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
@@ -53,24 +54,24 @@ export default function Games() {
         </Text>
       </View>
     );
-  } else {
-    return (
-      <View style={styles.container}>
-        <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
-        <FlatList
-          style={{ flex: 1 }}
-          contentContainerStyle={{ justifyContent: "flex-start" }}
-          data={data.games}
-          renderItem={(game) => (
-            <GameListElement
-              game={game.item}
-              onSelection={(id) => setRunningGameId(id)}
-            />
-          )}
-        ></FlatList>
-      </View>
-    );
   }
+
+  return (
+    <View style={styles.container}>
+      <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
+      <FlatList
+        style={{ flex: 1 }}
+        contentContainerStyle={{ justifyContent: "flex-start" }}
+        data={data.games}
+        renderItem={(game) => (
+          <GameListElement
+            game={game.item}
+            onSelection={(id) => setRunningGameId(id)}
+          />
+        )}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
