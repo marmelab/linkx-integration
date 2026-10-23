@@ -32,7 +32,7 @@ export default function PiecesMenu({
   const whitePieces = piecesSelection.filter(
     (piece) => piece.pieceModel.color === "white",
   );
-  const pieceWidth = Math.max(90, 0.23 * width);
+  const pieceWidth = Math.max(85, 0.18 * width);
   let scrollView: ScrollView | null;
 
   const insets = useSafeAreaInsets();
@@ -60,7 +60,8 @@ export default function PiecesMenu({
               const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
               return (
                 <Piece
-                  style={{ width: pieceWidth }}
+                  style={{ borderWidth: 1, borderColor: "#006596" }}
+                  contentContainerStyle={{ width: pieceWidth, gap: 30 }}
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}
@@ -74,7 +75,8 @@ export default function PiecesMenu({
               const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
               return (
                 <Piece
-                  style={{ width: pieceWidth }}
+                  style={{ borderWidth: 1, borderColor: "#9C4438" }}
+                  contentContainerStyle={{ width: pieceWidth, gap: 30 }}
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}

@@ -13,11 +13,13 @@ export default function Piece({
   onPress,
   width,
   style,
+  contentContainerStyle,
 }: {
   pieceSelection: PieceSelection;
   onPress: (event: GestureResponderEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
+  contentContainerStyle?: StyleProp<ViewStyle> | undefined;
 }) {
   const selectedMatrix = pieceSelection.pieceModel.possibleMatrices.find(
     (possibleMatrix) => {
@@ -41,14 +43,18 @@ export default function Piece({
   );
 
   const cellWidth = width / 3;
+  const backgroundColor =
+    pieceSelection.pieceModel.color === "blue" ? "#E0F0F9" : "#FFE9E6";
+
   const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
   return (
     <TouchableOpacity
       key={key}
       disabled={true} // TODO change on ticket about playing
+      style={[styles.container, { height: width + 42, backgroundColor }, style]}
       onPressOut={(event) => onPress(event)}
     >
-      <View style={[styles.piece, style]}>
+      <View style={[styles.piece, contentContainerStyle]}>
         <PieceCountIndicator pieceModel={pieceSelection.pieceModel} />
         <FlatList
           scrollEnabled={false}
@@ -88,6 +94,11 @@ function formatMatrixForFlexWrap(matrix: number[][], color: Color) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    borderRadius: 18,
+    padding: 6,
+    paddingBottom: 0,
+  },
   piece: {
     flex: 0,
     flexDirection: "column",
