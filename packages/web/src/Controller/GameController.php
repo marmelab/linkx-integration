@@ -85,7 +85,7 @@ class GameController extends AbstractController
             }
         } else if (
             $gameEntity->getFirstPlayer()->getId() !== $user->getId()
-            && $gameEntity->getSecondPlayer()->getId() !== $user->getId()
+            && $gameEntity->getSecondPlayer()?->getId() !== $user->getId()
         ) {
             $infoMessage = "You are a spectator of this game.";
         }
