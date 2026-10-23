@@ -1,18 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-
-import type { GameModel } from "@/model/game";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { listGames } from "@/api";
 
 import Game from "./game";
+import GameListElement from "./game-list-element";
 
 export default function Games() {
   const { isPending, error, data } = useQuery({
@@ -21,7 +14,7 @@ export default function Games() {
     refetchInterval: 1000,
   });
 
-  const [runningGame, setRunningGame] = useState<GameModel | null>(null);
+  const [runningGameId, setRunningGameId] = useState<number | null>(null);
 
   if (isPending) {
     return (
@@ -40,11 +33,15 @@ export default function Games() {
     );
   }
 
-  if (runningGame) {
-    const id: number = runningGame.id;
+  if (runningGameId) {
+    console.log(runningGameId);
     return (
       <View style={styles.container}>
-        <Game onRequestClose={() => setRunningGame(null)} id={id} />
+        <Game
+          key={`game-${runningGameId}`}
+          onRequestClose={() => setRunningGameId(null)}
+          id={runningGameId}
+        />
       </View>
     );
   } else if (data.games.length === 0) {
@@ -64,26 +61,16 @@ export default function Games() {
           style={{ flex: 1 }}
           contentContainerStyle={{ justifyContent: "flex-start" }}
           data={data.games}
-          renderItem={(game) =>
-            GameListElement(game.item, (gameSelected: any) =>
-              setRunningGame(gameSelected),
-            )
-          }
+          renderItem={(game) => (
+            <GameListElement
+              game={game.item}
+              onSelection={(id) => setRunningGameId(id)}
+            />
+          )}
         ></FlatList>
       </View>
     );
   }
-}
-
-function GameListElement(game: any, onGameSelection: Function) {
-  const versusStr = `${game.firstPlayer.displayName} VS ${game.secondPlayer.displayName}`;
-  return (
-    <TouchableOpacity key={game.id} onPress={() => onGameSelection(game)}>
-      <View style={styles.listElement}>
-        <Text style={styles.basicText}>{versusStr}</Text>
-      </View>
-    </TouchableOpacity>
-  );
 }
 
 const styles = StyleSheet.create({
@@ -119,18 +106,5 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
-  },
-  listElement: {
-    flexDirection: "row",
-    backgroundColor: "#D0D5DC",
-    borderWidth: 1,
-    borderColor: "black",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 64,
-    marginLeft: 22,
-    marginRight: 22,
-    marginBottom: 8,
-    borderRadius: 12,
   },
 });

@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { PieceSelection } from "@/model/game";
 
@@ -33,6 +34,8 @@ export default function PiecesMenu({
   );
   const pieceWidth = Math.max(90, 0.23 * width);
   let scrollView: ScrollView | null;
+
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
@@ -82,7 +85,7 @@ export default function PiecesMenu({
           </View>
         </ScrollView>
 
-        <View style={styles.actions}>
+        <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
           <Pressable
             style={[styles.button, styles.buttonReturn]}
             onPress={() => setMenuOpened(false)}
@@ -133,14 +136,14 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
+    borderWidth: 2,
   },
   buttonText: {
     fontSize: 22,
   },
   buttonOpen: {
-    backgroundColor: "#84C5E6",
-    borderColor: "#005179",
+    backgroundColor: "#B5BEC8",
+    borderColor: "#526172",
   },
   buttonReturn: {
     backgroundColor: "#B5BEC8",

@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   BackHandler,
   Dimensions,
-  FlatList,
   Pressable,
   StyleSheet,
   View,
@@ -15,7 +14,8 @@ import type { GameModel } from "@/model/game";
 import { showGame } from "@/api";
 import { RunningGameContext } from "@/context/running-game-context";
 
-import Cell from "./cell";
+import GameLabel from "./game-label";
+import Grid from "./grid";
 import PieceCarousel from "./piece-carousel";
 
 export default function Game({
@@ -75,83 +75,11 @@ export default function Game({
           </Pressable>
           {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
         </View>
-        {GameLabel(game)}
-        {Grid(width, game.grid)}
-        <PieceCarousel
-          key={carouselKey}
-          width={width}
-          availablePieces={game.availablePieces}
-        ></PieceCarousel>
+        <GameLabel />
+        <Grid width={width} />
+        <PieceCarousel key={carouselKey} width={width} />
       </View>
     </RunningGameContext>
-  );
-}
-
-function GameLabel(game: GameModel) {
-  if (game.victory && game.lastMove?.color === "blue") {
-    return (
-      <Text style={[styles.heading, { flex: 0 }]}>
-        Victory of {game.firstPlayer.displayName} !
-      </Text>
-    );
-  } else if (game.victory) {
-    return (
-      <Text style={[styles.heading, { flex: 0 }]}>
-        Victory of {game.secondPlayer?.displayName} !
-      </Text>
-    );
-  } else if (game.completed) {
-    return <Text style={styles.heading}>It's a draw !</Text>;
-  } else if (game.turnOfPlayer === "blue") {
-    return (
-      <Text style={styles.subHeading}>
-        Turn of{" "}
-        <Text style={styles.textBlue}>{game.firstPlayer.displayName}...</Text>
-      </Text>
-    );
-  } else if (!game.secondPlayer) {
-    return (
-      <Text style={styles.subHeading}>
-        Waiting for a second player to join...
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.subHeading}>
-        Turn of{" "}
-        <Text style={styles.textWhite}>
-          {game.secondPlayer?.displayName}...
-        </Text>
-      </Text>
-    );
-  }
-}
-
-function Grid(width: number, grid: string[][]) {
-  const cells = [];
-
-  for (let y = grid.length - 1; y >= 0; y--) {
-    for (let x = 0; x <= grid.length - 1; x++) {
-      cells.push({
-        value: grid[x][y],
-        x: x,
-        y: y,
-      });
-    }
-  }
-
-  const cellWidth = width / grid.length;
-
-  return (
-    <FlatList
-      data={cells}
-      style={{ ...styles.grid, width }}
-      renderItem={(item) => (
-        <Cell width={cellWidth} cellValue={item.item.value}></Cell>
-      )}
-      keyExtractor={(item) => `${item.x}.${item.y}:${item.value}`}
-      numColumns={9}
-    />
   );
 }
 
@@ -160,26 +88,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  grid: {
-    flex: 0,
-    marginTop: 18,
-    marginBottom: -250,
-  },
   heading: {
     textAlign: "center",
     fontSize: 26,
     flex: 1,
-  },
-  subHeading: {
-    textAlign: "center",
-    fontSize: 20,
-    color: "#666",
-  },
-  textBlue: {
-    color: "#006596",
-  },
-  textWhite: {
-    color: "#9C4438",
   },
   actions: {
     flex: 1,

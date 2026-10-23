@@ -1,7 +1,7 @@
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost";
 
 export async function listGames() {
-  const response = await fetch(`${apiBaseUrl ?? "localhost"}/games`);
+  const response = await fetch(`${apiBaseUrl}/games`);
 
   if (!response.ok) {
     const body = await response.json();
@@ -11,9 +11,7 @@ export async function listGames() {
 }
 
 export async function showGame(id: number) {
-  const response = await fetch(
-    `${apiBaseUrl ?? "http://localhost"}/games/${id}`,
-  );
+  const response = await fetch(`${apiBaseUrl}/games/${id}`);
 
   if (!response.ok) {
     const body = await response.json();

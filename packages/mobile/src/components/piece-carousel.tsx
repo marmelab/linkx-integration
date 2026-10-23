@@ -6,21 +6,18 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import type { PieceSelection } from "@/model/game";
 
 import { RunningGameContext } from "@/context/running-game-context";
-import { type PieceModel } from "@/model/game";
 
 import Piece from "./piece";
 import PiecesMenu from "./pieces-menu";
 
-export default function PieceCarousel({
-  availablePieces,
-  width,
-}: {
-  availablePieces: PieceModel[];
-  width: number;
-}) {
+export default function PieceCarousel({ width }: { width: number }) {
   const game = useContext(RunningGameContext);
+  if (!game) {
+    return <></>;
+  }
+
   const [piecesSelections, setPiecesSelections] = useState<PieceSelection[]>(
-    availablePieces.map(
+    game.availablePieces.map(
       (availablePiece): PieceSelection => ({
         pieceModel: availablePiece,
         mirrored: false,
