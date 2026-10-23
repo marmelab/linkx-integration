@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -14,18 +14,12 @@ import { listGames } from "@/api";
 
 import Game from "./game";
 
-export const RunningGameContext = createContext(null);
-
 export default function Games() {
-  const queryClient = useQueryClient();
   const { isPending, error, data } = useQuery({
     queryKey: ["games"],
     queryFn: listGames,
+    refetchInterval: 1000,
   });
-
-  // TODO detect swipe
-  // const handleRefresh = async () =>
-  //   queryClient.invalidateQueries({ queryKey: ["games"] });
 
   const [runningGame, setRunningGame] = useState<GameModel | null>(null);
 
@@ -50,7 +44,7 @@ export default function Games() {
     const id: number = runningGame.id;
     return (
       <View style={styles.container}>
-        <Game id={id} />
+        <Game onRequestClose={() => setRunningGame(null)} id={id} />
       </View>
     );
   } else {

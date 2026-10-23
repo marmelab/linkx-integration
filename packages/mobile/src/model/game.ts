@@ -1,14 +1,16 @@
+import type { Move } from "./move";
 import type { Player } from "./player";
 
 export type GameModel = {
   id: number;
   grid: string[][];
   availablePieces: PieceModel[];
-  turnOfPlayer: "white" | "blue";
+  turnOfPlayer: Color;
   victory: string[] | null;
   canPlay: { white: boolean; blue: boolean };
+  lastMove?: Move;
   firstPlayer: Player;
-  secondPlayer: Player;
+  secondPlayer?: Player;
   completed: boolean;
 };
 
@@ -28,8 +30,7 @@ export type PiecePossibleMatrices = {
 };
 
 export type PieceSelection = {
-  piece: string;
-  color: "white" | "blue";
+  pieceModel: PieceModel;
   selectedRotation: number;
   mirrored: boolean;
 };

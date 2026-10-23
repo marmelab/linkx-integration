@@ -1,32 +1,42 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
+  BackHandler,
+  Dimensions,
   FlatList,
-  ScrollView,
+  Pressable,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { Text } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { GameModel, PieceModel } from "@/model/game";
+import type { GameModel } from "@/model/game";
 
 import { showGame } from "@/api";
+import { RunningGameContext } from "@/context/running-game-context";
 
-export default function Game(param: any) {
-  const queryClient = useQueryClient();
+import Cell from "./cell";
+import PieceCarousel from "./piece-carousel";
+
+export default function Game({
+  id,
+  onRequestClose,
+}: {
+  id: number;
+  onRequestClose: () => void;
+}) {
   const { isPending, error, data } = useQuery({
     queryKey: ["game"],
-    queryFn: () => showGame(param.id),
+    queryFn: () => showGame(id),
+    refetchInterval: 1500,
+  });
+  BackHandler.addEventListener("hardwareBackPress", () => {
+    // TODO confirmation when playing
+    onRequestClose();
+    return true;
   });
 
-  useEffect(() => {
-    const timer = setInterval(
-      () => queryClient.invalidateQueries({ queryKey: ["game"] }),
-      1,
-    );
-    return () => clearInterval(timer);
-  }, []);
+  const insets = useSafeAreaInsets();
 
   if (isPending) {
     return (
@@ -43,25 +53,76 @@ export default function Game(param: any) {
       </View>
     );
   }
+  const width =
+    Dimensions.get("screen").width - 20 - insets.left - insets.right;
 
   const game = data.game as GameModel;
   const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
+
   return (
-    <View style={styles.game}>
-      <Text style={styles.heading}>{gameTitle}</Text>
-      {GameLabel(game)}
-      {Grid(game.grid)}
-      {PiecesLeft(game.availablePieces)}
-    </View>
+    <RunningGameContext value={game}>
+      <View style={styles.game}>
+        <View style={[styles.titleContainer, { width }]}>
+          <Pressable
+            onPress={onRequestClose}
+            style={[styles.button, styles.buttonReturn]}
+          >
+            <Text>Exit</Text>
+          </Pressable>
+          {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
+        </View>
+        {GameLabel(game)}
+        {Grid(width, game.grid)}
+        <PieceCarousel
+          width={width}
+          availablePieces={game.availablePieces}
+        ></PieceCarousel>
+      </View>
+    </RunningGameContext>
   );
 }
 
-function GameLabel(game: any) {
-  let label = "Game in progress";
-  return <Text style={styles.subHeading}>{label}</Text>; // TODO
+function GameLabel(game: GameModel) {
+  if (game.victory && game.lastMove?.color === "blue") {
+    return (
+      <Text style={styles.heading}>
+        Victory of {game.firstPlayer.displayName} !
+      </Text>
+    );
+  } else if (game.victory) {
+    return (
+      <Text style={styles.heading}>
+        Victory of {game.secondPlayer?.displayName} !
+      </Text>
+    );
+  } else if (game.completed) {
+    return <Text style={styles.heading}>It's a draw !</Text>;
+  } else if (game.turnOfPlayer === "blue") {
+    return (
+      <Text style={styles.subHeading}>
+        Turn of{" "}
+        <Text style={styles.textBlue}>{game.firstPlayer.displayName}...</Text>
+      </Text>
+    );
+  } else if (!game.secondPlayer) {
+    return (
+      <Text style={styles.subHeading}>
+        Waiting for a second player to join...
+      </Text>
+    );
+  } else {
+    return (
+      <Text style={styles.subHeading}>
+        Turn of{" "}
+        <Text style={styles.textWhite}>
+          {game.secondPlayer?.displayName}...
+        </Text>
+      </Text>
+    );
+  }
 }
 
-function Grid(grid: string[][]) {
+function Grid(width: number, grid: string[][]) {
   const cells = [];
 
   for (let y = grid.length - 1; y >= 0; y--) {
@@ -74,105 +135,70 @@ function Grid(grid: string[][]) {
     }
   }
 
+  const cellWidth = width / grid.length;
+
   return (
     <FlatList
       data={cells}
-      style={styles.grid}
-      renderItem={(item: any) => Cell(item.item.value)}
+      style={{ ...styles.grid, width }}
+      renderItem={(item) => (
+        <Cell width={cellWidth} cellValue={item.item.value}></Cell>
+      )}
       keyExtractor={(item) => `${item.x}.${item.y}`}
       numColumns={9}
     />
   );
 }
 
-function Cell(cellValue: string) {
-  switch (cellValue) {
-    case "white":
-    case "whiteLastMove":
-      return <View style={styles.cellWhite}></View>;
-    case "blue":
-    case "blueLastMove":
-      return <View style={styles.cellBlue}></View>;
-    case ".":
-    default:
-      return <View style={styles.emptyCell}></View>;
-  }
-}
-
-function PiecesLeft(availablePieces: PieceModel[]) {
-  // TODO Carousel
-  return (
-    <View>
-      <ScrollView horizontal>
-        {availablePieces.map((piece) => Piece(piece))}
-      </ScrollView>
-    </View>
-  );
-}
-
-function Piece(piece: PieceModel) {
-  const cells = [];
-
-  const selectedMatrix = piece.possibleMatrices.find((possibleMatrix) => {
-    return possibleMatrix.mirrored.includes();
-  })?.matrix;
-
-  for (let y = 2; y >= 0; y--) {
-    for (let x = 0; x <= 2; x++) {
-      cells.push({
-        value: selectedMatrix[x][y],
-        x: x,
-        y: y,
-      });
-    }
-  }
-
-  const key = `${piece.piece}-${piece.color}`;
-  return (
-    <TouchableOpacity>
-      <Text key={key}>{piece.piece}</Text>
-    </TouchableOpacity>
-  );
-}
-
-const borderColor = "#333";
 const styles = StyleSheet.create({
   game: {
     flex: 1,
+    alignItems: "center",
   },
   grid: {
-    flex: 1,
+    flex: 0,
     marginTop: 18,
-    marginBottom: 18,
+    marginBottom: -250,
   },
   heading: {
     textAlign: "center",
     fontSize: 26,
+    flex: 1,
   },
   subHeading: {
     textAlign: "center",
     fontSize: 20,
     color: "#666",
   },
-  cellWhite: {
-    flex: 1,
-    aspectRatio: 1,
-    borderColor: borderColor,
-    borderWidth: 1,
-    backgroundColor: "#9C4438",
+  textBlue: {
+    color: "#006596",
   },
-  cellBlue: {
-    flex: 1,
-    aspectRatio: 1,
-    borderColor: borderColor,
-    borderWidth: 1,
-    backgroundColor: "#006596",
+  textWhite: {
+    color: "#9C4438",
   },
-  emptyCell: {
+  actions: {
     flex: 1,
-    aspectRatio: 1,
-    borderColor: borderColor,
-    borderWidth: 1,
-    backgroundColor: "#fff",
+    justifyContent: "flex-end",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    flex: 0,
+    minWidth: 60,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    textAlign: "center",
+    alignItems: "center",
+    borderWidth: 2,
+  },
+  buttonReturn: {
+    position: "absolute",
+    left: 0,
+    top: 10,
+    borderColor: "#9AA6B5",
+    backgroundColor: "#ECEEF1",
   },
 });
