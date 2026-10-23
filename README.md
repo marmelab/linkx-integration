@@ -35,7 +35,7 @@ make mobile
 ```
 
 Add to your `.env.local` `EXPO_PUBLIC_API_URL=http://<your LOCAL ip here>/api`.
-See .env for an example.
+Example: `EXPO_PUBLIC_API_URL=http://192.168.1.XXX/api`
 
 ## Using cli mode
 

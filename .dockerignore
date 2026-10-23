@@ -4,3 +4,4 @@
 infra
 **/vendor
 packages/web/config/reference.php
+*.local
