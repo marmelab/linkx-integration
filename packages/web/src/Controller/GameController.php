@@ -85,7 +85,7 @@ class GameController extends AbstractController
             }
         } else if (
             $gameEntity->getFirstPlayer()->getId() !== $user->getId()
-            && $gameEntity->getSecondPlayer()->getId() !== $user->getId()
+            && $gameEntity->getSecondPlayer()?->getId() !== $user->getId()
         ) {
             $infoMessage = "You are a spectator of this game.";
         }
@@ -237,7 +237,7 @@ class GameController extends AbstractController
         if (!empty($gameEntity)) {
             $playerIdCurrentTurn = $game->getTurnOfPlayer() === "blue"
                 ? $gameEntity->getFirstPlayer()->getId()
-                : $gameEntity->getSecondPlayer()->getId();
+                : $gameEntity->getSecondPlayer()?->getId();
         }
         return !empty($gameEntity) ? ($playerIdCurrentTurn === $user->getId()) : true;
     }

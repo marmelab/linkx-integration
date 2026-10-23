@@ -21,6 +21,9 @@ services:
     environment:
       SWAGGER_JSON_URL: "http://localhost:3005/"
   php:
+    env_file:
+      - .env
+      - .env.local
     build:
       context: .
       dockerfile: packages/web/Dockerfile
@@ -30,7 +33,6 @@ services:
         condition: service_healthy
         restart: true
     environment:
-      SERVER_NAME: ${SERVER_NAME:-localhost}, php:80, ${SECONDARY_SERVER_NAME:-localhost}
       DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
       DATABASE_URL: ${DATABASE_URL}
     volumes:

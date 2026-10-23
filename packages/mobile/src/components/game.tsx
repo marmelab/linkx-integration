@@ -1,121 +1,124 @@
-import { Column, Host, Text } from "@expo/ui";
 import { useQuery } from "@tanstack/react-query";
-import { Dimensions, FlatList, StyleSheet, View } from "react-native";
+import {
+  BackHandler,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { showGame } from "@/api";
+import { RunningGameContext } from "@/context/running-game-context";
 
-export default function Game(param: any) {
+import GameLabel from "./game-label";
+import Grid from "./grid";
+import PieceCarousel from "./piece-carousel";
+
+export default function Game({
+  id,
+  onRequestClose,
+}: {
+  id: number;
+  onRequestClose: () => void;
+}) {
   const { isPending, error, data } = useQuery({
-    queryKey: ["game", param.id],
-    queryFn: () => showGame(param.id),
-    refetchInterval: 1000,
+    queryKey: ["game", id],
+    queryFn: () => showGame(id),
+    refetchInterval: 1500,
+  });
+  BackHandler.addEventListener("hardwareBackPress", () => {
+    // TODO confirmation when playing
+    onRequestClose();
+    return true;
   });
 
   const insets = useSafeAreaInsets();
-  const screenWidth =
-    Dimensions.get("screen").width - 20 - insets.left - insets.right;
-  const screenHeight =
-    Dimensions.get("screen").height - 20 - insets.bottom - insets.top;
 
   if (isPending) {
     return (
-      <Host matchContents>
+      <View style={styles.fullPageText}>
         <Text>Loading game...</Text>
-      </Host>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <Host matchContents>
+      <View style={styles.fullPageText}>
         <Text>Error : couldn't fetch game.</Text>
-      </Host>
+      </View>
     );
   }
+  const width =
+    Dimensions.get("screen").width - 20 - insets.left - insets.right;
 
   const game = data.game;
   const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
+
+  const carouselKey = game.availablePieces.reduce((accumulator, piece) => {
+    return accumulator + piece.count;
+  }, 0);
+
   return (
-    <Host style={{ ...styles.game, width: screenWidth, height: screenHeight }}>
-      <Column style={{ width: screenWidth, height: screenHeight }}>
-        <Text>{gameTitle}</Text>
-        {GameLabel(game)}
-        {Grid(game.grid)}
-      </Column>
-    </Host>
+    <RunningGameContext value={game}>
+      <View style={styles.game}>
+        <View style={[styles.titleContainer, { width }]}>
+          <Pressable
+            onPress={onRequestClose}
+            style={[styles.button, styles.buttonReturn]}
+          >
+            <Text>Exit</Text>
+          </Pressable>
+          {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
+        </View>
+        <GameLabel />
+        <Grid width={width} />
+        <PieceCarousel key={carouselKey} width={width} />
+      </View>
+    </RunningGameContext>
   );
 }
 
-function GameLabel(game: any) {
-  return <Text>Game in progress...</Text>; // TODO
-}
-
-function Grid(grid: string[][]) {
-  const cells = [];
-
-  for (let y = grid.length - 1; y >= 0; y--) {
-    for (let x = 0; x <= grid.length - 1; x++) {
-      cells.push({
-        value: grid[x][y],
-        x: x,
-        y: y,
-      });
-    }
-  }
-
-  return (
-    <FlatList
-      data={cells}
-      style={styles.grid}
-      renderItem={(item: any) => Cell(item.item.value)}
-      keyExtractor={(item) => `${item.x}.${item.y}`}
-      numColumns={9}
-    />
-  );
-}
-
-function Cell(cellValue: string) {
-  switch (cellValue) {
-    case "white":
-    case "whiteLastMove":
-      return <View style={styles.cellWhite}></View>;
-    case "blue":
-    case "blueLastMove":
-      return <View style={styles.cellBlue}></View>;
-    case ".":
-    default:
-      return <View style={styles.emptyCell}></View>;
-  }
-}
-
-const borderColor = "#333";
 const styles = StyleSheet.create({
   game: {
     flex: 1,
+    alignItems: "center",
   },
-  grid: {
+  heading: {
+    textAlign: "center",
+    fontSize: 26,
     flex: 1,
   },
-  cellWhite: {
+  actions: {
     flex: 1,
-    aspectRatio: 1,
-    borderColor: borderColor,
-    borderWidth: 1,
-    backgroundColor: "#9C4438",
+    justifyContent: "flex-end",
   },
-  cellBlue: {
-    flex: 1,
-    aspectRatio: 1,
-    borderColor: borderColor,
-    borderWidth: 1,
-    backgroundColor: "#006596",
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  emptyCell: {
+  button: {
+    flex: 0,
+    minWidth: 60,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    textAlign: "center",
+    alignItems: "center",
+    borderWidth: 2,
+  },
+  buttonReturn: {
+    position: "absolute",
+    left: 0,
+    top: 10,
+    borderColor: "#9AA6B5",
+    backgroundColor: "#ECEEF1",
+  },
+  fullPageText: {
     flex: 1,
-    aspectRatio: 1,
-    borderColor: borderColor,
-    borderWidth: 1,
-    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

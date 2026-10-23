@@ -1,7 +1,9 @@
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
+import type { GameModel } from "./model/game";
 
-export async function listGames() {
-  const response = await fetch(`${apiBaseUrl ?? "localhost"}/games`); // TODO env variable
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost";
+
+export async function listGames(): Promise<{ games: GameModel[] }> {
+  const response = await fetch(`${apiBaseUrl}/games`);
 
   if (!response.ok) {
     const body = await response.json();
@@ -10,10 +12,8 @@ export async function listGames() {
   return response.json();
 }
 
-export async function showGame(id: number) {
-  const response = await fetch(
-    `${apiBaseUrl ?? "http://localhost"}/games/${id}`,
-  );
+export async function showGame(id: number): Promise<{ game: GameModel }> {
+  const response = await fetch(`${apiBaseUrl}/games/${id}`);
 
   if (!response.ok) {
     const body = await response.json();

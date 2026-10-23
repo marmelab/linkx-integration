@@ -2,14 +2,23 @@
 
 namespace App\Model;
 
+use Symfony\Component\Serializer\Attribute\Groups;
+
 class Move
 {
     public function __construct(
+        #[Groups(['game-view'])]
         private bool $skipped,
+
+        #[Groups(['game-view'])]
         private string $color,
+
         private ?string $piece,
+
         private ?int $column,
+
         private ?int $rotation,
+
         private ?bool $mirrored,
     ) {}
 

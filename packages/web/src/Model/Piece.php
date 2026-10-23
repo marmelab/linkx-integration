@@ -11,6 +11,7 @@ class Piece
     private string $piece;
 
     /** @var PiecePossibleMatrices[] */
+    #[Groups(['game-view'])]
     private array $possibleMatrices;
 
     #[Groups(['game-view'])]

@@ -1,88 +1,94 @@
-import { Host, List, ListItem, Row, Text } from "@expo/ui";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { listGames } from "@/api";
 
-import Game from "./game";
-
-export const RunningGameContext = createContext(null);
+import GameListElement from "./game-list-element";
 
 export default function Games() {
-  const queryClient = useQueryClient();
   const { isPending, error, data } = useQuery({
     queryKey: ["games"],
     queryFn: listGames,
+    refetchInterval: 1000,
   });
-
-  const handleRefresh = async () =>
-    queryClient.invalidateQueries({ queryKey: ["games"] });
-
-  const [runningGame, setRunningGame] = useState(null);
 
   if (isPending) {
     return (
-      <Host matchContents>
-        <Text textStyle={styles.basicText}>Loading elements...</Text>
-      </Host>
+      <View style={styles.fullPageText}>
+        <Text style={styles.basicText}>Loading elements...</Text>
+      </View>
     );
   }
 
   if (error) {
     const message = `Could not load current games: ${error.message}`;
     return (
-      <Host matchContents>
-        <Text textStyle={styles.errorText}>{message}</Text>
-      </Host>
-    );
-  }
-
-  if (runningGame) {
-    const id: number = runningGame.id;
-    return (
-      <View style={styles.container}>
-        <Game id={id} />
+      <View style={styles.fullPageText}>
+        <Text style={styles.errorText}>{message}</Text>
       </View>
     );
-  } else {
+  }
+
+  if (data.games.length === 0) {
     return (
-      <Host style={styles.container}>
-        <Text textStyle={styles.basicText}>Spectate:</Text>
-        <List onRefresh={() => handleRefresh()}>
-          {data.games.map((game: any) =>
-            GameListElement(game, (gameSelected: any) =>
-              setRunningGame(gameSelected),
-            ),
-          )}
-        </List>
-      </Host>
+      <View style={styles.container}>
+        <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
+        <Text style={[styles.basicText, styles.subHeading]}>
+          There is no one currently playing.
+        </Text>
+      </View>
     );
   }
-}
 
-function GameListElement(game: any, onGameSelection: Function) {
-  const versusStr = `${game.firstPlayer.displayName} VS ${game.secondPlayer.displayName}`;
   return (
-    <ListItem key={game.id} onPress={() => onGameSelection(game)}>
-      <ListItem.Leading>
-        <Text>{game.id}</Text>
-      </ListItem.Leading>
-      <Row spacing={0}>
-        <Text>{versusStr}</Text>
-      </Row>
-    </ListItem>
+    <View style={styles.container}>
+      <Text style={[styles.basicText, styles.heading]}>Spectate:</Text>
+      <FlatList
+        style={{ flex: 1 }}
+        contentContainerStyle={{ justifyContent: "flex-start" }}
+        data={data.games}
+        renderItem={(game) => (
+          <GameListElement
+            game={game.item}
+            onSelection={(id) =>
+              router.navigate({
+                pathname: "/game/[id]",
+                params: {
+                  id,
+                },
+              })
+            }
+          />
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  fullPageText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
   },
+  heading: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  subHeading: {
+    textAlign: "center",
+    fontSize: 20,
+    color: "#666",
+  },
   basicText: {
-    flex: 1,
     textAlign: "center",
     color: "#333333",
+    fontSize: 24,
   },
   errorText: {
     color: "#000",
@@ -93,12 +99,5 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
-  },
-  listElement: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "black",
   },
 });
