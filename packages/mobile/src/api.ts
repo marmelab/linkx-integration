@@ -9,7 +9,7 @@ export async function listGames(): Promise<{ games: GameModel[] }> {
     const body = await response.json();
     throw new Error(body.message);
   }
-  return response.json().then((data) => data.games);
+  return response.json();
 }
 
 export async function showGame(id: number): Promise<{ game: GameModel }> {
@@ -19,5 +19,5 @@ export async function showGame(id: number): Promise<{ game: GameModel }> {
     const body = await response.json();
     throw new Error(body.message);
   }
-  return response.json().then((data) => data.game);
+  return response.json();
 }

@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { router } from "expo-router";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { listGames } from "@/api";
 
-import Game from "./game";
 import GameListElement from "./game-list-element";
 
 export default function Games() {
@@ -13,8 +12,6 @@ export default function Games() {
     queryFn: listGames,
     refetchInterval: 1000,
   });
-
-  const [runningGameId, setRunningGameId] = useState<number | null>(null);
 
   if (isPending) {
     return (
@@ -29,18 +26,6 @@ export default function Games() {
     return (
       <View style={styles.fullPageText}>
         <Text style={styles.errorText}>{message}</Text>
-      </View>
-    );
-  }
-
-  if (runningGameId) {
-    return (
-      <View style={styles.container}>
-        <Game
-          key={`game-${runningGameId}`}
-          onRequestClose={() => setRunningGameId(null)}
-          id={runningGameId}
-        />
       </View>
     );
   }
@@ -66,7 +51,14 @@ export default function Games() {
         renderItem={(game) => (
           <GameListElement
             game={game.item}
-            onSelection={(id) => setRunningGameId(id)}
+            onSelection={(id) =>
+              router.navigate({
+                pathname: "/game/[id]",
+                params: {
+                  id,
+                },
+              })
+            }
           />
         )}
       />
