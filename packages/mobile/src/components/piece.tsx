@@ -3,7 +3,7 @@ import type { StyleProp } from "react-native";
 
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
-import type { PieceSelection } from "@/model/game";
+import type { Color, PieceSelection } from "@/model/game";
 
 import Cell from "./cell";
 import PieceCountIndicator from "./piece-count-indicator";
@@ -19,8 +19,6 @@ export default function Piece({
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
 }) {
-  const cells = [];
-
   const selectedMatrix = pieceSelection.pieceModel.possibleMatrices.find(
     (possibleMatrix) => {
       return (
@@ -37,23 +35,10 @@ export default function Piece({
     return <></>;
   }
 
-  for (let y = selectedMatrix[0].length - 1; y >= 0; y--) {
-    for (let x = 0; x <= selectedMatrix.length - 1; x++) {
-      if (selectedMatrix[x] && selectedMatrix[x][y]) {
-        cells.push({
-          color: pieceSelection.pieceModel.color,
-          x,
-          y,
-        });
-      } else {
-        cells.push({
-          color: "",
-          x,
-          y,
-        });
-      }
-    }
-  }
+  const cells = formatMatrixForFlexWrap(
+    selectedMatrix,
+    pieceSelection.pieceModel.color,
+  );
 
   const cellWidth = width / 3;
   const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
@@ -78,6 +63,28 @@ export default function Piece({
       </View>
     </TouchableOpacity>
   );
+}
+
+function formatMatrixForFlexWrap(matrix: number[][], color: Color) {
+  const cells = [];
+  for (let y = matrix[0].length - 1; y >= 0; y--) {
+    for (let x = 0; x <= matrix.length - 1; x++) {
+      if (matrix[x] && matrix[x][y]) {
+        cells.push({
+          color,
+          x,
+          y,
+        });
+      } else {
+        cells.push({
+          color: "",
+          x,
+          y,
+        });
+      }
+    }
+  }
+  return cells;
 }
 
 const styles = StyleSheet.create({
