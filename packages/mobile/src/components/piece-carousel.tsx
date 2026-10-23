@@ -32,10 +32,18 @@ export default function PieceCarousel({
   const carouselPieces = piecesSelections.filter(
     (piece) => piece.pieceModel.color === game?.turnOfPlayer,
   );
+  const backgroundColor = game?.turnOfPlayer === "blue" ? "#F6FBFD" : "#FFF8F8";
+  const borderColor = game?.turnOfPlayer === "blue" ? "#006596" : "#9C4438";
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container} horizontal>
+    <View style={styles.carousel}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor, borderColor },
+        ]}
+        horizontal
+      >
         {carouselPieces.map((pieceSelection) => {
           const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
           return (
@@ -69,11 +77,18 @@ function updateSelection(setPiecesSelections, piece) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 30,
-    paddingRight: 30,
+    paddingLeft: 15,
+    paddingRight: 15,
     flexDirection: "row",
     alignItems: "center",
     gap: 18,
+    borderRadius: 24,
+    borderWidth: 2,
+  },
+  carousel: {
+    flex: 1,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   actions: {
     flex: 1,

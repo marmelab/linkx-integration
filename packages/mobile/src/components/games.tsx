@@ -108,12 +108,15 @@ const styles = StyleSheet.create({
   },
   listElement: {
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: "#D0D5DC",
     borderWidth: 1,
     borderColor: "black",
     alignItems: "center",
     justifyContent: "center",
     height: 64,
+    marginLeft: 22,
+    marginRight: 22,
     marginBottom: 8,
+    borderRadius: 12,
   },
 });

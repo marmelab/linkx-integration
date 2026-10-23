@@ -1,7 +1,7 @@
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export async function listGames() {
-  const response = await fetch(`${apiBaseUrl ?? "localhost"}/games`); // TODO env variable
+  const response = await fetch(`${apiBaseUrl ?? "localhost"}/games`);
 
   if (!response.ok) {
     const body = await response.json();

@@ -40,7 +40,7 @@ export default function Game({
 
   if (isPending) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.fullPageText}>
         <Text>Loading game...</Text>
       </View>
     );
@@ -48,7 +48,7 @@ export default function Game({
 
   if (error) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.fullPageText}>
         <Text>Error : couldn't fetch game.</Text>
       </View>
     );
@@ -58,6 +58,10 @@ export default function Game({
 
   const game = data.game as GameModel;
   const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
+
+  const carouselKey = game.availablePieces.reduce((accumulator, piece) => {
+    return accumulator + piece.count;
+  }, 0);
 
   return (
     <RunningGameContext value={game}>
@@ -74,6 +78,7 @@ export default function Game({
         {GameLabel(game)}
         {Grid(width, game.grid)}
         <PieceCarousel
+          key={carouselKey}
           width={width}
           availablePieces={game.availablePieces}
         ></PieceCarousel>
@@ -144,7 +149,7 @@ function Grid(width: number, grid: string[][]) {
       renderItem={(item) => (
         <Cell width={cellWidth} cellValue={item.item.value}></Cell>
       )}
-      keyExtractor={(item) => `${item.x}.${item.y}`}
+      keyExtractor={(item) => `${item.x}.${item.y}:${item.value}`}
       numColumns={9}
     />
   );
@@ -200,5 +205,10 @@ const styles = StyleSheet.create({
     top: 10,
     borderColor: "#9AA6B5",
     backgroundColor: "#ECEEF1",
+  },
+  fullPageText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
