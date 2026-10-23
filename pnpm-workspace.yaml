@@ -8,9 +8,6 @@ catalog:
   "@expo/ui": ~57.0.25
   "@hono/node-server": ^2.1.4
   "@hono/standard-validator": ^0.4.0
-  "@tanstack/ai": ^0.69.0
-  "@tanstack/ai-openai": ^0.30.0
-  "@tanstack/ai-react": ^0.30.4
   "@tanstack/react-query": ^5.104.3
   "@types/node": ^26.6.4
   babel-preset-expo: ^58.0.17

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: 30,
   },
   grid: {
     flex: 0,

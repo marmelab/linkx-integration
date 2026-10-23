@@ -3,9 +3,20 @@
 		trusted_proxies static 0.0.0.0/0 ::/0
 		client_ip_headers Cf-Connecting-IP
 	}
+	log {
+		output file /home/ubuntu/var/log/caddy.log
+	}
 }
 
 linkx-integration.marmelab.com {
+	
+	redir /apk /apk/ permanent
+	handle_path /apk/* {
+		encode gzip
+		root * /apk
+		file_server browse
+		index latest.apk
+	}
     handle {
         # Http is acceptable because every message is within the docker virtual network
         reverse_proxy http://php
