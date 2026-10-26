@@ -4,13 +4,16 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\User;
+use App\Model\GameOptions;
 use App\Model\Move;
 use App\Repository\GameRepository;
 use App\Service\GamePersister;
 use App\Service\GameRunner;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,7 +25,7 @@ class ApiGameController extends AbstractController
 {
 
 
-    #[Route('/api/games', name: 'api_list_games')]
+    #[Route('/api/games', name: 'api_list_games', methods: ['GET'])]
     public function listGames(GameRepository $gameRepository): JsonResponse
     {
         return $this->json(
@@ -33,11 +36,37 @@ class ApiGameController extends AbstractController
         );
     }
 
+    #[Route('/api/games', name: 'api_create_games', methods: 'POST')]
+    public function createGame(
+        #[MapRequestPayload] GameOptions $options,
+        GamePersister $gamePersister,
+        #[CurrentUser] ?User $player,
+    ) {
+        if (!$options->isLocal() && !$player) {
+            return $this->json(['message' => 'You need to be authenticated to create an online game.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (!$options->isLocal()) {
+            return $this->json(['message' => 'Online games are not implemented yet.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $gameEntity = $gamePersister->initGame($player, $options);
+
+        return $this->json(['id' => $gameEntity->getId()], Response::HTTP_CREATED);
+    }
+
+
     #[Route('/api/games/{id}', name: 'api_show_game', methods: ['GET'])]
-    public function showGame(Game $gameEntity, GameRepository $gameRepository, GameRunner $gameRunner): JsonResponse
+    public function showGame(Game $gameEntity, EntityManagerInterface $em, GameRunner $gameRunner): JsonResponse
     {
         $game = $gameRunner->getGame($gameEntity->getState());
+        if (is_null($gameEntity->getState())) {
+            // Anchoring the first move
+            $gameEntity->setState($game->getState());
+            $em->flush();
+        }
         $game->setCompleted($gameEntity->isCompleted());
+        $game->setLocal($gameEntity->isLocalGame());
         $game->setFirstPlayer($gameEntity->getFirstPlayer());
         $game->setSecondPlayer($gameEntity->getSecondPlayer());
         $game->setGrid(array_map(function ($column) {

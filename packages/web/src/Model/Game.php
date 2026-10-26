@@ -37,6 +37,9 @@ class Game
     #[Groups(['game-view'])]
     private ?bool $completed = false;
 
+    #[Groups(['game-view'])]
+    private ?bool $local = false;
+
     public function __construct() {}
 
     public function getVictory()
@@ -124,23 +127,23 @@ class Game
         return $this;
     }
 
-    public function getFirstPlayer(): User
+    public function getFirstPlayer(): ?User
     {
         return $this->firstPlayer;
     }
 
-    public function setFirstPlayer(User $firstPlayer): self
+    public function setFirstPlayer(?User $firstPlayer): self
     {
         $this->firstPlayer = $firstPlayer;
         return $this;
     }
 
-    public function getSecondPlayer(): User
+    public function getSecondPlayer(): ?User
     {
         return $this->secondPlayer;
     }
 
-    public function setSecondPlayer(User $secondPlayer): self
+    public function setSecondPlayer(?User $secondPlayer): self
     {
         $this->secondPlayer = $secondPlayer;
         return $this;
@@ -154,6 +157,17 @@ class Game
     public function setCompleted(bool $completed): self
     {
         $this->completed = $completed;
+        return $this;
+    }
+
+    public function isLocal(): bool
+    {
+        return $this->local ?? false;
+    }
+
+    public function setLocal(bool $local): self
+    {
+        $this->local = $local;
         return $this;
     }
 }

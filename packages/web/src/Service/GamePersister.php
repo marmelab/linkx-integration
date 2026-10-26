@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Game as GameEntity;
 use App\Entity\User;
 use App\Model\Game;
+use App\Model\GameOptions;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GamePersister
@@ -14,10 +15,13 @@ class GamePersister
         private EntityManagerInterface $em,
     ) {}
 
-    public function initGame(User $currentUser): GameEntity
+    public function initGame(?User $currentUser, ?GameOptions $options): GameEntity
     {
         $gameEntity = new GameEntity();
         $gameEntity->setFirstPlayer($currentUser);
+        if ($options) {
+            $gameEntity->setLocalGame($options->isLocal());
+        }
         $this->em->persist($gameEntity);
         $this->em->flush();
         return $gameEntity;

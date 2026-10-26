@@ -67,7 +67,7 @@ class Game
         return $this->firstPlayer;
     }
 
-    public function setFirstPlayer(User $firstPlayer): static
+    public function setFirstPlayer(?User $firstPlayer): static
     {
         $this->firstPlayer = $firstPlayer;
 
