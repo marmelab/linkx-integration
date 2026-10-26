@@ -16,13 +16,12 @@ import GameLabel from "./game-label";
 import Grid from "./grid";
 import PieceCarousel from "./piece-carousel";
 
-export default function Game({
-  id,
-  onRequestClose,
-}: {
+type GameProps = {
   id: number;
   onRequestClose: () => void;
-}) {
+};
+
+export default function Game({ id, onRequestClose }: GameProps) {
   const { isPending, error, data } = useQuery({
     queryKey: ["game", id],
     queryFn: () => showGame(id),

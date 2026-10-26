@@ -13,15 +13,17 @@ import type { PieceSelection } from "@/model/game";
 
 import Piece from "./piece";
 
+type PiecesMenuProps = {
+  piecesSelection: PieceSelection[];
+  width: number;
+  onSelection: (piece: PieceSelection) => void;
+};
+
 export default function PiecesMenu({
   piecesSelection,
   width,
   onSelection,
-}: {
-  piecesSelection: PieceSelection[];
-  width: number;
-  onSelection: (piece: PieceSelection) => void;
-}) {
+}: PiecesMenuProps) {
   const [menuOpened, setMenuOpened] = useState(false);
 
   // TODO Order based on current turn for local play

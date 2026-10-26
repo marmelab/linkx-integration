@@ -4,11 +4,13 @@ import type { PieceModel } from "@/model/game";
 
 const BASE_COUNT = 2;
 
+type PieceCountIndicatorProps = {
+  pieceModel: PieceModel;
+};
+
 export default function PieceCountIndicator({
   pieceModel,
-}: {
-  pieceModel: PieceModel;
-}) {
+}: PieceCountIndicatorProps) {
   const baseClass = pieceModel.color === "blue" ? styles.blue : styles.white;
   const filledClass =
     pieceModel.color === "blue" ? styles.filledBlue : styles.filledWhite;
