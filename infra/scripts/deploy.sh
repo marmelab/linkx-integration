@@ -8,7 +8,7 @@ SSH_CERTIFICATE="~/AWS/certificates/maxime.pem"
 SSH_USER="ubuntu"
 SSH_OPTS="-i ${SSH_CERTIFICATE} -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15"
 
-rm packages/mobile/build-*.apk
+rm -f packages/mobile/build-*.apk
 
 docker build --platform linux/amd64 -f packages/cli/Dockerfile -t node-linkx-integration:prod .
 docker build --platform linux/amd64 -f packages/web/Dockerfile -t frankenphp_prod .
