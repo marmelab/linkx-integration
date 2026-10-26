@@ -7,7 +7,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import type { PieceSelection } from "@/model/game";
 
@@ -48,55 +51,57 @@ export default function PiecesMenu({
         visible={menuOpened}
         onRequestClose={() => setMenuOpened(false)}
       >
-        <View style={{ flex: 1 }}></View>
-        <ScrollView
-          ref={(ref) => {
-            scrollView = ref;
-          }}
-          onContentSizeChange={() =>
-            scrollView?.scrollToEnd({ animated: false })
-          }
-        >
-          <View style={[styles.piecesContainer, styles.blueContainer]}>
-            {bluePieces.map((piece) => {
-              const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
-              return (
-                <Piece
-                  style={{ borderWidth: 1, borderColor: "#006596" }}
-                  contentContainerStyle={{ width: pieceWidth, gap: 30 }}
-                  key={key}
-                  pieceSelection={piece}
-                  width={pieceWidth}
-                  onPressOut={() => onSelection(piece)}
-                />
-              );
-            })}
-          </View>
-          <View style={[styles.piecesContainer, styles.whiteContainer]}>
-            {whitePieces.map((piece) => {
-              const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
-              return (
-                <Piece
-                  style={{ borderWidth: 1, borderColor: "#9C4438" }}
-                  contentContainerStyle={{ width: pieceWidth }}
-                  key={key}
-                  pieceSelection={piece}
-                  width={pieceWidth}
-                  onPressOut={() => onSelection(piece)}
-                />
-              );
-            })}
-          </View>
-        </ScrollView>
-
-        <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
-          <Pressable
-            style={[styles.button, styles.buttonReturn]}
-            onPress={() => setMenuOpened(false)}
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView
+            ref={(ref) => {
+              scrollView = ref;
+            }}
+            style={{ flex: 1 }}
+            onContentSizeChange={() =>
+              scrollView?.scrollToEnd({ animated: false })
+            }
           >
-            <Text style={styles.buttonText}>Back to game</Text>
-          </Pressable>
-        </View>
+            <View style={[styles.piecesContainer, styles.blueContainer]}>
+              {bluePieces.map((piece) => {
+                const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
+                return (
+                  <Piece
+                    style={{ borderWidth: 1, borderColor: "#006596" }}
+                    contentContainerStyle={{ width: pieceWidth, gap: 30 }}
+                    key={key}
+                    pieceSelection={piece}
+                    width={pieceWidth}
+                    onPressOut={() => onSelection(piece)}
+                  />
+                );
+              })}
+            </View>
+            <View style={[styles.piecesContainer, styles.whiteContainer]}>
+              {whitePieces.map((piece) => {
+                const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
+                return (
+                  <Piece
+                    style={{ borderWidth: 1, borderColor: "#9C4438" }}
+                    contentContainerStyle={{ width: pieceWidth }}
+                    key={key}
+                    pieceSelection={piece}
+                    width={pieceWidth}
+                    onPressOut={() => onSelection(piece)}
+                  />
+                );
+              })}
+            </View>
+          </ScrollView>
+
+          <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
+            <Pressable
+              style={[styles.button, styles.buttonReturn]}
+              onPress={() => setMenuOpened(false)}
+            >
+              <Text style={styles.buttonText}>Back to game</Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
       </Modal>
 
       <View style={[styles.actions, { width }]}>

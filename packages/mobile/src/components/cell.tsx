@@ -1,12 +1,11 @@
 import { StyleSheet, View } from "react-native";
 
-export default function Cell({
-  cellValue,
-  width,
-}: {
+type CellProps = {
   cellValue: string;
   width: number;
-}) {
+};
+
+export default function Cell({ cellValue, width }: CellProps) {
   switch (cellValue) {
     case "white":
     case "whiteLastMove":
