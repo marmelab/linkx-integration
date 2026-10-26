@@ -26,7 +26,8 @@
           "backgroundColor": "#208AEF",
           "imageWidth": 76
         }
-      ]
+      ],
+      "@react-native-vector-icons/material-design-icons"
     ],
     "experiments": {
       "typedRoutes": true,
