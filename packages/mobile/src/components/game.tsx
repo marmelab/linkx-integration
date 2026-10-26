@@ -1,15 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  BackHandler,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useContext } from "react";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { showGame } from "@/api";
+import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
 
 import GameLabel from "./game-label";
@@ -17,43 +11,21 @@ import Grid from "./grid";
 import PieceCarousel from "./piece-carousel";
 
 type GameProps = {
-  id: number;
   onRequestClose: () => void;
 };
 
-export default function Game({ id, onRequestClose }: GameProps) {
-  const { isPending, error, data } = useQuery({
-    queryKey: ["game", id],
-    queryFn: () => showGame(id),
-    refetchInterval: 1500,
-  });
-  BackHandler.addEventListener("hardwareBackPress", () => {
-    // TODO confirmation when playing
-    onRequestClose();
-    return true;
-  });
+export default function Game({ onRequestClose }: GameProps) {
+  const mode = useContext(GameModeContext);
+  const game = useContext(RunningGameContext);
+
+  if (!game) {
+    return <></>;
+  }
 
   const insets = useSafeAreaInsets();
-
-  if (isPending) {
-    return (
-      <View style={styles.fullPageText}>
-        <Text>Loading game...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.fullPageText}>
-        <Text>Error : couldn't fetch game.</Text>
-      </View>
-    );
-  }
   const width =
     Dimensions.get("screen").width - 20 - insets.left - insets.right;
 
-  const game = data.game;
   const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
 
   const carouselKey = game.availablePieces.reduce((accumulator, piece) => {
@@ -61,22 +33,20 @@ export default function Game({ id, onRequestClose }: GameProps) {
   }, 0);
 
   return (
-    <RunningGameContext value={game}>
-      <View style={styles.game}>
-        <View style={[styles.titleContainer, { width }]}>
-          <Pressable
-            onPress={onRequestClose}
-            style={[styles.button, styles.buttonReturn]}
-          >
-            <Text>Exit</Text>
-          </Pressable>
-          {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
-        </View>
-        <GameLabel />
-        <Grid width={width} />
-        <PieceCarousel key={carouselKey} width={width} />
+    <View style={styles.game}>
+      <View style={[styles.titleContainer, { width }]}>
+        <Pressable
+          onPress={onRequestClose}
+          style={[styles.button, styles.buttonReturn]}
+        >
+          <Text>Exit</Text>
+        </Pressable>
+        {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
       </View>
-    </RunningGameContext>
+      <GameLabel />
+      <Grid width={width} />
+      <PieceCarousel key={carouselKey} width={width} />
+    </View>
   );
 }
 
@@ -114,10 +84,5 @@ const styles = StyleSheet.create({
     top: 10,
     borderColor: "#9AA6B5",
     backgroundColor: "#ECEEF1",
-  },
-  fullPageText: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

@@ -56,6 +56,7 @@ export default function Games() {
                 pathname: "/game/[id]",
                 params: {
                   id,
+                  mode: "spectating",
                 },
               })
             }
