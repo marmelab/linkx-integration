@@ -2,21 +2,34 @@
 
 namespace App\Model;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 class Move
 {
     public function __construct(
         #[Groups(['game-view'])]
+        #[Assert\NotBlank]
         private bool $skipped,
 
         #[Groups(['game-view'])]
+        #[Assert\NotBlank]
+        #[Assert\Regex('/^(blue|white)$/')]
         private string $color,
 
+        #[Assert\Regex('/^(1|2|3L|3I|4S|4L|4T)$/')]
         private ?string $piece,
 
+        #[Assert\All(
+            new Assert\GreaterThanOrEqual(0),
+            new Assert\LessThanOrEqual(8)
+        )]
         private ?int $column,
 
+        #[Assert\All(
+            new Assert\GreaterThanOrEqual(0),
+            new Assert\LessThanOrEqual(3)
+        )]
         private ?int $rotation,
 
         private ?bool $mirrored,

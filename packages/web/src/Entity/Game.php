@@ -18,7 +18,7 @@ class Game
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $state = null;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['default' => false])]
     #[Groups(['list-view'])]
     private ?bool $completed = false;
 
@@ -30,6 +30,8 @@ class Game
     #[Groups(['list-view'])]
     private ?User $secondPlayer = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $localGame = false;
 
     public function getId(): ?int
     {
@@ -80,6 +82,18 @@ class Game
     public function setSecondPlayer(User $secondPlayer): static
     {
         $this->secondPlayer = $secondPlayer;
+
+        return $this;
+    }
+
+    public function isLocalGame(): ?bool
+    {
+        return $this->localGame;
+    }
+
+    public function setLocalGame(bool $localGame): static
+    {
+        $this->localGame = $localGame;
 
         return $this;
     }
