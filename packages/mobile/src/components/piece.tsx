@@ -10,13 +10,13 @@ import PieceCountIndicator from "./piece-count-indicator";
 
 export default function Piece({
   pieceSelection,
-  onPress,
+  onPressOut,
   width,
   style,
   contentContainerStyle,
 }: {
   pieceSelection: PieceSelection;
-  onPress: (event: GestureResponderEvent) => void;
+  onPressOut: (event: GestureResponderEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
@@ -52,7 +52,7 @@ export default function Piece({
       key={key}
       disabled={true} // TODO change on ticket about playing
       style={[styles.container, { height: width + 42, backgroundColor }, style]}
-      onPressOut={(event) => onPress(event)}
+      onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
         <PieceCountIndicator pieceModel={pieceSelection.pieceModel} />
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: 30,
   },
   grid: {
     flex: 0,

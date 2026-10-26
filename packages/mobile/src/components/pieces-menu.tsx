@@ -65,7 +65,7 @@ export default function PiecesMenu({
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}
-                  onPress={() => onSelection(piece)}
+                  onPressOut={() => onSelection(piece)}
                 />
               );
             })}
@@ -76,11 +76,11 @@ export default function PiecesMenu({
               return (
                 <Piece
                   style={{ borderWidth: 1, borderColor: "#9C4438" }}
-                  contentContainerStyle={{ width: pieceWidth, gap: 30 }}
+                  contentContainerStyle={{ width: pieceWidth }}
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}
-                  onPress={() => onSelection(piece)}
+                  onPressOut={() => onSelection(piece)}
                 />
               );
             })}

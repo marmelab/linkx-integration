@@ -49,7 +49,7 @@ export default function PieceCarousel({ width }: { width: number }) {
               key={key}
               width={pieceWidth}
               pieceSelection={pieceSelection}
-              onPress={(event: GestureResponderEvent) => {
+              onPressOut={(event: GestureResponderEvent) => {
                 event.stopPropagation();
                 // TODO Rotation in future ticket
               }}
