@@ -12,18 +12,7 @@ export default function Grid({ width }: GridProps) {
   if (!game) {
     return <></>;
   }
-
-  const cells = [];
-
-  for (let y = game.grid.length - 1; y >= 0; y--) {
-    for (let x = 0; x <= game.grid.length - 1; x++) {
-      cells.push({
-        value: game.grid[x][y],
-        x: x,
-        y: y,
-      });
-    }
-  }
+  const cells = gridToCells(game.grid);
 
   const cellWidth = width / game.grid.length;
 
@@ -38,6 +27,22 @@ export default function Grid({ width }: GridProps) {
       numColumns={9}
     />
   );
+}
+
+function gridToCells(grid: string[][]) {
+  const cells = [];
+
+  for (let y = grid.length - 1; y >= 0; y--) {
+    for (let x = 0; x <= grid.length - 1; x++) {
+      cells.push({
+        value: grid[x][y],
+        x: x,
+        y: y,
+      });
+    }
+  }
+
+  return cells;
 }
 
 const styles = StyleSheet.create({

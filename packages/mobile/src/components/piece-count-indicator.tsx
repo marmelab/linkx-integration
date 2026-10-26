@@ -1,3 +1,5 @@
+import type { JSX } from "react/jsx-runtime";
+
 import { StyleSheet, View } from "react-native";
 
 import type { PieceModel } from "@/model/game";
@@ -15,23 +17,28 @@ export default function PieceCountIndicator({
   const filledClass =
     pieceModel.color === "blue" ? styles.filledBlue : styles.filledWhite;
 
-  const indicators = [];
-  for (let i = 1; i <= pieceModel.count; i++) {
-    indicators.push(
-      <View
-        key={`${pieceModel.piece}-${pieceModel.color}-count-filled-${i}`}
-        style={[styles.mark, baseClass, filledClass]}
-      ></View>,
-    );
-  }
-  for (let i = 1; i <= BASE_COUNT - pieceModel.count; i++) {
-    indicators.push(
-      <View
-        key={`${pieceModel.piece}-${pieceModel.color}-count-empty-${i}`}
-        style={[styles.mark, baseClass]}
-      ></View>,
-    );
-  }
+  const accumulatorBase: JSX.Element[] = [];
+  const indicators = Array.from({ length: BASE_COUNT }).reduce(
+    (accumulator: JSX.Element[], _, index) => {
+      if (index < pieceModel.count) {
+        return [
+          ...accumulator,
+          <View
+            key={`${pieceModel.piece}-${pieceModel.color}-count-filled-${index}`}
+            style={[styles.mark, baseClass, filledClass]}
+          ></View>,
+        ];
+      }
+      return [
+        ...accumulator,
+        <View
+          key={`${pieceModel.piece}-${pieceModel.color}-count-empty-${index}`}
+          style={[styles.mark, baseClass]}
+        ></View>,
+      ];
+    },
+    accumulatorBase,
+  );
 
   return <View style={styles.container}>{indicators}</View>;
 }
