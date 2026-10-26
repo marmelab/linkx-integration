@@ -1,11 +1,11 @@
 import type { GestureResponderEvent, ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 
+import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import {
   FlatList,
   Pressable,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -64,7 +64,7 @@ export default function Piece({
       disabled={true} // TODO change on ticket about playing
       style={[
         styles.container,
-        { height: width + 102, backgroundColor },
+        { height: width + 120, backgroundColor },
         style,
       ]}
       onPressOut={(event) => onPressOut(event)}
@@ -74,7 +74,8 @@ export default function Piece({
         <FlatList
           scrollEnabled={false}
           data={cells}
-          style={styles.grid}
+          style={[styles.grid, { width }]}
+          contentContainerStyle={styles.gridContainer}
           renderItem={(item) => (
             <Cell width={cellWidth} cellValue={item.item.color}></Cell>
           )}
@@ -88,7 +89,7 @@ export default function Piece({
           }}
           style={[styles.buttonMirror, { width }]}
         >
-          <Text>Mirror</Text>
+          <MaterialDesignIcons name="mirror" size={24} />
         </Pressable>
       </View>
     </TouchableOpacity>
@@ -131,7 +132,11 @@ const styles = StyleSheet.create({
     gap: 30,
   },
   grid: {
-    flex: 1,
+    flex: 0,
+  },
+  gridContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonMirror: {
     minHeight: 44,

@@ -44,6 +44,6 @@ const styles = StyleSheet.create({
   grid: {
     flex: 0,
     marginTop: 18,
-    marginBottom: -250,
+    marginBottom: -340,
   },
 });
