@@ -4,7 +4,7 @@ help:									## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 install:
-	@pnpm install && cd packages/web/ && composer install
+	@pnpm install && cd packages/web/ && composer install && cd ../mobile && pnpm expo install
 
 lint: generate
 	@pnpm lint:apply
@@ -37,11 +37,14 @@ stop:
 build:
 	@docker compose build
 
+android:
+	@cd packages/mobile && pnpm --filter @linkx-integration/mobile run build:android:dev
+
 make-migration: # Requires make dev
 	@docker compose exec php php bin/console make:migration
 
 migrate:
-	@docker compose exec php php bin/console d:m:m
+	@docker compose exec php php bin/console d:m:m --no-interaction
 
 deploy:	## Deploy over SSH (requires DOMAIN=...)
 	@DOMAIN=$(DOMAIN) ./infra/scripts/deploy.sh

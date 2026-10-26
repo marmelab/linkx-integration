@@ -17,6 +17,7 @@ class Game
     #[Groups(['game-view'])]
     private string $turnOfPlayer = "blue";
 
+    #[Groups(['game-view'])]
     private ?Move $lastMove = null;
 
     #[Groups(['game-view'])]

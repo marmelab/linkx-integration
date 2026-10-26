@@ -6,6 +6,16 @@
 }
 
 linkx-integration.marmelab.com {
+	
+	redir /apk /apk/ permanent
+	handle_path /apk/* {
+		encode gzip
+		root * /apk
+		file_server {
+			browse
+			index latest.apk
+		}
+	}
     handle {
         # Http is acceptable because every message is within the docker virtual network
         reverse_proxy http://php

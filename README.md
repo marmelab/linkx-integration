@@ -7,7 +7,7 @@ Official rules: <https://www.jeux-abstraits.fr/wp-content/uploads/2026/07/lynkx.
 ## Getting started
 
 You need a working **docker** and **docker-compose**.
-You will also need **npm** for the mobile version.
+You will also need **pnpm 12** for the mobile version.
 
 ```bash
 make dev
@@ -28,13 +28,18 @@ docker-compose build && docker-compose up
 You need android studio with a working emulator.
 [Expo documentation](https://docs.expo.dev/workflow/android-studio-emulator/)
 
+Dev mode :
+
 ```bash
 make mobile
 ```
 
+Add to your `.env.local` `EXPO_PUBLIC_API_URL=http://<your LOCAL ip here>/api`.
+Example: `EXPO_PUBLIC_API_URL=http://192.168.1.XXX/api`
+
 ## Using cli mode
 
-You need Node v26 (see `.nvmrc`) and pnpm 12. Or open the repository in the devcontainer, which ships with both.
+You need **Node v26** (see `.nvmrc`) and **pnpm 12**. Or open the repository in the devcontainer, which ships with both.
 
 ```bash
 make install
@@ -94,7 +99,9 @@ make test
 
 ## Deploying
 
-**Make sure you are on main before deploying**
+**Make sure you are on main before deploying!**
+
+This command takes 10-30min to complete, as it will start a gradle build for the android app on top of the APIs.
 
 ```bash
 DOMAIN=linkx-integration.marmelab.com make deploy

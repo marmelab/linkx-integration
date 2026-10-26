@@ -17,8 +17,9 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./apk:/apk
+      - caddy_proxy_data:/data
+      - caddy_proxy_config:/config
   php:
     image: frankenphp_prod
     restart: unless-stopped
@@ -52,5 +53,7 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  caddy_proxy_data:
+  caddy_proxy_config:
   linkx_postgres:
     name: linkx_postgres
