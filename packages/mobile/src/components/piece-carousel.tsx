@@ -10,7 +10,9 @@ import { RunningGameContext } from "@/context/running-game-context";
 import Piece from "./piece";
 import PiecesMenu from "./pieces-menu";
 
-export default function PieceCarousel({ width }: { width: number }) {
+type PieceCarouselProps = { width: number };
+
+export default function PieceCarousel({ width }: PieceCarouselProps) {
   const game = useContext(RunningGameContext);
   if (!game) {
     return <></>;

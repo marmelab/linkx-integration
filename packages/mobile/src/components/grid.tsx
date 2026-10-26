@@ -5,7 +5,9 @@ import { RunningGameContext } from "@/context/running-game-context";
 
 import Cell from "./cell";
 
-export default function Grid({ width }: { width: number }) {
+type GridProps = { width: number };
+
+export default function Grid({ width }: GridProps) {
   const game = useContext(RunningGameContext);
   if (!game) {
     return <></>;

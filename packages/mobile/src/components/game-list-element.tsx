@@ -2,13 +2,15 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import type { GameModel } from "@/model/game";
 
+type GameListElementProps = {
+  game: GameModel;
+  onSelection: (id: number) => void;
+};
+
 export default function GameListElement({
   game,
   onSelection,
-}: {
-  game: GameModel;
-  onSelection: (id: number) => void;
-}) {
+}: GameListElementProps) {
   const versusStr = game.secondPlayer
     ? `${game.firstPlayer.displayName} VS ${game.secondPlayer.displayName}`
     : `${game.firstPlayer.displayName} is waiting for a match...`;
