@@ -66,7 +66,6 @@ export default function PiecesMenu({
                 const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
                 return (
                   <Piece
-                    style={{ borderWidth: 1, borderColor: "#006596" }}
                     contentContainerStyle={{ width: pieceWidth }}
                     key={key}
                     pieceSelection={piece}
@@ -81,7 +80,6 @@ export default function PiecesMenu({
                 const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
                 return (
                   <Piece
-                    style={{ borderWidth: 1, borderColor: "#9C4438" }}
                     contentContainerStyle={{ width: pieceWidth }}
                     key={key}
                     pieceSelection={piece}

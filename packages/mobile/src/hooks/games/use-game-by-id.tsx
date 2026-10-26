@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { showGame } from "@/api";
+import { showGame } from "@/api-games";
 
 export function useGameById(id: string) {
   const { isPending, error, data } = useQuery({

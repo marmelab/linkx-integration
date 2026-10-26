@@ -12,6 +12,7 @@ export type GameModel = {
   firstPlayer: Player;
   secondPlayer?: Player;
   completed: boolean;
+  local: boolean;
 };
 
 export type Color = "white" | "blue";
@@ -33,4 +34,5 @@ export type PieceSelection = {
   pieceModel: PieceModel;
   selectedRotation: number;
   mirrored: boolean;
+  selected?: boolean;
 };

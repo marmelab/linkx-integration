@@ -2,6 +2,7 @@ import type { GestureResponderEvent, ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
+import { useContext } from "react";
 import {
   FlatList,
   Pressable,
@@ -11,6 +12,8 @@ import {
 } from "react-native";
 
 import type { Color, PieceSelection } from "@/model/game";
+
+import { GameModeContext } from "@/context/game-mode-context";
 
 import Cell from "./cell";
 import PieceCountIndicator from "./piece-count-indicator";
@@ -32,14 +35,16 @@ export default function Piece({
   style,
   contentContainerStyle,
 }: PieceProps) {
-  const selectedMatrix = pieceSelection.pieceModel.possibleMatrices.find(
-    (possibleMatrix) => {
+  const mode = useContext(GameModeContext);
+
+  const selectedPossibleMatrix =
+    pieceSelection.pieceModel.possibleMatrices.find((possibleMatrix) => {
       return (
         possibleMatrix.mirrored.includes(pieceSelection.mirrored) &&
         possibleMatrix.rotations.includes(pieceSelection.selectedRotation)
       );
-    },
-  )?.matrix;
+    });
+  const selectedMatrix = selectedPossibleMatrix?.matrix;
 
   if (!selectedMatrix) {
     console.error(
@@ -54,17 +59,19 @@ export default function Piece({
   );
 
   const cellWidth = width / 3;
-  const backgroundColor =
-    pieceSelection.pieceModel.color === "blue" ? "#E0F0F9" : "#FFE9E6";
+  const canBeMirrored = selectedPossibleMatrix.mirrored.length === 1;
+  // TODO special display when selected === true
 
-  const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
+  const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}`;
   return (
     <TouchableOpacity
       key={key}
-      disabled={true} // TODO change on ticket about playing
+      disabled={mode === "spectating"}
       style={[
         styles.container,
-        { height: width + 120, backgroundColor },
+        {
+          height: width + (mode && mode !== "spectating" ? 120 : 50),
+        },
         style,
       ]}
       onPressOut={(event) => onPressOut(event)}
@@ -72,9 +79,10 @@ export default function Piece({
       <View style={[styles.piece, contentContainerStyle]}>
         <PieceCountIndicator pieceModel={pieceSelection.pieceModel} />
         <FlatList
+          key={key}
           scrollEnabled={false}
           data={cells}
-          style={[styles.grid, { width }]}
+          style={[styles.grid, { width, height: width }]}
           contentContainerStyle={styles.gridContainer}
           renderItem={(item) => (
             <Cell width={cellWidth} cellValue={item.item.color}></Cell>
@@ -82,15 +90,17 @@ export default function Piece({
           keyExtractor={(item) => `${item.x}.${item.y}`}
           numColumns={selectedMatrix.length}
         />
-        <Pressable
-          onPress={(event) => {
-            event.stopPropagation();
-            return onMirrorPiece;
-          }}
-          style={[styles.buttonMirror, { width }]}
-        >
-          <MaterialDesignIcons name="mirror" size={24} />
-        </Pressable>
+        {canBeMirrored && mode && mode !== "spectating" && (
+          <Pressable
+            onPress={(event) => {
+              event.stopPropagation();
+              return onMirrorPiece;
+            }}
+            style={[styles.buttonMirror, { width }]}
+          >
+            <MaterialDesignIcons name="mirror" size={24} />
+          </Pressable>
+        )}
       </View>
     </TouchableOpacity>
   );

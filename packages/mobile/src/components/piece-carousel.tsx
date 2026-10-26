@@ -1,5 +1,3 @@
-import type { GestureResponderEvent } from "react-native";
-
 import { useContext, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -47,14 +45,16 @@ export default function PieceCarousel({ width }: PieceCarouselProps) {
           const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
           return (
             <Piece
-              style={{ borderColor, borderWidth: 1 }}
               contentContainerStyle={{ width: pieceWidth }}
               key={key}
               width={pieceWidth}
               pieceSelection={pieceSelection}
-              onPressOut={(event: GestureResponderEvent) => {
-                event.stopPropagation();
-                // TODO Rotation in future ticket
+              onPressOut={() => {
+                updateSelection(
+                  piecesSelections,
+                  setPiecesSelections,
+                  pieceSelection,
+                );
               }}
             ></Piece>
           );
@@ -63,7 +63,9 @@ export default function PieceCarousel({ width }: PieceCarouselProps) {
       <View style={styles.actions}>
         <PiecesMenu
           width={width}
-          onSelection={(piece) => updateSelection(setPiecesSelections, piece)}
+          onSelection={(piece) =>
+            updateSelection(piecesSelections, setPiecesSelections, piece)
+          }
           piecesSelection={piecesSelections}
         />
       </View>
@@ -71,8 +73,48 @@ export default function PieceCarousel({ width }: PieceCarouselProps) {
   );
 }
 
-function updateSelection(setPiecesSelections, piece) {
-  // TODO In ticket where you can play
+function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
+  return (
+    pieceA.pieceModel.color === pieceB.pieceModel.color &&
+    pieceA.pieceModel.piece === pieceB.pieceModel.piece
+  );
+}
+
+function updateSelection(
+  piecesSelection: PieceSelection[],
+  setPiecesSelections: Function,
+  selectedPiece: PieceSelection,
+): void {
+  const isAlreadySelected = piecesSelection.find((piece) =>
+    isSamePiece(piece, selectedPiece),
+  );
+  if (isAlreadySelected) {
+    setPiecesSelections(
+      piecesSelection.map((piece) => {
+        if (isSamePiece(piece, selectedPiece)) {
+          return rotatePiece(piece);
+        }
+        return piece;
+      }),
+    );
+  } else {
+    setPiecesSelections(
+      piecesSelection.map((piece) => {
+        return {
+          ...piece,
+          selected: isSamePiece(piece, selectedPiece),
+        };
+      }),
+    );
+  }
+}
+
+function rotatePiece(piece: PieceSelection): PieceSelection {
+  const updatedRotation = (piece.selectedRotation + 1) % 4;
+  return {
+    ...piece,
+    selectedRotation: updatedRotation,
+  };
 }
 
 const styles = StyleSheet.create({

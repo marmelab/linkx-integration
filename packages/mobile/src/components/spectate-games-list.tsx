@@ -2,15 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { listGames } from "@/api";
+import { listGames } from "@/api-games";
 
 import GameListElement from "./game-list-element";
 
-export default function Games() {
+export default function SpectateGamesList() {
   const { isPending, error, data } = useQuery({
     queryKey: ["games"],
     queryFn: listGames,
-    refetchInterval: 1000,
+    refetchInterval: 3000,
   });
 
   if (isPending) {

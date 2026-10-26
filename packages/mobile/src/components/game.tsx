@@ -3,7 +3,6 @@ import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
 
 import GameLabel from "./game-label";
@@ -15,7 +14,6 @@ type GameProps = {
 };
 
 export default function Game({ onRequestClose }: GameProps) {
-  const mode = useContext(GameModeContext);
   const game = useContext(RunningGameContext);
 
   if (!game) {
@@ -25,8 +23,6 @@ export default function Game({ onRequestClose }: GameProps) {
   const insets = useSafeAreaInsets();
   const width =
     Dimensions.get("screen").width - 20 - insets.left - insets.right;
-
-  const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
 
   const carouselKey = game.availablePieces.reduce((accumulator, piece) => {
     return accumulator + piece.count;
@@ -41,7 +37,6 @@ export default function Game({ onRequestClose }: GameProps) {
         >
           <Text>Exit</Text>
         </Pressable>
-        {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
       </View>
       <GameLabel />
       <Grid width={width} />
@@ -54,11 +49,6 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     alignItems: "center",
-  },
-  heading: {
-    textAlign: "center",
-    fontSize: 26,
-    flex: 1,
   },
   actions: {
     flex: 1,

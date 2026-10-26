@@ -13,15 +13,27 @@ export default function GameLabel() {
     );
   }
 
+  if (game.local) {
+    const currentColor =
+      game.turnOfPlayer === "blue" ? (
+        <Text style={styles.textBlue}>Blue</Text>
+      ) : (
+        <Text style={styles.textWhite}>Red</Text>
+      );
+    return <Text style={styles.heading}>Turn of {currentColor}</Text>;
+  }
+
+  const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
+
   if (game.victory && game.lastMove?.color === "blue") {
     return (
-      <Text style={[styles.heading, { flex: 0 }]}>
-        Victory of {game.firstPlayer.displayName} !
+      <Text style={styles.heading}>
+        Victory of {game.firstPlayer?.displayName} !
       </Text>
     );
   } else if (game.victory) {
     return (
-      <Text style={[styles.heading, { flex: 0 }]}>
+      <Text style={styles.heading}>
         Victory of {game.secondPlayer?.displayName} !
       </Text>
     );
@@ -29,25 +41,36 @@ export default function GameLabel() {
     return <Text style={styles.heading}>It's a draw !</Text>;
   } else if (game.turnOfPlayer === "blue") {
     return (
-      <Text style={styles.subHeading}>
-        Turn of{" "}
-        <Text style={styles.textBlue}>{game.firstPlayer.displayName}...</Text>
-      </Text>
+      <>
+        <Text style={styles.heading}>{gameTitle}</Text>
+        <Text style={styles.subHeading}>
+          Turn of{" "}
+          <Text style={styles.textBlue}>
+            {game.firstPlayer?.displayName}...
+          </Text>
+        </Text>
+      </>
     );
   } else if (!game.secondPlayer) {
     return (
-      <Text style={styles.subHeading}>
-        Waiting for a second player to join...
-      </Text>
+      <>
+        <Text style={styles.heading}>{gameTitle}</Text>
+        <Text style={styles.subHeading}>
+          Waiting for a second player to join...
+        </Text>
+      </>
     );
   } else {
     return (
-      <Text style={styles.subHeading}>
-        Turn of{" "}
-        <Text style={styles.textWhite}>
-          {game.secondPlayer?.displayName}...
+      <>
+        <Text style={styles.heading}>{gameTitle}</Text>
+        <Text style={styles.subHeading}>
+          Turn of{" "}
+          <Text style={styles.textWhite}>
+            {game.secondPlayer?.displayName}...
+          </Text>
         </Text>
-      </Text>
+      </>
     );
   }
 }
@@ -56,7 +79,7 @@ const styles = StyleSheet.create({
   heading: {
     textAlign: "center",
     fontSize: 26,
-    flex: 1,
+    flex: 0,
   },
   subHeading: {
     textAlign: "center",

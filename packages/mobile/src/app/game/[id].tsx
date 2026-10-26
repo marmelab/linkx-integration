@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Game from "@/components/game";
 import { GameModeContext, type GameMode } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
-import { useGameById } from "@/hooks/use-game-by-id";
+import { useGameById } from "@/hooks/games/use-game-by-id";
 
 type GameRouteSearchParams = {
   id: string;
@@ -27,7 +27,7 @@ export default function GameRoute() {
   if (error) {
     return (
       <View style={styles.fullPageText}>
-        <Text>Error : couldn't fetch game.</Text>
+        <Text style={styles.errorText}>Error : couldn't fetch game.</Text>
       </View>
     );
   }
@@ -50,5 +50,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorText: {
+    color: "#000",
+    backgroundColor: "#FEA69A",
+    borderWidth: 1,
+    borderColor: "#9C4438",
+    borderRadius: 5,
   },
 });
