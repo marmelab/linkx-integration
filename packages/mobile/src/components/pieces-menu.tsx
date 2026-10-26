@@ -61,7 +61,7 @@ export default function PiecesMenu({
               return (
                 <Piece
                   style={{ borderWidth: 1, borderColor: "#006596" }}
-                  contentContainerStyle={{ width: pieceWidth, gap: 30 }}
+                  contentContainerStyle={{ width: pieceWidth }}
                   key={key}
                   pieceSelection={piece}
                   width={pieceWidth}

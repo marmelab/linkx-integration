@@ -1,26 +1,37 @@
 import type { GestureResponderEvent, ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import type { Color, PieceSelection } from "@/model/game";
 
 import Cell from "./cell";
 import PieceCountIndicator from "./piece-count-indicator";
 
-export default function Piece({
-  pieceSelection,
-  onPressOut,
-  width,
-  style,
-  contentContainerStyle,
-}: {
+type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: GestureResponderEvent) => void;
+  onMirrorPiece?: (event: GestureResponderEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
-}) {
+};
+
+export default function Piece({
+  pieceSelection,
+  onPressOut,
+  onMirrorPiece,
+  width,
+  style,
+  contentContainerStyle,
+}: PieceProps) {
   const selectedMatrix = pieceSelection.pieceModel.possibleMatrices.find(
     (possibleMatrix) => {
       return (
@@ -51,7 +62,11 @@ export default function Piece({
     <TouchableOpacity
       key={key}
       disabled={true} // TODO change on ticket about playing
-      style={[styles.container, { height: width + 42, backgroundColor }, style]}
+      style={[
+        styles.container,
+        { height: width + 102, backgroundColor },
+        style,
+      ]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
@@ -66,6 +81,15 @@ export default function Piece({
           keyExtractor={(item) => `${item.x}.${item.y}`}
           numColumns={selectedMatrix.length}
         />
+        <Pressable
+          onPress={(event) => {
+            event.stopPropagation();
+            return onMirrorPiece;
+          }}
+          style={[styles.buttonMirror, { width }]}
+        >
+          <Text>Mirror</Text>
+        </Pressable>
       </View>
     </TouchableOpacity>
   );
@@ -107,6 +131,16 @@ const styles = StyleSheet.create({
     gap: 30,
   },
   grid: {
-    flex: 0,
+    flex: 1,
+  },
+  buttonMirror: {
+    minHeight: 44,
+    borderRadius: 12,
+    elevation: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    backgroundColor: "#B5BEC8",
+    borderColor: "#526172",
   },
 });

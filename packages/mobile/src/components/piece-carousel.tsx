@@ -46,6 +46,7 @@ export default function PieceCarousel({ width }: { width: number }) {
           return (
             <Piece
               style={{ borderColor, borderWidth: 1 }}
+              contentContainerStyle={{ width: pieceWidth }}
               key={key}
               width={pieceWidth}
               pieceSelection={pieceSelection}
