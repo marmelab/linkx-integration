@@ -3,11 +3,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import GamesList from "@/components/game-list";
-import { useLastLocalGameId } from "@/hooks/games/storage/use-last-local-game-id";
 import { useCreateLocalGame } from "@/hooks/games/use-create-local-game";
 
 export default function Index() {
-  const localGameIdQuery = useLastLocalGameId();
   const createGameMutation = useCreateLocalGame();
 
   return (
@@ -34,7 +32,7 @@ export default function Index() {
           />
         </Pressable>
 
-        <GamesList currentGameId={localGameIdQuery.data} />
+        <GamesList />
       </View>
     </SafeAreaView>
   );

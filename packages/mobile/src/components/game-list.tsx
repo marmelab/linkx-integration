@@ -2,19 +2,19 @@ import MaterialDesignIcons from "@react-native-vector-icons/material-design-icon
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { useLastLocalGameId } from "@/hooks/games/storage/use-last-local-game-id";
+
 import SpectateGamesList from "./spectate-games-list";
 
-type GameListProps = {
-  currentGameId?: string | null;
-};
+export default function GamesList() {
+  const currentGameId = useLastLocalGameId().data;
 
-export default function GamesList({ currentGameId }: GameListProps) {
-  if (currentGameId) {
-    return (
-      <>
-        <Text style={[styles.basicText, styles.heading]}>Your games:</Text>
+  return (
+    <>
+      <Text style={[styles.basicText, styles.heading]}>Your games:</Text>
+      {currentGameId && (
         <TouchableOpacity
-          key={currentGameId}
+          key={`game-${currentGameId}`}
           onPress={() => {
             router.navigate({
               pathname: "/game/[id]",
@@ -32,15 +32,10 @@ export default function GamesList({ currentGameId }: GameListProps) {
             </Text>
           </View>
         </TouchableOpacity>
-        <SpectateGamesList />
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Text style={[styles.basicText, styles.heading]}>Your games:</Text>
-      <Text style={styles.secondaryText}>No current game.</Text>
+      )}
+      {!currentGameId && (
+        <Text style={styles.secondaryText}>No current game.</Text>
+      )}
       <SpectateGamesList />
     </>
   );
