@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
+    rowGap: 8,
     gap: 18,
     borderRadius: 24,
   },

@@ -1,8 +1,9 @@
 import type { QueryClient } from "@tanstack/react-query";
 
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons/static";
 import { useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 import { useContext, useState } from "react";
-import { Dimensions, Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -49,12 +50,12 @@ export default function Game({ onRequestClose }: GameProps) {
   return (
     <View style={styles.game}>
       <View style={[styles.titleContainer, { width }]}>
-        <Pressable
+        <TouchableOpacity
           onPress={() => onRequestClose()}
-          style={[styles.button, styles.buttonReturn]}
+          style={[styles.button]}
         >
-          <Text>Exit</Text>
-        </Pressable>
+          <MaterialDesignIcons name="arrow-left" size={28} color="#9AA6B5" />
+        </TouchableOpacity>
       </View>
       <GameLabel />
       <Grid
@@ -135,21 +136,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   button: {
-    flex: 0,
-    minWidth: 60,
-    borderRadius: 20,
+    minWidth: 44,
+    minHeight: 44,
     padding: 10,
-    elevation: 2,
     textAlign: "center",
     alignItems: "center",
-    borderWidth: 2,
-  },
-  buttonReturn: {
-    position: "absolute",
-    left: 0,
-    top: 10,
-    borderColor: "#9AA6B5",
-    backgroundColor: "#ECEEF1",
   },
   errorText: {
     color: "#9C4438",
