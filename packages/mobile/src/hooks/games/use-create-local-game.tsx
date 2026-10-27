@@ -6,6 +6,8 @@ import { createGame } from "@/api/api-games";
 import { useSetLastLocalGameId } from "./storage/use-set-last-local-game-id";
 
 export function useCreateLocalGame() {
+  const setLastLocalGameId = useSetLastLocalGameId();
+
   const mutation = useMutation({
     mutationFn: (additionalOptions: object) =>
       createGame({
@@ -13,7 +15,6 @@ export function useCreateLocalGame() {
         local: true,
       }),
     onSuccess: (data) => {
-      const setLastLocalGameId = useSetLastLocalGameId();
       setLastLocalGameId.mutate(data.id.toString());
       router.navigate({
         pathname: "/game/[id]",

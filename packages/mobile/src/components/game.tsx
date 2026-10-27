@@ -29,7 +29,7 @@ export default function Game({ onRequestClose }: GameProps) {
     return <></>;
   }
 
-  const playTurnMutation = usePlayTurnMutation();
+  const playTurnMutation = usePlayTurnMutation(game.id);
 
   const [piecesSelections, setPiecesSelections] = useState<PieceSelection[]>(
     game.availablePieces.map(
@@ -58,29 +58,27 @@ export default function Game({ onRequestClose }: GameProps) {
       </View>
       <GameLabel />
       <Grid
-        disabled={playTurnMutation.mutation.isPending}
+        disabled={playTurnMutation.isPending}
         onColumnSelection={(column) =>
           handleColumnSelection(
             column,
             game,
             piecesSelections,
-            playTurnMutation.mutation,
+            playTurnMutation,
             queryClient,
           )
         }
         width={width}
       />
-      {playTurnMutation.mutation.error ? (
+      {playTurnMutation.error ? (
         <View style={[styles.errorContainer, { width }]}>
-          <Text style={styles.errorText}>
-            {playTurnMutation.mutation.error.message}
-          </Text>
+          <Text style={styles.errorText}>{playTurnMutation.error.message}</Text>
         </View>
       ) : (
         <View style={styles.noErrorPadding} />
       )}
       <PieceCarousel
-        disabled={playTurnMutation.mutation.isPending}
+        disabled={playTurnMutation.isPending}
         piecesSelections={piecesSelections}
         onPiecesSelectionChange={setPiecesSelections}
         width={width}
@@ -112,13 +110,7 @@ function handleColumnSelection(
     rotation: selectedPiece.selectedRotation,
   };
 
-  playTurnMutation.mutate(
-    { gameId: game.id, move },
-    {
-      onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: ["game", game.id] }),
-    },
-  );
+  playTurnMutation.mutate({ gameId: game.id, move });
 }
 
 const styles = StyleSheet.create({

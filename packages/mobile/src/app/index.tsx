@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import GamesList from "@/components/game-list";
 import { useLastLocalGameId } from "@/hooks/games/storage/use-last-local-game-id";
-import { useCreateGameAndRedirect } from "@/hooks/games/use-create-game-and-redirect";
 import { useCreateLocalGame } from "@/hooks/games/use-create-local-game";
 
 export default function Index() {
@@ -25,7 +24,7 @@ export default function Index() {
         )}
         <Pressable
           style={styles.newGameButton}
-          onPress={() => useCreateGameAndRedirect()}
+          onPress={() => createGameMutation.mutate({})}
           disabled={createGameMutation.isPending}
         >
           <MaterialDesignIcons
