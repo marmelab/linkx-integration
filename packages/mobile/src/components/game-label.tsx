@@ -32,25 +32,26 @@ export default function GameLabel() {
           />
         </Text>
       )}
-      {game.victory && game.lastMove?.color === "blue" ? (
-        <Text style={styles.heading}>
-          Victory of{" "}
-          <GamePlayerLabel
-            fallbackName="Blue"
-            player={game.firstPlayer}
-            style={styles.textBlue}
-          />
-        </Text>
-      ) : (
-        <Text style={styles.heading}>
-          Victory of{" "}
-          <GamePlayerLabel
-            fallbackName="Red"
-            player={game.secondPlayer}
-            style={styles.textWhite}
-          />
-        </Text>
-      )}
+      {game.victory &&
+        (game.lastMove?.color === "blue" ? (
+          <Text style={styles.heading}>
+            Victory of{" "}
+            <GamePlayerLabel
+              fallbackName="Blue"
+              player={game.firstPlayer}
+              style={styles.textBlue}
+            />
+          </Text>
+        ) : (
+          <Text style={styles.heading}>
+            Victory of{" "}
+            <GamePlayerLabel
+              fallbackName="Red"
+              player={game.secondPlayer}
+              style={styles.textWhite}
+            />
+          </Text>
+        ))}
       {!game.victory && game.completed && (
         <Text style={styles.heading}>It's a draw !</Text>
       )}
