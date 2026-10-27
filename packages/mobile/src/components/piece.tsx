@@ -89,6 +89,8 @@ export default function Piece({
   return (
     <Pressable
       key={key}
+      activeOpacity={0.2}
+      animationDuration={{ in: 50, out: 150 }}
       disabled={disabled || mode === "spectating" || game?.completed}
       style={[styles.container, pieceAdditionalStyle, style]}
       onPressOut={(event) => onPressOut(event)}
@@ -109,6 +111,8 @@ export default function Piece({
         />
         {displayMirror && (
           <Pressable
+            activeOpacity={0.2}
+            animationDuration={{ in: 50, out: 150 }}
             disabled={disabled}
             onPress={(event) => {
               if (onMirrorPiece) {

@@ -33,6 +33,8 @@ export default function Grid({
       style={{ ...styles.grid, width }}
       renderItem={(item) => (
         <Pressable
+          activeOpacity={0.2}
+          animationDuration={{ in: 50, out: 150 }}
           disabled={disabled || gameMode === "spectating"}
           onPress={() => onColumnSelection(item.item.x)}
         >
