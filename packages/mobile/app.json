@@ -18,7 +18,7 @@
         "backgroundColor": "#E6F4FE"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.mrichier.linkxintegration"
+      "package": "com.marmelab.linkxintegration"
     },
     "web": {
       "output": "static",
