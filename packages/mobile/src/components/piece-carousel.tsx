@@ -43,6 +43,13 @@ export default function PieceCarousel({
               key={key}
               width={pieceWidth}
               pieceSelection={pieceSelection}
+              onMirrorPiece={() =>
+                mirrorPiece(
+                  piecesSelections,
+                  onPiecesSelectionChange,
+                  pieceSelection,
+                )
+              }
               onPressOut={() => {
                 updateSelection(
                   piecesSelections,
@@ -71,6 +78,31 @@ function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
   return pieceA.color === pieceB.color && pieceA.pieceName === pieceB.pieceName;
 }
 
+function mirrorPiece(
+  piecesSelection: PieceSelection[],
+  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
+  selectedPiece: PieceSelection,
+): void {
+  onPiecesSelectionChange(
+    piecesSelection.map((piece) => {
+      if (isSamePiece(piece, selectedPiece)) {
+        const updatedRotation = reverseOddRotations(piece.selectedRotation);
+        return {
+          ...piece,
+          selectedRotation: updatedRotation,
+          mirrored: !piece.mirrored,
+          selected: true,
+        };
+      }
+
+      return {
+        ...piece,
+        selected: false,
+      };
+    }),
+  );
+}
+
 function updateSelection(
   piecesSelection: PieceSelection[],
   onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
@@ -89,7 +121,6 @@ function updateSelection(
       }),
     );
   } else {
-    // TODO scroll to piece
     onPiecesSelectionChange(
       piecesSelection.map((piece) => {
         return {
@@ -99,6 +130,17 @@ function updateSelection(
       }),
     );
   }
+}
+
+function reverseOddRotations(rotation: number) {
+  if (rotation === 1) {
+    return 3;
+  }
+  if (rotation === 3) {
+    return 1;
+  }
+
+  return rotation;
 }
 
 function rotatePiece(piece: PieceSelection): PieceSelection {

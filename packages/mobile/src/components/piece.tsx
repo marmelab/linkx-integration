@@ -1,15 +1,10 @@
-import type { GestureResponderEvent, ViewStyle } from "react-native";
+import type { ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 import type { PressableEvent } from "react-native-gesture-handler";
 
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useContext } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  View,
-  Pressable as NativePressable,
-} from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 
 import type { Color, PieceSelection } from "@/model/game";
@@ -23,7 +18,7 @@ import PieceCountIndicator from "./piece-count-indicator";
 type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: PressableEvent) => void;
-  onMirrorPiece?: (event: GestureResponderEvent) => void;
+  onMirrorPiece?: (event: PressableEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
@@ -114,16 +109,17 @@ export default function Piece({
           numColumns={selectedMatrix.length}
         />
         {canBeMirrored && mode && mode !== "spectating" && !game?.completed && (
-          <NativePressable
+          <Pressable
             disabled={disabled}
             onPress={(event) => {
-              event.stopPropagation();
-              return onMirrorPiece;
+              if (onMirrorPiece) {
+                onMirrorPiece(event);
+              }
             }}
             style={[styles.buttonMirror, { width }]}
           >
             <MaterialDesignIcons name="mirror" size={24} />
-          </NativePressable>
+          </Pressable>
         )}
       </View>
     </Pressable>
