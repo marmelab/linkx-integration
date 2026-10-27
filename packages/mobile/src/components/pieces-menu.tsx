@@ -61,11 +61,10 @@ export default function PiecesMenu({
           >
             <View style={[styles.piecesContainer, styles.blueContainer]}>
               {bluePieces.map((piece) => {
-                const key = `${piece.pieceName}-${piece.color}`;
                 return (
                   <Piece
                     contentContainerStyle={{ width: pieceWidth }}
-                    key={key}
+                    key={`${piece.pieceName}-${piece.color}`}
                     pieceSelection={piece}
                     width={pieceWidth}
                     onPressOut={() => onSelection(piece)}
@@ -75,11 +74,10 @@ export default function PiecesMenu({
             </View>
             <View style={[styles.piecesContainer, styles.whiteContainer]}>
               {whitePieces.map((pieceSelection) => {
-                const key = `${pieceSelection.pieceName}-${pieceSelection.color}`;
                 return (
                   <Piece
                     contentContainerStyle={{ width: pieceWidth }}
-                    key={key}
+                    key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
                     pieceSelection={pieceSelection}
                     width={pieceWidth}
                     onPressOut={() => onSelection(pieceSelection)}

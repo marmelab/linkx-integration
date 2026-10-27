@@ -35,12 +35,11 @@ export default function PieceCarousel({
     <View style={styles.carousel}>
       <ScrollView contentContainerStyle={[styles.container]} horizontal>
         {carouselPieces.map((pieceSelection) => {
-          const key = `${pieceSelection.pieceName}-${pieceSelection.color}`;
           return (
             <Piece
               disabled={disabled}
               contentContainerStyle={{ width: pieceWidth }}
-              key={key}
+              key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
               width={pieceWidth}
               pieceSelection={pieceSelection}
               onMirrorPiece={() =>

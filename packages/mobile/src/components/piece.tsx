@@ -85,17 +85,18 @@ export default function Piece({
         height: width + (mode && mode !== "spectating" ? 120 : 50),
       };
 
-  const key = `${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceModel.count}`;
-  const countKey = `${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`;
   return (
     <Pressable
-      key={key}
+      key={`${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceModel.count}`}
       disabled={disabled || mode === "spectating" || game?.completed}
       style={[styles.container, pieceAdditionalStyle, style]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
-        <PieceCountIndicator key={countKey} pieceModel={pieceModel} />
+        <PieceCountIndicator
+          key={`${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`}
+          pieceModel={pieceModel}
+        />
         <FlatList
           key={key}
           scrollEnabled={false}
