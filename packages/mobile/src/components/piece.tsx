@@ -1,15 +1,10 @@
-import type { GestureResponderEvent, ViewStyle } from "react-native";
+import type { ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 import type { PressableEvent } from "react-native-gesture-handler";
 
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useContext } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  View,
-  Pressable as NativePressable,
-} from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 
 import type { Color, PieceSelection } from "@/model/game";
@@ -23,7 +18,7 @@ import PieceCountIndicator from "./piece-count-indicator";
 type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: PressableEvent) => void;
-  onMirrorPiece?: (event: GestureResponderEvent) => void;
+  onMirrorPiece?: (event: PressableEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
@@ -76,19 +71,18 @@ export default function Piece({
 
   const cellWidth = width / 3;
   const canBeMirrored = selectedPossibleMatrix.mirrored.length === 1;
+  const displayMirror =
+    canBeMirrored && mode && mode !== "spectating" && !game?.completed;
 
   const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
   const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
   const pieceAdditionalStyle = pieceSelection.selected
     ? {
-        height: width + (mode && mode !== "spectating" ? 120 : 50),
         backgroundColor,
         borderColor,
         borderWidth: 2,
       }
-    : {
-        height: width + (mode && mode !== "spectating" ? 120 : 50),
-      };
+    : {};
 
   const key = `${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceModel.count}`;
   const countKey = `${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`;
@@ -113,17 +107,14 @@ export default function Piece({
           keyExtractor={(item) => `${item.x}.${item.y}`}
           numColumns={selectedMatrix.length}
         />
-        {canBeMirrored && mode && mode !== "spectating" && !game?.completed && (
-          <NativePressable
+        {displayMirror && (
+          <Pressable
             disabled={disabled}
-            onPress={(event) => {
-              event.stopPropagation();
-              return onMirrorPiece;
-            }}
+            onPress={() => onMirrorPiece}
             style={[styles.buttonMirror, { width }]}
           >
             <MaterialDesignIcons name="mirror" size={24} />
-          </NativePressable>
+          </Pressable>
         )}
       </View>
     </Pressable>
@@ -155,7 +146,6 @@ function formatMatrixForFlexWrap(matrix: number[][], color: Color) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 18,
-    padding: 6,
     paddingBottom: 0,
   },
   piece: {
@@ -163,10 +153,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 30,
+    gap: 10,
   },
   grid: {
     flex: 0,
+    marginLeft: 6,
+    marginRight: 6,
   },
   gridContainer: {
     justifyContent: "center",
@@ -175,7 +167,6 @@ const styles = StyleSheet.create({
   buttonMirror: {
     minHeight: 44,
     borderRadius: 12,
-    elevation: 2,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,

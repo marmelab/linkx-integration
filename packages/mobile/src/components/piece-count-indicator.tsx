@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     gap: 8,
+    marginBottom: 20,
   },
   mark: {
     borderRadius: "50%",
