@@ -44,6 +44,9 @@ export default function Game({ onRequestClose }: GameProps) {
   const insets = useSafeAreaInsets();
   const width =
     Dimensions.get("screen").width - 20 - insets.left - insets.right;
+  const carouselKey =
+    "carousel-" +
+    piecesSelections.reduce((sum, piece) => sum + piece.pieceModel.count, 0);
 
   return (
     <View style={styles.game}>
@@ -78,6 +81,7 @@ export default function Game({ onRequestClose }: GameProps) {
         <View style={styles.noErrorPadding} />
       )}
       <PieceCarousel
+        key={carouselKey}
         piecesSelections={piecesSelections}
         onPiecesSelectionChange={setPiecesSelections}
         width={width}
