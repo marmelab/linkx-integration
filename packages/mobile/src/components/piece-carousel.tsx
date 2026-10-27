@@ -12,12 +12,14 @@ type PieceCarouselProps = {
   width: number;
   piecesSelections: PieceSelection[];
   onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void;
+  disabled: boolean;
 };
 
 export default function PieceCarousel({
   width,
   piecesSelections,
   onPiecesSelectionChange,
+  disabled,
 }: PieceCarouselProps) {
   const game = useContext(RunningGameContext);
   if (!game) {
@@ -26,16 +28,17 @@ export default function PieceCarousel({
 
   const pieceWidth = Math.max(90, 0.23 * width);
   const carouselPieces = piecesSelections.filter(
-    (piece) => piece.pieceModel.color === game?.turnOfPlayer,
+    (piece) => piece.color === game?.turnOfPlayer,
   );
 
   return (
     <View style={styles.carousel}>
       <ScrollView contentContainerStyle={[styles.container]} horizontal>
         {carouselPieces.map((pieceSelection) => {
-          const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
+          const key = `${pieceSelection.pieceName}-${pieceSelection.color}`;
           return (
             <Piece
+              disabled={disabled}
               contentContainerStyle={{ width: pieceWidth }}
               key={key}
               width={pieceWidth}
@@ -65,10 +68,7 @@ export default function PieceCarousel({
 }
 
 function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
-  return (
-    pieceA.pieceModel.color === pieceB.pieceModel.color &&
-    pieceA.pieceModel.piece === pieceB.pieceModel.piece
-  );
+  return pieceA.color === pieceB.color && pieceA.pieceName === pieceB.pieceName;
 }
 
 function updateSelection(

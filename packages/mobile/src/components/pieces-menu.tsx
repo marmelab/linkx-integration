@@ -31,11 +31,9 @@ export default function PiecesMenu({
 
   // TODO Order based on current turn for local play
   // TODO Order based on current player for online play
-  const bluePieces = piecesSelection.filter(
-    (piece) => piece.pieceModel.color === "blue",
-  );
+  const bluePieces = piecesSelection.filter((piece) => piece.color === "blue");
   const whitePieces = piecesSelection.filter(
-    (piece) => piece.pieceModel.color === "white",
+    (piece) => piece.color === "white",
   );
   const pieceWidth = Math.max(85, 0.18 * width);
   let scrollView: ScrollView | null;
@@ -63,7 +61,7 @@ export default function PiecesMenu({
           >
             <View style={[styles.piecesContainer, styles.blueContainer]}>
               {bluePieces.map((piece) => {
-                const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
+                const key = `${piece.pieceName}-${piece.color}`;
                 return (
                   <Piece
                     contentContainerStyle={{ width: pieceWidth }}
@@ -76,15 +74,15 @@ export default function PiecesMenu({
               })}
             </View>
             <View style={[styles.piecesContainer, styles.whiteContainer]}>
-              {whitePieces.map((piece) => {
-                const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
+              {whitePieces.map((pieceSelection) => {
+                const key = `${pieceSelection.pieceName}-${pieceSelection.color}`;
                 return (
                   <Piece
                     contentContainerStyle={{ width: pieceWidth }}
                     key={key}
-                    pieceSelection={piece}
+                    pieceSelection={pieceSelection}
                     width={pieceWidth}
-                    onPressOut={() => onSelection(piece)}
+                    onPressOut={() => onSelection(pieceSelection)}
                   />
                 );
               })}

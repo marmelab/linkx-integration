@@ -31,7 +31,8 @@ export type PiecePossibleMatrices = {
 };
 
 export type PieceSelection = {
-  pieceModel: PieceModel;
+  pieceName: string;
+  color: Color;
   selectedRotation: number;
   mirrored: boolean;
   selected?: boolean;

@@ -34,7 +34,8 @@ export default function Game({ onRequestClose }: GameProps) {
   const [piecesSelections, setPiecesSelections] = useState<PieceSelection[]>(
     game.availablePieces.map(
       (availablePiece): PieceSelection => ({
-        pieceModel: availablePiece,
+        pieceName: availablePiece.piece,
+        color: availablePiece.color,
         mirrored: false,
         selectedRotation: 0,
       }),
@@ -44,15 +45,12 @@ export default function Game({ onRequestClose }: GameProps) {
   const insets = useSafeAreaInsets();
   const width =
     Dimensions.get("screen").width - 20 - insets.left - insets.right;
-  const carouselKey =
-    "carousel-" +
-    piecesSelections.reduce((sum, piece) => sum + piece.pieceModel.count, 0);
 
   return (
     <View style={styles.game}>
       <View style={[styles.titleContainer, { width }]}>
         <Pressable
-          onPress={onRequestClose}
+          onPress={() => onRequestClose()}
           style={[styles.button, styles.buttonReturn]}
         >
           <Text>Exit</Text>
@@ -60,6 +58,7 @@ export default function Game({ onRequestClose }: GameProps) {
       </View>
       <GameLabel />
       <Grid
+        disabled={playTurnMutation.mutation.isPending}
         onColumnSelection={(column) =>
           handleColumnSelection(
             column,
@@ -81,7 +80,7 @@ export default function Game({ onRequestClose }: GameProps) {
         <View style={styles.noErrorPadding} />
       )}
       <PieceCarousel
-        key={carouselKey}
+        disabled={playTurnMutation.mutation.isPending}
         piecesSelections={piecesSelections}
         onPiecesSelectionChange={setPiecesSelections}
         width={width}
@@ -98,7 +97,7 @@ function handleColumnSelection(
   queryClient: QueryClient,
 ) {
   const selectedPiece = piecesSelection.find(
-    (piece) => piece.pieceModel.color === game.turnOfPlayer && piece.selected,
+    (piece) => piece.color === game.turnOfPlayer && piece.selected,
   );
   if (!selectedPiece) {
     return;
@@ -106,8 +105,8 @@ function handleColumnSelection(
 
   const move: Move = {
     skipped: false,
-    color: game.turnOfPlayer,
-    piece: selectedPiece.pieceModel.piece,
+    color: selectedPiece.color,
+    piece: selectedPiece.pieceName,
     column,
     mirrored: selectedPiece.mirrored,
     rotation: selectedPiece.selectedRotation,

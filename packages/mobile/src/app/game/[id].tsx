@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Game from "@/components/game";
@@ -26,23 +27,27 @@ export default function GameRoute() {
 
   if (error) {
     return (
-      <View style={styles.fullPageText}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Error : could not fetch game.</Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.fullPageText}>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Error : could not fetch game.</Text>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <GameModeContext value={mode}>
-          <RunningGameContext value={data?.game}>
-            <Game key={`game-${id}`} onRequestClose={() => router.back()} />
-          </RunningGameContext>
-        </GameModeContext>
-      </View>
+      <GestureHandlerRootView>
+        <View style={{ flex: 1 }}>
+          <GameModeContext value={mode}>
+            <RunningGameContext value={data?.game}>
+              <Game key={`game-${id}`} onRequestClose={() => router.back()} />
+            </RunningGameContext>
+          </GameModeContext>
+        </View>
+      </GestureHandlerRootView>
     </SafeAreaView>
   );
 }

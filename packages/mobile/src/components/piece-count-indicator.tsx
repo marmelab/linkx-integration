@@ -40,7 +40,13 @@ export default function PieceCountIndicator({
     accumulatorBase,
   );
 
-  return <View style={styles.container}>{indicators}</View>;
+  const key = `count-${pieceModel.color}-${pieceModel.piece}:${pieceModel.count}`;
+
+  return (
+    <View key={key} style={styles.container}>
+      {indicators}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

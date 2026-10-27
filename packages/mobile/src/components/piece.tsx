@@ -1,15 +1,16 @@
 import type { GestureResponderEvent, ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
+import type { PressableEvent } from "react-native-gesture-handler";
 
 import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useContext } from "react";
 import {
   FlatList,
-  Pressable,
   StyleSheet,
-  TouchableOpacity,
   View,
+  Pressable as NativePressable,
 } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 
 import type { Color, PieceSelection } from "@/model/game";
 
@@ -21,11 +22,12 @@ import PieceCountIndicator from "./piece-count-indicator";
 
 type PieceProps = {
   pieceSelection: PieceSelection;
-  onPressOut: (event: GestureResponderEvent) => void;
+  onPressOut: (event: PressableEvent) => void;
   onMirrorPiece?: (event: GestureResponderEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
+  disabled?: boolean;
 };
 
 export default function Piece({
@@ -35,38 +37,48 @@ export default function Piece({
   width,
   style,
   contentContainerStyle,
+  disabled,
 }: PieceProps) {
   const mode = useContext(GameModeContext);
   const game = useContext(RunningGameContext);
 
-  const selectedPossibleMatrix =
-    pieceSelection.pieceModel.possibleMatrices.find((possibleMatrix) => {
-      return (
-        possibleMatrix.mirrored.includes(pieceSelection.mirrored) &&
-        possibleMatrix.rotations.includes(pieceSelection.selectedRotation)
-      );
-    });
-  const selectedMatrix = selectedPossibleMatrix?.matrix;
+  const pieceModel = game?.availablePieces.find(
+    (piece) =>
+      piece.color === pieceSelection.color &&
+      piece.piece === pieceSelection.pieceName,
+  );
 
-  if (!selectedMatrix) {
+  if (!pieceModel) {
     console.error(
-      `Unknown configuration for piece {piece: ${pieceSelection.pieceModel.piece}, rotation: ${pieceSelection.selectedRotation}, mirrored: ${pieceSelection.mirrored} }`,
+      `Unknown piece ${pieceSelection.color}-${pieceSelection.pieceName}`,
     );
     return <></>;
   }
 
-  const cells = formatMatrixForFlexWrap(
-    selectedMatrix,
-    pieceSelection.pieceModel.color,
+  const selectedPossibleMatrix = pieceModel.possibleMatrices.find(
+    (possibleMatrix) => {
+      return (
+        possibleMatrix.mirrored.includes(pieceSelection.mirrored) &&
+        possibleMatrix.rotations.includes(pieceSelection.selectedRotation)
+      );
+    },
   );
+  const selectedMatrix = selectedPossibleMatrix?.matrix;
+
+  if (!selectedMatrix) {
+    console.error(
+      `Unknown configuration for piece {piece: ${pieceModel.piece}, rotation: ${pieceSelection.selectedRotation}, mirrored: ${pieceSelection.mirrored} }`,
+    );
+    return <></>;
+  }
+
+  const cells = formatMatrixForFlexWrap(selectedMatrix, pieceModel.color);
 
   const cellWidth = width / 3;
   const canBeMirrored = selectedPossibleMatrix.mirrored.length === 1;
 
-  const backgroundColor =
-    pieceSelection.pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
-  const borderColor =
-    pieceSelection.pieceModel.color === "blue" ? "#006596" : "#9C4438";
+  const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
+  const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
   const pieceAdditionalStyle = pieceSelection.selected
     ? {
         height: width + (mode && mode !== "spectating" ? 120 : 50),
@@ -78,20 +90,17 @@ export default function Piece({
         height: width + (mode && mode !== "spectating" ? 120 : 50),
       };
 
-  const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceSelection.pieceModel.count}`;
-  const countKey = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}:${pieceSelection.pieceModel.count}`;
+  const key = `${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceModel.count}`;
+  const countKey = `${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`;
   return (
-    <TouchableOpacity
+    <Pressable
       key={key}
-      disabled={mode === "spectating" || game?.completed}
+      disabled={disabled || mode === "spectating" || game?.completed}
       style={[styles.container, pieceAdditionalStyle, style]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
-        <PieceCountIndicator
-          key={countKey}
-          pieceModel={pieceSelection.pieceModel}
-        />
+        <PieceCountIndicator key={countKey} pieceModel={pieceModel} />
         <FlatList
           key={key}
           scrollEnabled={false}
@@ -105,7 +114,8 @@ export default function Piece({
           numColumns={selectedMatrix.length}
         />
         {canBeMirrored && mode && mode !== "spectating" && !game?.completed && (
-          <Pressable
+          <NativePressable
+            disabled={disabled}
             onPress={(event) => {
               event.stopPropagation();
               return onMirrorPiece;
@@ -113,10 +123,10 @@ export default function Piece({
             style={[styles.buttonMirror, { width }]}
           >
             <MaterialDesignIcons name="mirror" size={24} />
-          </Pressable>
+          </NativePressable>
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
