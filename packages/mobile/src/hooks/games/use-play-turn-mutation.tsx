@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import type { Move } from "@/model/move";
 
@@ -12,5 +11,5 @@ export function usePlayTurnMutation() {
     mutationFn: ({ gameId, move }: PlayTurnParams) => playTurn(gameId, move),
   });
 
-  return useMemo(() => ({ mutation }), [mutation]);
+  return mutation;
 }
