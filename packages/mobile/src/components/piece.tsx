@@ -11,6 +11,7 @@ import type { Color, PieceSelection } from "@/model/game";
 
 import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
+import { getPieceKey } from "@/helper/get-piece-key";
 
 import Cell from "./cell";
 import PieceCountIndicator from "./piece-count-indicator";
@@ -37,16 +38,11 @@ export default function Piece({
   const mode = useContext(GameModeContext);
   const game = useContext(RunningGameContext);
 
-  const pieceModel = game?.availablePieces.find(
-    (piece) =>
-      piece.color === pieceSelection.color &&
-      piece.piece === pieceSelection.pieceName,
-  );
+  const pieceKey = getPieceKey(pieceSelection.color, pieceSelection.pieceName);
+  const pieceModel = game?.mappedPieces[pieceKey];
 
   if (!pieceModel) {
-    console.error(
-      `Unknown piece ${pieceSelection.color}-${pieceSelection.pieceName}`,
-    );
+    console.error(`Unknown piece ${pieceKey}`);
     return <></>;
   }
 
@@ -76,20 +72,23 @@ export default function Piece({
   const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
   const pieceAdditionalStyle = pieceSelection.selected
     ? {
-        height: width + (mode && mode !== "spectating" ? 120 : 50),
         backgroundColor,
         borderColor,
         borderWidth: 2,
       }
-    : {
-        height: width + (mode && mode !== "spectating" ? 120 : 50),
-      };
+    : {};
 
   return (
     <Pressable
-      key={`${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceModel.count}`}
       disabled={disabled || mode === "spectating" || game?.completed}
-      style={[styles.container, pieceAdditionalStyle, style]}
+      style={[
+        styles.container,
+        pieceAdditionalStyle,
+        {
+          height: width + (mode && mode !== "spectating" ? 120 : 50),
+        },
+        style,
+      ]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
@@ -98,7 +97,7 @@ export default function Piece({
           pieceModel={pieceModel}
         />
         <FlatList
-          key={key}
+          key={`${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}`}
           scrollEnabled={false}
           data={cells}
           style={[styles.grid, { width, height: width }]}

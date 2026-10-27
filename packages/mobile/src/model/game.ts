@@ -5,6 +5,7 @@ export type GameModel = {
   id: number;
   grid: string[][];
   availablePieces: PieceModel[];
+  mappedPieces: { [key: string]: PieceModel };
   turnOfPlayer: Color;
   victory: string[] | null;
   canPlay: { white: boolean; blue: boolean };
@@ -28,6 +29,10 @@ export type PiecePossibleMatrices = {
   rotations: number[];
   mirrored: boolean[];
   matrix: number[][];
+};
+
+export type MultiPieceSelection = {
+  [key: string]: PieceSelection;
 };
 
 export type PieceSelection = {

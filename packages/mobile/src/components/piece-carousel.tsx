@@ -1,17 +1,18 @@
 import { useContext } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import type { PieceSelection } from "@/model/game";
+import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
 import { RunningGameContext } from "@/context/running-game-context";
+import { getPieceKey } from "@/helper/get-piece-key";
 
 import Piece from "./piece";
 import PiecesMenu from "./pieces-menu";
 
 type PieceCarouselProps = {
   width: number;
-  piecesSelections: PieceSelection[];
-  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void;
+  piecesSelections: MultiPieceSelection;
+  onPiecesSelectionChange: (piecesSelections: MultiPieceSelection) => void;
   disabled: boolean;
 };
 
@@ -27,7 +28,7 @@ export default function PieceCarousel({
   }
 
   const pieceWidth = Math.max(90, 0.23 * width);
-  const carouselPieces = piecesSelections.filter(
+  const carouselPieces = Object.values(piecesSelections).filter(
     (piece) => piece.color === game?.turnOfPlayer,
   );
 
@@ -78,57 +79,77 @@ function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
 }
 
 function mirrorPiece(
-  piecesSelection: PieceSelection[],
-  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
+  piecesSelection: MultiPieceSelection,
+  onPiecesSelectionChange: (piecesSelections: MultiPieceSelection) => void,
   selectedPiece: PieceSelection,
 ): void {
+  const pieceKey = getPieceKey(selectedPiece.color, selectedPiece.pieceName);
+
   onPiecesSelectionChange(
-    piecesSelection.map((piece) => {
-      if (isSamePiece(piece, selectedPiece)) {
+    transformPiecesSelection(piecesSelection, (key, piece) => {
+      if (key === pieceKey) {
         const updatedRotation = reverseOddRotations(piece.selectedRotation);
-        return {
-          ...piece,
-          selectedRotation: updatedRotation,
-          mirrored: !piece.mirrored,
-          selected: true,
-        };
+        return [
+          key,
+          {
+            ...piece,
+            selectedRotation: updatedRotation,
+            mirrored: !piece.mirrored,
+            selected: true,
+          },
+        ];
       }
 
-      return {
-        ...piece,
-        selected: false,
-      };
+      return [
+        key,
+        {
+          ...piece,
+          selected: false,
+        },
+      ];
     }),
   );
 }
 
 function updateSelection(
-  piecesSelection: PieceSelection[],
-  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
+  piecesSelection: MultiPieceSelection,
+  onPiecesSelectionChange: (piecesSelections: MultiPieceSelection) => void,
   selectedPiece: PieceSelection,
 ): void {
-  const isAlreadySelected = piecesSelection.find(
-    (piece) => isSamePiece(piece, selectedPiece) && piece.selected,
-  );
+  const pieceKey = getPieceKey(selectedPiece.color, selectedPiece.pieceName);
+  const isAlreadySelected = piecesSelection[pieceKey].selected;
   if (isAlreadySelected) {
-    onPiecesSelectionChange(
-      piecesSelection.map((piece) => {
-        if (isSamePiece(piece, selectedPiece)) {
-          return rotatePiece(piece);
-        }
-        return piece;
-      }),
-    );
+    onPiecesSelectionChange({
+      ...piecesSelection,
+      [pieceKey]: rotatePiece(selectedPiece),
+    });
   } else {
     onPiecesSelectionChange(
-      piecesSelection.map((piece) => {
-        return {
-          ...piece,
-          selected: isSamePiece(piece, selectedPiece),
-        };
+      transformPiecesSelection(piecesSelection, (key, piece) => {
+        return [
+          key,
+          {
+            ...piece,
+            selected: key === pieceKey,
+          },
+        ];
       }),
     );
   }
+}
+
+function transformPiecesSelection(
+  piecesSelection: MultiPieceSelection,
+  callback: (
+    key: string,
+    pieceSelection: PieceSelection,
+  ) => [string, PieceSelection],
+) {
+  return Object.fromEntries(
+    Object.entries(piecesSelection).map(([key, piece]) => {
+      return callback(key, piece);
+    }),
+  );
 }
 
 function reverseOddRotations(rotation: number) {

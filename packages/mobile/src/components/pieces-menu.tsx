@@ -12,12 +12,12 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import type { PieceSelection } from "@/model/game";
+import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
 import Piece from "./piece";
 
 type PiecesMenuProps = {
-  piecesSelection: PieceSelection[];
+  piecesSelection: MultiPieceSelection;
   width: number;
   onSelection: (piece: PieceSelection) => void;
 };
@@ -31,8 +31,10 @@ export default function PiecesMenu({
 
   // TODO Order based on current turn for local play
   // TODO Order based on current player for online play
-  const bluePieces = piecesSelection.filter((piece) => piece.color === "blue");
-  const whitePieces = piecesSelection.filter(
+  const bluePieces = Object.values(piecesSelection).filter(
+    (piece) => piece.color === "blue",
+  );
+  const whitePieces = Object.values(piecesSelection).filter(
     (piece) => piece.color === "white",
   );
   const pieceWidth = Math.max(85, 0.18 * width);

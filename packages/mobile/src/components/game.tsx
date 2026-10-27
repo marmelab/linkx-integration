@@ -1,16 +1,13 @@
-import type { QueryClient } from "@tanstack/react-query";
-
-import { useQueryClient, type UseMutationResult } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { PlayTurnParams } from "@/hooks/games/use-play-turn-mutation";
-import type { GameModel, PieceSelection } from "@/model/game";
+import type { MultiPieceSelection } from "@/model/game";
 import type { Move } from "@/model/move";
 
 import { RunningGameContext } from "@/context/running-game-context";
+import { getPieceKey } from "@/helper/get-piece-key";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
 
 import GameLabel from "./game-label";
@@ -23,7 +20,6 @@ type GameProps = {
 
 export default function Game({ onRequestClose }: GameProps) {
   const game = useContext(RunningGameContext);
-  const queryClient = useQueryClient();
 
   if (!game) {
     return <></>;
@@ -31,15 +27,18 @@ export default function Game({ onRequestClose }: GameProps) {
 
   const playTurnMutation = usePlayTurnMutation(game.id);
 
-  const [piecesSelections, setPiecesSelections] = useState<PieceSelection[]>(
-    game.availablePieces.map(
-      (availablePiece): PieceSelection => ({
-        pieceName: availablePiece.piece,
-        color: availablePiece.color,
-        mirrored: false,
-        selectedRotation: 0,
-      }),
-    ),
+  const [piecesSelections, setPiecesSelections] = useState<MultiPieceSelection>(
+    game.availablePieces.reduce((mapped, availablePiece) => {
+      return {
+        ...mapped,
+        [getPieceKey(availablePiece.color, availablePiece.piece)]: {
+          pieceName: availablePiece.piece,
+          color: availablePiece.color,
+          mirrored: false,
+          selectedRotation: 0,
+        },
+      };
+    }, {}),
   );
 
   const insets = useSafeAreaInsets();
@@ -59,15 +58,25 @@ export default function Game({ onRequestClose }: GameProps) {
       <GameLabel />
       <Grid
         disabled={playTurnMutation.isPending}
-        onColumnSelection={(column) =>
-          handleColumnSelection(
+        onColumnSelection={(column) => {
+          const selectedPiece = Object.values(piecesSelections).find(
+            (piece) => piece.color === game.turnOfPlayer && piece.selected,
+          );
+          if (!selectedPiece) {
+            return;
+          }
+
+          const move: Move = {
+            skipped: false,
+            color: selectedPiece.color,
+            piece: selectedPiece.pieceName,
             column,
-            game,
-            piecesSelections,
-            playTurnMutation,
-            queryClient,
-          )
-        }
+            mirrored: selectedPiece.mirrored,
+            rotation: selectedPiece.selectedRotation,
+          };
+
+          playTurnMutation.mutate({ gameId: game.id, move });
+        }}
         width={width}
       />
       {playTurnMutation.error ? (
@@ -85,32 +94,6 @@ export default function Game({ onRequestClose }: GameProps) {
       />
     </View>
   );
-}
-
-function handleColumnSelection(
-  column: number,
-  game: GameModel,
-  piecesSelection: PieceSelection[],
-  playTurnMutation: UseMutationResult<void, Error, PlayTurnParams, unknown>,
-  queryClient: QueryClient,
-) {
-  const selectedPiece = piecesSelection.find(
-    (piece) => piece.color === game.turnOfPlayer && piece.selected,
-  );
-  if (!selectedPiece) {
-    return;
-  }
-
-  const move: Move = {
-    skipped: false,
-    color: selectedPiece.color,
-    piece: selectedPiece.pieceName,
-    column,
-    mirrored: selectedPiece.mirrored,
-    rotation: selectedPiece.selectedRotation,
-  };
-
-  playTurnMutation.mutate({ gameId: game.id, move });
 }
 
 const styles = StyleSheet.create({
