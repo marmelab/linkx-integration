@@ -27,13 +27,14 @@ class GamePersister
         return $gameEntity;
     }
 
-    public function saveGame(User $currentUser, GameEntity $gameEntity, Game $game)
+    public function saveGame(?User $currentUser, GameEntity $gameEntity, Game $game)
     {
         // Either we have met an error, or we are a spectator: no save
         if (
             is_null($game) ||
-            $currentUser->getId() !== $gameEntity->getFirstPlayer()->getId()
-            && $currentUser->getId() !== $gameEntity->getSecondPlayer()->getId()
+            ($currentUser
+                && $currentUser->getId() !== $gameEntity->getFirstPlayer()->getId()
+                && $currentUser->getId() !== $gameEntity->getSecondPlayer()->getId())
         ) {
             return;
         }

@@ -8,7 +8,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import GamesList from "@/components/game-list";
-import { useCreateLocalGame } from "@/hooks/games/create-local-game";
+import { useCreateLocalGame } from "@/hooks/games/use-create-local-game";
 
 export default function Index() {
   const createGameMutation = useCreateLocalGame().mutation;
@@ -19,7 +19,6 @@ export default function Index() {
   useEffect(() => {
     AsyncStorage.getItem("runningGameId")
       .then((id) => {
-        console.log(id);
         setCurrentGameId(id);
       })
       .catch((error) => console.error(error));
@@ -69,13 +68,11 @@ function createThenRedirect(
     {},
     {
       onSuccess: (data) => {
-        AsyncStorage.setItem("runningGameId", data.id.toString())
-          .then(() => {
-            console.log(data.id);
-          })
-          .catch((error) => {
+        AsyncStorage.setItem("runningGameId", data.id.toString()).catch(
+          (error) => {
             console.error(error);
-          });
+          },
+        );
         router.navigate({
           pathname: "/game/[id]",
           params: {

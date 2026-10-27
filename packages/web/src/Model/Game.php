@@ -8,6 +8,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Game
 {
     #[Groups(['game-view'])]
+    private ?int $id;
+
+    #[Groups(['game-view'])]
     private array $grid = [];
 
     /**@var Piece[] */
@@ -168,6 +171,18 @@ class Game
     public function setLocal(bool $local): self
     {
         $this->local = $local;
+        return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id)
+    {
+        $this->id = $id;
+
         return $this;
     }
 }

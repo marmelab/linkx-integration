@@ -63,6 +63,7 @@ class ApiGameController extends AbstractController
             $gameEntity->setState($game->getState());
             $em->flush();
         }
+        $game->setId($gameEntity->getId());
         $game->setCompleted($gameEntity->isCompleted());
         $game->setLocal($gameEntity->isLocalGame());
         $game->setFirstPlayer($gameEntity->getFirstPlayer());
@@ -88,11 +89,11 @@ class ApiGameController extends AbstractController
 
     #[Route('/api/games/{id}/play-turn', name: 'api_play_turn', methods: ['PATCH'])]
     public function playTurn(
-        #[CurrentUser] User $player,
         Game $gameEntity,
         GameRunner $gameRunner,
         GamePersister $gamePersister,
         #[MapRequestPayload] Move $move,
+        #[CurrentUser] ?User $player,
     ) {
         if (
             !$gameEntity->isLocalGame()
@@ -127,10 +128,10 @@ class ApiGameController extends AbstractController
             return new Response('', Response::HTTP_CREATED);
         } catch (ClientExceptionInterface $exception) {
             $errorMessage = $exception->getResponse()->toArray(false)['message'];
-            $this->json(['message' => $errorMessage], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => $errorMessage], Response::HTTP_BAD_REQUEST);
         } catch (ServerExceptionInterface $exception) {
             $errorMessage = "The server appears to be unavailable. Please contact an administrator.";
-            $this->json(['message' => $errorMessage], Response::HTTP_BAD_GATEWAY);
+            return $this->json(['message' => $errorMessage], Response::HTTP_BAD_GATEWAY);
         }
     }
 }

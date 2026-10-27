@@ -14,6 +14,7 @@ import {
 import type { Color, PieceSelection } from "@/model/game";
 
 import { GameModeContext } from "@/context/game-mode-context";
+import { RunningGameContext } from "@/context/running-game-context";
 
 import Cell from "./cell";
 import PieceCountIndicator from "./piece-count-indicator";
@@ -36,6 +37,7 @@ export default function Piece({
   contentContainerStyle,
 }: PieceProps) {
   const mode = useContext(GameModeContext);
+  const game = useContext(RunningGameContext);
 
   const selectedPossibleMatrix =
     pieceSelection.pieceModel.possibleMatrices.find((possibleMatrix) => {
@@ -60,24 +62,36 @@ export default function Piece({
 
   const cellWidth = width / 3;
   const canBeMirrored = selectedPossibleMatrix.mirrored.length === 1;
-  // TODO special display when selected === true
 
-  const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}`;
+  const backgroundColor =
+    pieceSelection.pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
+  const borderColor =
+    pieceSelection.pieceModel.color === "blue" ? "#006596" : "#9C4438";
+  const pieceAdditionalStyle = pieceSelection.selected
+    ? {
+        height: width + (mode && mode !== "spectating" ? 120 : 50),
+        backgroundColor,
+        borderColor,
+        borderWidth: 2,
+      }
+    : {
+        height: width + (mode && mode !== "spectating" ? 120 : 50),
+      };
+
+  const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceSelection.pieceModel.count}`;
+  const countKey = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}:${pieceSelection.pieceModel.count}`;
   return (
     <TouchableOpacity
       key={key}
-      disabled={mode === "spectating"}
-      style={[
-        styles.container,
-        {
-          height: width + (mode && mode !== "spectating" ? 120 : 50),
-        },
-        style,
-      ]}
+      disabled={mode === "spectating" || game?.completed}
+      style={[styles.container, pieceAdditionalStyle, style]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
-        <PieceCountIndicator pieceModel={pieceSelection.pieceModel} />
+        <PieceCountIndicator
+          key={countKey}
+          pieceModel={pieceSelection.pieceModel}
+        />
         <FlatList
           key={key}
           scrollEnabled={false}
@@ -90,7 +104,7 @@ export default function Piece({
           keyExtractor={(item) => `${item.x}.${item.y}`}
           numColumns={selectedMatrix.length}
         />
-        {canBeMirrored && mode && mode !== "spectating" && (
+        {canBeMirrored && mode && mode !== "spectating" && !game?.completed && (
           <Pressable
             onPress={(event) => {
               event.stopPropagation();

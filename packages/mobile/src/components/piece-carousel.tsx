@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import type { PieceSelection } from "@/model/game";
@@ -8,39 +8,30 @@ import { RunningGameContext } from "@/context/running-game-context";
 import Piece from "./piece";
 import PiecesMenu from "./pieces-menu";
 
-type PieceCarouselProps = { width: number };
+type PieceCarouselProps = {
+  width: number;
+  piecesSelections: PieceSelection[];
+  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void;
+};
 
-export default function PieceCarousel({ width }: PieceCarouselProps) {
+export default function PieceCarousel({
+  width,
+  piecesSelections,
+  onPiecesSelectionChange,
+}: PieceCarouselProps) {
   const game = useContext(RunningGameContext);
   if (!game) {
     return <></>;
   }
 
-  const [piecesSelections, setPiecesSelections] = useState<PieceSelection[]>(
-    game.availablePieces.map(
-      (availablePiece): PieceSelection => ({
-        pieceModel: availablePiece,
-        mirrored: false,
-        selectedRotation: 0,
-      }),
-    ),
-  );
   const pieceWidth = Math.max(90, 0.23 * width);
   const carouselPieces = piecesSelections.filter(
     (piece) => piece.pieceModel.color === game?.turnOfPlayer,
   );
-  const backgroundColor = game?.turnOfPlayer === "blue" ? "#F6FBFD" : "#FFF8F8";
-  const borderColor = game?.turnOfPlayer === "blue" ? "#006596" : "#9C4438";
 
   return (
     <View style={styles.carousel}>
-      <ScrollView
-        contentContainerStyle={[
-          styles.container,
-          { backgroundColor, borderColor },
-        ]}
-        horizontal
-      >
+      <ScrollView contentContainerStyle={[styles.container]} horizontal>
         {carouselPieces.map((pieceSelection) => {
           const key = `${pieceSelection.pieceModel.piece}-${pieceSelection.pieceModel.color}`;
           return (
@@ -52,11 +43,11 @@ export default function PieceCarousel({ width }: PieceCarouselProps) {
               onPressOut={() => {
                 updateSelection(
                   piecesSelections,
-                  setPiecesSelections,
+                  onPiecesSelectionChange,
                   pieceSelection,
                 );
               }}
-            ></Piece>
+            />
           );
         })}
       </ScrollView>
@@ -64,7 +55,7 @@ export default function PieceCarousel({ width }: PieceCarouselProps) {
         <PiecesMenu
           width={width}
           onSelection={(piece) =>
-            updateSelection(piecesSelections, setPiecesSelections, piece)
+            updateSelection(piecesSelections, onPiecesSelectionChange, piece)
           }
           piecesSelection={piecesSelections}
         />
@@ -82,14 +73,14 @@ function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
 
 function updateSelection(
   piecesSelection: PieceSelection[],
-  setPiecesSelections: Function,
+  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
   selectedPiece: PieceSelection,
 ): void {
-  const isAlreadySelected = piecesSelection.find((piece) =>
-    isSamePiece(piece, selectedPiece),
+  const isAlreadySelected = piecesSelection.find(
+    (piece) => isSamePiece(piece, selectedPiece) && piece.selected,
   );
   if (isAlreadySelected) {
-    setPiecesSelections(
+    onPiecesSelectionChange(
       piecesSelection.map((piece) => {
         if (isSamePiece(piece, selectedPiece)) {
           return rotatePiece(piece);
@@ -98,7 +89,8 @@ function updateSelection(
       }),
     );
   } else {
-    setPiecesSelections(
+    // TODO scroll to piece
+    onPiecesSelectionChange(
       piecesSelection.map((piece) => {
         return {
           ...piece,
@@ -125,7 +117,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 18,
     borderRadius: 24,
-    borderWidth: 2,
   },
   carousel: {
     flex: 1,

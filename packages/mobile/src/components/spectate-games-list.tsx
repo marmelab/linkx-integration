@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { listGames } from "@/api-games";
+import { listGames } from "@/api/api-games";
 
 import GameListElement from "./game-list-element";
 

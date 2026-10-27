@@ -1,14 +1,16 @@
 import { useContext } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
 
+import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
 
 import Cell from "./cell";
 
-type GridProps = { width: number };
+type GridProps = { width: number; onColumnSelection: (column: number) => void };
 
-export default function Grid({ width }: GridProps) {
+export default function Grid({ width, onColumnSelection }: GridProps) {
   const game = useContext(RunningGameContext);
+  const gameMode = useContext(GameModeContext);
   if (!game) {
     return <></>;
   }
@@ -21,7 +23,12 @@ export default function Grid({ width }: GridProps) {
       data={cells}
       style={{ ...styles.grid, width }}
       renderItem={(item) => (
-        <Cell width={cellWidth} cellValue={item.item.value}></Cell>
+        <TouchableOpacity
+          disabled={gameMode === "spectating"}
+          onPress={() => onColumnSelection(item.item.x)}
+        >
+          <Cell width={cellWidth} cellValue={item.item.value}></Cell>
+        </TouchableOpacity>
       )}
       keyExtractor={(item) => `${item.x}.${item.y}:${item.value}`}
       numColumns={9}

@@ -27,7 +27,9 @@ export default function GameRoute() {
   if (error) {
     return (
       <View style={styles.fullPageText}>
-        <Text style={styles.errorText}>Error : couldn't fetch game.</Text>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Error : could not fetch game.</Text>
+        </View>
       </View>
     );
   }
@@ -49,13 +51,19 @@ const styles = StyleSheet.create({
   fullPageText: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
   },
-  errorText: {
-    color: "#000",
-    backgroundColor: "#FEA69A",
+  errorContainer: {
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFE9E6",
     borderWidth: 1,
     borderColor: "#9C4438",
     borderRadius: 5,
+  },
+  errorText: {
+    color: "#9C4438",
+    fontSize: 22,
   },
 });

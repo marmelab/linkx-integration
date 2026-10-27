@@ -1,5 +1,5 @@
-import type { GameModel } from "./model/game";
-import type { Move } from "./model/move";
+import type { GameModel } from "../model/game";
+import type { Move } from "../model/move";
 
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost";
 const BASE_HEADERS = {
@@ -41,7 +41,7 @@ export async function playTurn(gameId: number, move: Move): Promise<void> {
 
   if (!response.ok) {
     const body = await response.json();
-    throw new Error(body.message);
+    throw new Error(body.message ? body.message : body.detail);
   }
 
   return response.text().then();

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { createGame } from "@/api-games";
+import { createGame } from "@/api/api-games";
 
 export function useCreateLocalGame() {
   const mutation = useMutation({

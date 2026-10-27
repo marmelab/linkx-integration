@@ -13,30 +13,34 @@ export default function GameLabel() {
     );
   }
 
-  if (game.local) {
-    const currentColor =
-      game.turnOfPlayer === "blue" ? (
-        <Text style={styles.textBlue}>Blue</Text>
-      ) : (
-        <Text style={styles.textWhite}>Red</Text>
-      );
-    return <Text style={styles.heading}>Turn of {currentColor}</Text>;
+  const firstPlayerLabel = game.firstPlayer?.displayName ? (
+    <Text style={styles.textBlue}>{game.firstPlayer.displayName}</Text>
+  ) : (
+    <Text style={styles.textBlue}>Blue</Text>
+  );
+  const secondPlayerLabel = game.secondPlayer?.displayName ? (
+    <Text style={styles.textWhite}>{game.secondPlayer.displayName}</Text>
+  ) : (
+    <Text style={styles.textWhite}>Red</Text>
+  );
+
+  const currentLabel =
+    game.turnOfPlayer === "blue" ? firstPlayerLabel : secondPlayerLabel;
+
+  if (game.local && !game.completed) {
+    return <Text style={styles.heading}>Turn of {currentLabel}</Text>;
   }
 
-  const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
+  const gameTitle = (
+    <Text>
+      {firstPlayerLabel} VS {secondPlayerLabel}
+    </Text>
+  );
 
   if (game.victory && game.lastMove?.color === "blue") {
-    return (
-      <Text style={styles.heading}>
-        Victory of {game.firstPlayer?.displayName} !
-      </Text>
-    );
+    return <Text style={styles.heading}>Victory of {firstPlayerLabel} !</Text>;
   } else if (game.victory) {
-    return (
-      <Text style={styles.heading}>
-        Victory of {game.secondPlayer?.displayName} !
-      </Text>
-    );
+    return <Text style={styles.heading}>Victory of {secondPlayerLabel} !</Text>;
   } else if (game.completed) {
     return <Text style={styles.heading}>It's a draw !</Text>;
   } else if (game.turnOfPlayer === "blue") {
@@ -44,10 +48,7 @@ export default function GameLabel() {
       <>
         <Text style={styles.heading}>{gameTitle}</Text>
         <Text style={styles.subHeading}>
-          Turn of{" "}
-          <Text style={styles.textBlue}>
-            {game.firstPlayer?.displayName}...
-          </Text>
+          Turn of <Text style={styles.textBlue}>{firstPlayerLabel}...</Text>
         </Text>
       </>
     );
@@ -65,10 +66,7 @@ export default function GameLabel() {
       <>
         <Text style={styles.heading}>{gameTitle}</Text>
         <Text style={styles.subHeading}>
-          Turn of{" "}
-          <Text style={styles.textWhite}>
-            {game.secondPlayer?.displayName}...
-          </Text>
+          Turn of <Text style={styles.textWhite}>{secondPlayerLabel}...</Text>
         </Text>
       </>
     );
