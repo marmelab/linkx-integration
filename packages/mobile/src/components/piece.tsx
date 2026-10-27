@@ -110,7 +110,11 @@ export default function Piece({
         {displayMirror && (
           <Pressable
             disabled={disabled}
-            onPress={() => onMirrorPiece}
+            onPress={(event) => {
+              if (onMirrorPiece) {
+                onMirrorPiece(event);
+              }
+            }}
             style={[styles.buttonMirror, { width }]}
           >
             <MaterialDesignIcons name="mirror" size={24} />
