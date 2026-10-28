@@ -30,7 +30,8 @@ export default function Grid({
   return (
     <FlatList
       data={cells}
-      style={{ ...styles.grid, width }}
+      style={[styles.grid, { width }]}
+      contentContainerStyle={{ flex: 0 }}
       renderItem={(item) => (
         <Pressable
           disabled={disabled || gameMode === "spectating"}
@@ -65,6 +66,5 @@ const styles = StyleSheet.create({
   grid: {
     flex: 0,
     marginTop: 18,
-    marginBottom: -340,
   },
 });

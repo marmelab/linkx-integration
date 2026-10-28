@@ -41,7 +41,7 @@ export default function GameRoute() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <GestureHandlerRootView>
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
           <GameModeContext value={mode}>
             <RunningGameContext value={data?.game}>
               <Game key={`game-${id}`} onRequestClose={() => router.back()} />
@@ -54,6 +54,11 @@ export default function GameRoute() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginLeft: 22,
+    marginRight: 22,
+  },
   fullPageText: {
     flex: 1,
     justifyContent: "center",

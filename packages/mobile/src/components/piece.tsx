@@ -72,7 +72,7 @@ export default function Piece({
 
   const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
   const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
-  const pieceAdditionalStyle = selected
+  const gridAdditionalStyle = selected
     ? {
         backgroundColor,
         borderColor,
@@ -85,7 +85,6 @@ export default function Piece({
       disabled={disabled || mode === "spectating" || game?.completed}
       style={[
         styles.container,
-        pieceAdditionalStyle,
         {
           height: width + (mode && mode !== "spectating" ? 120 : 50),
         },
@@ -102,8 +101,8 @@ export default function Piece({
           key={`${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}`}
           scrollEnabled={false}
           data={cells}
-          style={[styles.grid, { width, height: width }]}
-          contentContainerStyle={styles.gridContainer}
+          style={[styles.grid, { width, height: width }, gridAdditionalStyle]}
+          contentContainerStyle={[styles.gridContainer]}
           renderItem={(item) => (
             <Cell width={cellWidth} cellValue={item.item.color}></Cell>
           )}
@@ -167,6 +166,7 @@ const styles = StyleSheet.create({
     flex: 0,
   },
   gridContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

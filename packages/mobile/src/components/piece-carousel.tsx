@@ -172,6 +172,11 @@ function rotatePiece(piece: PieceSelection): PieceSelection {
 }
 
 const styles = StyleSheet.create({
+  carousel: {
+    flex: 1,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
   container: {
     paddingLeft: 15,
     paddingRight: 15,
@@ -179,11 +184,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 18,
     borderRadius: 24,
-  },
-  carousel: {
-    flex: 1,
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   actions: {
     flex: 1,

@@ -45,7 +45,7 @@ export default function Game({ onRequestClose }: GameProps) {
 
   const insets = useSafeAreaInsets();
   const width =
-    Dimensions.get("screen").width - 20 - insets.left - insets.right;
+    Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
   return (
     <View style={styles.game}>
