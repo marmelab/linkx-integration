@@ -19,6 +19,7 @@ import PieceCountIndicator from "./piece-count-indicator";
 type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: PressableEvent) => void;
+  selected: boolean;
   onMirrorPiece?: (event: PressableEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
@@ -29,6 +30,7 @@ type PieceProps = {
 export default function Piece({
   pieceSelection,
   onPressOut,
+  selected,
   onMirrorPiece,
   width,
   style,
@@ -70,7 +72,7 @@ export default function Piece({
 
   const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
   const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
-  const pieceAdditionalStyle = pieceSelection.selected
+  const pieceAdditionalStyle = selected
     ? {
         backgroundColor,
         borderColor,

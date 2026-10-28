@@ -32,7 +32,8 @@ export type PiecePossibleMatrices = {
 };
 
 export type MultiPieceSelection = {
-  [key: string]: PieceSelection;
+  selectedKey?: string;
+  pieces: { [key: string]: PieceSelection };
 };
 
 export type PieceSelection = {
@@ -40,5 +41,4 @@ export type PieceSelection = {
   color: Color;
   selectedRotation: number;
   mirrored: boolean;
-  selected?: boolean;
 };

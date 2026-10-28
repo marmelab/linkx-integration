@@ -31,10 +31,10 @@ export default function PiecesMenu({
 
   // TODO Order based on current turn for local play
   // TODO Order based on current player for online play
-  const bluePieces = Object.values(piecesSelection).filter(
+  const bluePieces = Object.values(piecesSelection.pieces).filter(
     (piece) => piece.color === "blue",
   );
-  const whitePieces = Object.values(piecesSelection).filter(
+  const whitePieces = Object.values(piecesSelection.pieces).filter(
     (piece) => piece.color === "white",
   );
   const pieceWidth = Math.max(85, 0.18 * width);

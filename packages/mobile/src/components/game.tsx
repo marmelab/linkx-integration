@@ -28,17 +28,19 @@ export default function Game({ onRequestClose }: GameProps) {
   const playTurnMutation = usePlayTurnMutation(game.id);
 
   const [piecesSelections, setPiecesSelections] = useState<MultiPieceSelection>(
-    game.availablePieces.reduce((mapped, availablePiece) => {
-      return {
-        ...mapped,
-        [getPieceKey(availablePiece.color, availablePiece.piece)]: {
-          pieceName: availablePiece.piece,
-          color: availablePiece.color,
-          mirrored: false,
-          selectedRotation: 0,
-        },
-      };
-    }, {}),
+    {
+      pieces: game.availablePieces.reduce((mapped, availablePiece) => {
+        return {
+          ...mapped,
+          [getPieceKey(availablePiece.color, availablePiece.piece)]: {
+            pieceName: availablePiece.piece,
+            color: availablePiece.color,
+            mirrored: false,
+            selectedRotation: 0,
+          },
+        };
+      }, {}),
+    },
   );
 
   const insets = useSafeAreaInsets();
@@ -59,12 +61,11 @@ export default function Game({ onRequestClose }: GameProps) {
       <Grid
         disabled={playTurnMutation.isPending}
         onColumnSelection={(column) => {
-          const selectedPiece = Object.values(piecesSelections).find(
-            (piece) => piece.color === game.turnOfPlayer && piece.selected,
-          );
-          if (!selectedPiece) {
+          if (!piecesSelections.selectedKey) {
             return;
           }
+          const selectedPiece =
+            piecesSelections.pieces[piecesSelections.selectedKey];
 
           const move: Move = {
             skipped: false,

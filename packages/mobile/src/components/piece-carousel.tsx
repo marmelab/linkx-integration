@@ -28,7 +28,7 @@ export default function PieceCarousel({
   }
 
   const pieceWidth = Math.max(90, 0.23 * width);
-  const carouselPieces = Object.values(piecesSelections).filter(
+  const carouselPieces = Object.values(piecesSelections.pieces).filter(
     (piece) => piece.color === game?.turnOfPlayer,
   );
 
@@ -36,11 +36,16 @@ export default function PieceCarousel({
     <View style={styles.carousel}>
       <ScrollView contentContainerStyle={[styles.container]} horizontal>
         {carouselPieces.map((pieceSelection) => {
+          const pieceKey = getPieceKey(
+            pieceSelection.color,
+            pieceSelection.pieceName,
+          );
           return (
             <Piece
+              selected={pieceKey === piecesSelections.selectedKey}
               disabled={disabled}
               contentContainerStyle={{ width: pieceWidth }}
-              key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
+              key={`${pieceKey}-${pieceKey === piecesSelections.selectedKey}`}
               width={pieceWidth}
               pieceSelection={pieceSelection}
               onMirrorPiece={() =>
@@ -72,10 +77,6 @@ export default function PieceCarousel({
       </View>
     </View>
   );
-}
-
-function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
-  return pieceA.color === pieceB.color && pieceA.pieceName === pieceB.pieceName;
 }
 
 function mirrorPiece(
@@ -117,24 +118,20 @@ function updateSelection(
   selectedPiece: PieceSelection,
 ): void {
   const pieceKey = getPieceKey(selectedPiece.color, selectedPiece.pieceName);
-  const isAlreadySelected = piecesSelection[pieceKey].selected;
+  const isAlreadySelected = pieceKey === piecesSelection.selectedKey;
   if (isAlreadySelected) {
     onPiecesSelectionChange({
       ...piecesSelection,
-      [pieceKey]: rotatePiece(selectedPiece),
+      pieces: {
+        ...piecesSelection.pieces,
+        [pieceKey]: rotatePiece(selectedPiece),
+      },
     });
   } else {
-    onPiecesSelectionChange(
-      transformPiecesSelection(piecesSelection, (key, piece) => {
-        return [
-          key,
-          {
-            ...piece,
-            selected: key === pieceKey,
-          },
-        ];
-      }),
-    );
+    onPiecesSelectionChange({
+      ...piecesSelection,
+      selectedKey: pieceKey,
+    });
   }
 }
 
@@ -144,12 +141,15 @@ function transformPiecesSelection(
     key: string,
     pieceSelection: PieceSelection,
   ) => [string, PieceSelection],
-) {
-  return Object.fromEntries(
-    Object.entries(piecesSelection).map(([key, piece]) => {
-      return callback(key, piece);
-    }),
-  );
+): MultiPieceSelection {
+  return {
+    ...piecesSelection,
+    pieces: Object.fromEntries(
+      Object.entries(piecesSelection.pieces).map(([key, piece]) => {
+        return callback(key, piece);
+      }),
+    ),
+  };
 }
 
 function reverseOddRotations(rotation: number) {
