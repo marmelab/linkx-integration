@@ -64,13 +64,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "space-around",
     alignItems: "center",
     rowGap: 8,
     gap: 18,
     borderRadius: 24,
   },
   actions: {
-    flex: 1,
+    paddingTop: 16,
     justifyContent: "flex-end",
   },
 });

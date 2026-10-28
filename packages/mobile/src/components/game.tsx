@@ -113,7 +113,7 @@ export default function Game({ onRequestClose }: GameProps) {
           />
         )}
       </View>
-      <View style={styles.actions}>
+      <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
         <PiecesMenu
           width={width}
           onSelection={(piece) =>
@@ -209,7 +209,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actions: {
-    flex: 1,
     justifyContent: "flex-end",
   },
   titleContainer: {
@@ -239,6 +238,7 @@ const styles = StyleSheet.create({
     height: 45,
   },
   carouselContainer: {
+    flex: 1,
     flexDirection: "row",
     gap: 16,
   },
