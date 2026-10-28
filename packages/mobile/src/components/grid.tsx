@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 
 import { GameModeContext } from "@/context/game-mode-context";
@@ -21,50 +21,42 @@ export default function Grid({
   const game = useContext(RunningGameContext);
   const gameMode = useContext(GameModeContext);
   if (!game) {
-    return <></>;
+    return null;
   }
-  const cells = gridToCells(game.grid);
 
   const cellWidth = width / game.grid.length;
 
   return (
-    <FlatList
-      data={cells}
-      style={[styles.grid, { width }]}
-      contentContainerStyle={{ flex: 0 }}
-      renderItem={(item) => (
-        <Pressable
-          disabled={disabled || gameMode === "spectating"}
-          onPress={() => onColumnSelection(item.item.x)}
-        >
-          <Cell width={cellWidth} cellValue={item.item.value}></Cell>
-        </Pressable>
-      )}
-      keyExtractor={(item) => `${item.x}.${item.y}:${item.value}`}
-      numColumns={9}
-    />
+    <View style={styles.grid}>
+      {Array.from({ length: game.grid[0].length }).map((_, reversedY) => {
+        const y = game.grid[0].length - reversedY;
+        return (
+          <View style={styles.row}>
+            {Array.from({ length: game.grid.length }).map((__, x) => {
+              return (
+                <Pressable
+                  disabled={disabled || gameMode === "spectating"}
+                  onPress={() => onColumnSelection(x)}
+                  key={`${x}.${y}:${game.grid[x][y]}`}
+                >
+                  <Cell width={cellWidth} cellValue={game.grid[x][y]}></Cell>
+                </Pressable>
+              );
+            })}
+          </View>
+        );
+      })}
+    </View>
   );
-}
-
-function gridToCells(grid: string[][]) {
-  const cells = [];
-
-  for (let y = grid.length - 1; y >= 0; y--) {
-    for (let x = 0; x <= grid.length - 1; x++) {
-      cells.push({
-        value: grid[x][y],
-        x: x,
-        y: y,
-      });
-    }
-  }
-
-  return cells;
 }
 
 const styles = StyleSheet.create({
   grid: {
     flex: 0,
     marginTop: 18,
+  },
+  row: {
+    flex: 0,
+    flexDirection: "row",
   },
 });
