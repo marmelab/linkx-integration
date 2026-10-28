@@ -106,7 +106,7 @@ export default function Game({ onRequestClose, disabled }: GameProps) {
           }
           width={width - buttonWidth - carouselGap}
         />
-        {piecesSelections.selectedKey && (
+        {piecesSelections.selectedKey ? (
           <PieceSelectionControls
             onMirror={() => setPiecesSelections(mirrorPiece(piecesSelections))}
             onRotateClockwise={() =>
@@ -116,6 +116,8 @@ export default function Game({ onRequestClose, disabled }: GameProps) {
               setPiecesSelections(rotatePiece(piecesSelections, false))
             }
           />
+        ) : (
+          <View style={{ width: buttonWidth }} />
         )}
       </View>
       <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
@@ -214,6 +216,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actions: {
+    flex: 0,
     justifyContent: "flex-end",
   },
   titleContainer: {
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   carouselContainer: {
-    flex: 1,
+    flex: 0,
     flexDirection: "row",
     gap: 16,
   },
