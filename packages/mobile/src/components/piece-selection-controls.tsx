@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     flex: 0,
     flexDirection: "column",
     gap: 20,
+    justifyContent: "center",
   },
   control: {
     justifyContent: "center",
@@ -57,5 +58,6 @@ const styles = StyleSheet.create({
     borderColor: "#005179",
     borderWidth: 2,
     color: "#303943",
+    borderRadius: 12,
   },
 });
