@@ -239,9 +239,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
   },
   noErrorPadding: {
     height: 45,
+    marginTop: 5,
+    marginBottom: 5,
   },
   carouselContainer: {
     flex: 1,
