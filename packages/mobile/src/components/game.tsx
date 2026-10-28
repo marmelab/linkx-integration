@@ -61,8 +61,8 @@ export default function Game({ onRequestClose }: GameProps) {
         >
           <MaterialDesignIcons name="arrow-left" size={28} color="#9AA6B5" />
         </TouchableOpacity>
+        <GameLabel />
       </View>
-      <GameLabel />
       <Grid
         disabled={playTurnMutation.isPending}
         onColumnSelection={(column) => {
@@ -213,7 +213,9 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 24,
+    paddingTop: 10,
   },
   button: {
     minWidth: 44,
