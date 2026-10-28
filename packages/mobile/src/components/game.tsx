@@ -7,9 +7,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 import type { Move } from "@/model/move";
 
+import { IsGameLoadingContext } from "@/context/is-game-loading-context";
 import { RunningGameContext } from "@/context/running-game-context";
 import { getPieceKey } from "@/helper/get-piece-key";
-import { useIsGameLoading } from "@/hooks/games/use-is-game-loading";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
 
 import GameLabel from "./game-label";
@@ -24,13 +24,13 @@ type GameProps = {
 
 export default function Game({ onRequestClose }: GameProps) {
   const game = useContext(RunningGameContext);
+  const isLoading = useContext(IsGameLoadingContext);
 
   if (!game) {
     return null;
   }
 
   const playTurnMutation = usePlayTurnMutation(game.id);
-  const { isLoading } = useIsGameLoading(game.id);
 
   const [piecesSelections, setPiecesSelections] = useState<MultiPieceSelection>(
     {
@@ -66,7 +66,7 @@ export default function Game({ onRequestClose }: GameProps) {
       </View>
       <GameLabel />
       <Grid
-        disabled={isLoading}
+        disabled={playTurnMutation.isPending || isLoading}
         onColumnSelection={(column) => {
           if (!piecesSelections.selectedKey) {
             return;
@@ -92,7 +92,11 @@ export default function Game({ onRequestClose }: GameProps) {
           <Text style={styles.errorText}>{playTurnMutation.error.message}</Text>
         </View>
       ) : (
-        <View style={styles.noErrorPadding} />
+        <View style={styles.noErrorPadding}>
+          {(playTurnMutation.isPending || isLoading) && (
+            <MaterialDesignIcons name="loading" color="#1993D0" size={30} />
+          )}
+        </View>
       )}
       <View style={styles.carouselContainer}>
         <PieceCarousel

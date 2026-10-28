@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Game from "@/components/game";
 import { GameModeContext, type GameMode } from "@/context/game-mode-context";
+import { IsGameLoadingContext } from "@/context/is-game-loading-context";
 import { RunningGameContext } from "@/context/running-game-context";
 import { useGameById } from "@/hooks/games/use-game-by-id";
 
@@ -43,8 +44,10 @@ export default function GameRoute() {
       <GestureHandlerRootView>
         <View style={styles.container}>
           <GameModeContext value={mode}>
-            <RunningGameContext value={data?.game}>
-              <Game key={`game-${id}`} onRequestClose={() => router.back()} />
+            <RunningGameContext value={data.game}>
+              <IsGameLoadingContext value={isPending}>
+                <Game key={`game-${id}`} onRequestClose={() => router.back()} />
+              </IsGameLoadingContext>
             </RunningGameContext>
           </GameModeContext>
         </View>
