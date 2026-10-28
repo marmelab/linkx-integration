@@ -9,6 +9,7 @@ import type { Move } from "@/model/move";
 
 import { RunningGameContext } from "@/context/running-game-context";
 import { getPieceKey } from "@/helper/get-piece-key";
+import { useIsGameLoading } from "@/hooks/games/use-is-game-loading";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
 
 import GameLabel from "./game-label";
@@ -29,6 +30,7 @@ export default function Game({ onRequestClose }: GameProps) {
   }
 
   const playTurnMutation = usePlayTurnMutation(game.id);
+  const { isLoading } = useIsGameLoading(game.id);
 
   const [piecesSelections, setPiecesSelections] = useState<MultiPieceSelection>(
     {
@@ -64,7 +66,7 @@ export default function Game({ onRequestClose }: GameProps) {
       </View>
       <GameLabel />
       <Grid
-        disabled={playTurnMutation.isPending}
+        disabled={isLoading}
         onColumnSelection={(column) => {
           if (!piecesSelections.selectedKey) {
             return;

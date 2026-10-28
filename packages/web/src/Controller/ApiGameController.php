@@ -112,6 +112,8 @@ class ApiGameController extends AbstractController
             if ($currentPlayer->getId() !== $player->getId()) {
                 return $this->json(['message' => 'This is not your turn to play.'], Response::HTTP_FORBIDDEN);
             }
+        } else if ($game->getTurnOfPlayer() !== $move->getColor()) {
+            return $this->json(['message' => 'This is not your turn to play.'], Response::HTTP_FORBIDDEN);
         }
 
         try {
