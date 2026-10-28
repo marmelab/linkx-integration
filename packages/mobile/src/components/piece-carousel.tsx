@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
@@ -34,7 +34,10 @@ export default function PieceCarousel({
 
   return (
     <View style={styles.carousel}>
-      <View style={[styles.container, { gap: pieceGap }]}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={[styles.container, { gap: pieceGap }]}
+      >
         {carouselPieces.map((pieceSelection) => {
           const pieceKey = getPieceKey(
             pieceSelection.color,
@@ -52,7 +55,7 @@ export default function PieceCarousel({
             />
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 }
