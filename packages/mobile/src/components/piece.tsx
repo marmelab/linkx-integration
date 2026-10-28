@@ -2,7 +2,6 @@ import type { ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 import type { PressableEvent } from "react-native-gesture-handler";
 
-import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useContext } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
@@ -19,8 +18,7 @@ import PieceCountIndicator from "./piece-count-indicator";
 type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: PressableEvent) => void;
-  selected: boolean;
-  onMirrorPiece?: (event: PressableEvent) => void;
+  selected?: boolean;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
@@ -31,7 +29,6 @@ export default function Piece({
   pieceSelection,
   onPressOut,
   selected,
-  onMirrorPiece,
   width,
   style,
   contentContainerStyle,
@@ -68,7 +65,6 @@ export default function Piece({
   const cells = formatMatrixForFlexWrap(selectedMatrix, pieceModel.color);
 
   const cellWidth = width / 3;
-  const canBeMirrored = selectedPossibleMatrix.mirrored.length === 1;
 
   const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
   const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
@@ -83,13 +79,7 @@ export default function Piece({
   return (
     <Pressable
       disabled={disabled || mode === "spectating" || game?.completed}
-      style={[
-        styles.container,
-        {
-          height: width + (mode && mode !== "spectating" ? 120 : 50),
-        },
-        style,
-      ]}
+      style={[styles.container, style]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
@@ -109,19 +99,6 @@ export default function Piece({
           keyExtractor={(item) => `${item.x}.${item.y}`}
           numColumns={selectedMatrix.length}
         />
-        {canBeMirrored && mode && mode !== "spectating" && !game?.completed && (
-          <Pressable
-            disabled={disabled}
-            onPress={(event) => {
-              if (onMirrorPiece) {
-                onMirrorPiece(event);
-              }
-            }}
-            style={[styles.buttonMirror, { width }]}
-          >
-            <MaterialDesignIcons name="mirror" size={24} />
-          </Pressable>
-        )}
       </View>
     </Pressable>
   );
