@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 
 import { httpGetGameState } from "./get-game-state.ts";
 import { httpGetHealth } from "./get-health.ts";
+import { httpGetLargestArea } from "./get-largest-area.ts";
 import { httpGetOpenApi } from "./get-openapi.ts";
 import { httpGetPossibleMoves } from "./get-possible-moves.ts";
 import { httpGetPiecePossiblePieces } from "./get-possibles-pieces.ts";
@@ -25,4 +26,5 @@ export function routes(app: Hono) {
   httpGetGameState(app);
   httpGetPossibleMoves(app);
   httpGetPiecePossiblePieces(app);
+  httpGetLargestArea(app);
 }
