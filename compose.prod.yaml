@@ -1,6 +1,7 @@
 ---
 services:
   node-linkx:
+    restart: unless-stopped
     image: node-linkx-integration:prod
     environment:
       - BASE_URL=https://${DEFAULT_URI}/api/
@@ -36,6 +37,7 @@ services:
       - caddy_config:/config
   postgres-dev:
     image: postgres:18
+    restart: unless-stopped
     container_name: postgres-dev
     environment:
       - POSTGRES_USER=${POSTGRES_USER}

@@ -1,82 +1,99 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  BackHandler,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useContext, useState } from "react";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { showGame } from "@/api";
+import type { MultiPieceSelection } from "@/model/game";
+import type { Move } from "@/model/move";
+
 import { RunningGameContext } from "@/context/running-game-context";
+import { getPieceKey } from "@/helper/get-piece-key";
+import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
 
 import GameLabel from "./game-label";
 import Grid from "./grid";
 import PieceCarousel from "./piece-carousel";
 
 type GameProps = {
-  id: number;
   onRequestClose: () => void;
 };
 
-export default function Game({ id, onRequestClose }: GameProps) {
-  const { isPending, error, data } = useQuery({
-    queryKey: ["game", id],
-    queryFn: () => showGame(id),
-    refetchInterval: 1500,
-  });
-  BackHandler.addEventListener("hardwareBackPress", () => {
-    // TODO confirmation when playing
-    onRequestClose();
-    return true;
-  });
+export default function Game({ onRequestClose }: GameProps) {
+  const game = useContext(RunningGameContext);
+
+  if (!game) {
+    return null;
+  }
+
+  const playTurnMutation = usePlayTurnMutation(game.id);
+
+  const [piecesSelections, setPiecesSelections] = useState<MultiPieceSelection>(
+    {
+      pieces: game.availablePieces.reduce((mapped, availablePiece) => {
+        return {
+          ...mapped,
+          [getPieceKey(availablePiece.color, availablePiece.piece)]: {
+            pieceName: availablePiece.piece,
+            color: availablePiece.color,
+            mirrored: false,
+            selectedRotation: 0,
+          },
+        };
+      }, {}),
+    },
+  );
 
   const insets = useSafeAreaInsets();
-
-  if (isPending) {
-    return (
-      <View style={styles.fullPageText}>
-        <Text>Loading game...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.fullPageText}>
-        <Text>Error : couldn't fetch game.</Text>
-      </View>
-    );
-  }
   const width =
-    Dimensions.get("screen").width - 20 - insets.left - insets.right;
-
-  const game = data.game;
-  const gameTitle = `${game.firstPlayer?.displayName ?? "Unknown player"} VS ${game.secondPlayer?.displayName ?? "Unknown player"}`;
-
-  const carouselKey = game.availablePieces.reduce((accumulator, piece) => {
-    return accumulator + piece.count;
-  }, 0);
+    Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
   return (
-    <RunningGameContext value={game}>
-      <View style={styles.game}>
-        <View style={[styles.titleContainer, { width }]}>
-          <Pressable
-            onPress={onRequestClose}
-            style={[styles.button, styles.buttonReturn]}
-          >
-            <Text>Exit</Text>
-          </Pressable>
-          {!game.victory && <Text style={styles.heading}>{gameTitle}</Text>}
-        </View>
-        <GameLabel />
-        <Grid width={width} />
-        <PieceCarousel key={carouselKey} width={width} />
+    <View style={styles.game}>
+      <View style={[styles.titleContainer, { width }]}>
+        <Pressable
+          onPress={() => onRequestClose()}
+          style={[styles.button, styles.buttonReturn]}
+        >
+          <Text>Exit</Text>
+        </Pressable>
       </View>
-    </RunningGameContext>
+      <GameLabel />
+      <Grid
+        disabled={playTurnMutation.isPending}
+        onColumnSelection={(column) => {
+          if (!piecesSelections.selectedKey) {
+            return;
+          }
+          const selectedPiece =
+            piecesSelections.pieces[piecesSelections.selectedKey];
+
+          const move: Move = {
+            skipped: false,
+            color: selectedPiece.color,
+            piece: selectedPiece.pieceName,
+            column,
+            mirrored: selectedPiece.mirrored,
+            rotation: selectedPiece.selectedRotation,
+          };
+
+          playTurnMutation.mutate({ gameId: game.id, move });
+        }}
+        width={width}
+      />
+      {playTurnMutation.error ? (
+        <View style={[styles.errorContainer, { width }]}>
+          <Text style={styles.errorText}>{playTurnMutation.error.message}</Text>
+        </View>
+      ) : (
+        <View style={styles.noErrorPadding} />
+      )}
+      <PieceCarousel
+        disabled={playTurnMutation.isPending}
+        piecesSelections={piecesSelections}
+        onPiecesSelectionChange={setPiecesSelections}
+        width={width}
+      />
+    </View>
   );
 }
 
@@ -84,11 +101,6 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     alignItems: "center",
-  },
-  heading: {
-    textAlign: "center",
-    fontSize: 26,
-    flex: 1,
   },
   actions: {
     flex: 1,
@@ -115,9 +127,19 @@ const styles = StyleSheet.create({
     borderColor: "#9AA6B5",
     backgroundColor: "#ECEEF1",
   },
-  fullPageText: {
-    flex: 1,
+  errorText: {
+    color: "#9C4438",
+  },
+  errorContainer: {
+    height: 45,
+    backgroundColor: "#FFC8C0",
+    borderWidth: 1,
+    borderColor: "#9C4438",
+    borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
+  },
+  noErrorPadding: {
+    height: 45,
   },
 });

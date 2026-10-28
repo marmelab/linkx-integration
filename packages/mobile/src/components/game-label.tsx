@@ -3,6 +3,8 @@ import { StyleSheet, Text } from "react-native";
 
 import { RunningGameContext } from "@/context/running-game-context";
 
+import GamePlayerLabel from "./game-player-label";
+
 export default function GameLabel() {
   const game = useContext(RunningGameContext);
   if (!game) {
@@ -13,50 +15,73 @@ export default function GameLabel() {
     );
   }
 
-  if (game.victory && game.lastMove?.color === "blue") {
-    return (
-      <Text style={[styles.heading, { flex: 0 }]}>
-        Victory of {game.firstPlayer.displayName} !
+  return (
+    <>
+      <Text style={styles.heading}>
+        {!game.local && (
+          <>
+            <GamePlayerLabel
+              fallbackName="Blue"
+              player={game.firstPlayer}
+              style={styles.textBlue}
+            />{" "}
+            VS{" "}
+            <GamePlayerLabel
+              fallbackName="Red"
+              player={game.secondPlayer}
+              style={styles.textWhite}
+            />
+          </>
+        )}
+        {game.victory &&
+          (game.lastMove?.color === "blue" ? (
+            <>
+              Victory of{" "}
+              <GamePlayerLabel
+                fallbackName="Blue"
+                player={game.firstPlayer}
+                style={styles.textBlue}
+              />
+            </>
+          ) : (
+            <>
+              Victory of{" "}
+              <GamePlayerLabel
+                fallbackName="Red"
+                player={game.secondPlayer}
+                style={styles.textWhite}
+              />
+            </>
+          ))}
+        {!game.victory && game.completed && <>It's a draw !</>}
       </Text>
-    );
-  } else if (game.victory) {
-    return (
-      <Text style={[styles.heading, { flex: 0 }]}>
-        Victory of {game.secondPlayer?.displayName} !
-      </Text>
-    );
-  } else if (game.completed) {
-    return <Text style={styles.heading}>It's a draw !</Text>;
-  } else if (game.turnOfPlayer === "blue") {
-    return (
-      <Text style={styles.subHeading}>
-        Turn of{" "}
-        <Text style={styles.textBlue}>{game.firstPlayer.displayName}...</Text>
-      </Text>
-    );
-  } else if (!game.secondPlayer) {
-    return (
-      <Text style={styles.subHeading}>
-        Waiting for a second player to join...
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.subHeading}>
-        Turn of{" "}
-        <Text style={styles.textWhite}>
-          {game.secondPlayer?.displayName}...
+      {!game.completed && (
+        <Text style={styles.subHeading}>
+          Turn of{" "}
+          {game.turnOfPlayer === "blue" ? (
+            <GamePlayerLabel
+              fallbackName="Blue"
+              player={game.firstPlayer}
+              style={styles.textBlue}
+            />
+          ) : (
+            <GamePlayerLabel
+              fallbackName="Red"
+              player={game.secondPlayer}
+              style={styles.textWhite}
+            />
+          )}
         </Text>
-      </Text>
-    );
-  }
+      )}
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
   heading: {
     textAlign: "center",
     fontSize: 26,
-    flex: 1,
+    flex: 0,
   },
   subHeading: {
     textAlign: "center",

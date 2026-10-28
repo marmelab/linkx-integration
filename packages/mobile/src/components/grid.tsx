@@ -1,14 +1,25 @@
 import { useContext } from "react";
 import { FlatList, StyleSheet } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 
+import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
 
 import Cell from "./cell";
 
-type GridProps = { width: number };
+type GridProps = {
+  width: number;
+  onColumnSelection: (column: number) => void;
+  disabled: boolean;
+};
 
-export default function Grid({ width }: GridProps) {
+export default function Grid({
+  width,
+  onColumnSelection,
+  disabled,
+}: GridProps) {
   const game = useContext(RunningGameContext);
+  const gameMode = useContext(GameModeContext);
   if (!game) {
     return <></>;
   }
@@ -19,9 +30,15 @@ export default function Grid({ width }: GridProps) {
   return (
     <FlatList
       data={cells}
-      style={{ ...styles.grid, width }}
+      style={[styles.grid, { width }]}
+      contentContainerStyle={{ flex: 0 }}
       renderItem={(item) => (
-        <Cell width={cellWidth} cellValue={item.item.value}></Cell>
+        <Pressable
+          disabled={disabled || gameMode === "spectating"}
+          onPress={() => onColumnSelection(item.item.x)}
+        >
+          <Cell width={cellWidth} cellValue={item.item.value}></Cell>
+        </Pressable>
       )}
       keyExtractor={(item) => `${item.x}.${item.y}:${item.value}`}
       numColumns={9}
@@ -49,6 +66,5 @@ const styles = StyleSheet.create({
   grid: {
     flex: 0,
     marginTop: 18,
-    marginBottom: -250,
   },
 });

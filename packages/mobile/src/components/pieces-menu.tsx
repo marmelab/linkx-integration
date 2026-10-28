@@ -12,12 +12,12 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import type { PieceSelection } from "@/model/game";
+import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
 import Piece from "./piece";
 
 type PiecesMenuProps = {
-  piecesSelection: PieceSelection[];
+  piecesSelection: MultiPieceSelection;
   width: number;
   onSelection: (piece: PieceSelection) => void;
 };
@@ -31,11 +31,11 @@ export default function PiecesMenu({
 
   // TODO Order based on current turn for local play
   // TODO Order based on current player for online play
-  const bluePieces = piecesSelection.filter(
-    (piece) => piece.pieceModel.color === "blue",
+  const bluePieces = Object.values(piecesSelection.pieces).filter(
+    (piece) => piece.color === "blue",
   );
-  const whitePieces = piecesSelection.filter(
-    (piece) => piece.pieceModel.color === "white",
+  const whitePieces = Object.values(piecesSelection.pieces).filter(
+    (piece) => piece.color === "white",
   );
   const pieceWidth = Math.max(85, 0.18 * width);
   let scrollView: ScrollView | null;
@@ -63,12 +63,10 @@ export default function PiecesMenu({
           >
             <View style={[styles.piecesContainer, styles.blueContainer]}>
               {bluePieces.map((piece) => {
-                const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
                 return (
                   <Piece
-                    style={{ borderWidth: 1, borderColor: "#006596" }}
-                    contentContainerStyle={{ width: pieceWidth, gap: 30 }}
-                    key={key}
+                    contentContainerStyle={{ width: pieceWidth }}
+                    key={`${piece.pieceName}-${piece.color}`}
                     pieceSelection={piece}
                     width={pieceWidth}
                     onPressOut={() => onSelection(piece)}
@@ -77,16 +75,14 @@ export default function PiecesMenu({
               })}
             </View>
             <View style={[styles.piecesContainer, styles.whiteContainer]}>
-              {whitePieces.map((piece) => {
-                const key = `${piece.pieceModel.piece}-${piece.pieceModel.color}`;
+              {whitePieces.map((pieceSelection) => {
                 return (
                   <Piece
-                    style={{ borderWidth: 1, borderColor: "#9C4438" }}
                     contentContainerStyle={{ width: pieceWidth }}
-                    key={key}
-                    pieceSelection={piece}
+                    key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
+                    pieceSelection={pieceSelection}
                     width={pieceWidth}
-                    onPressOut={() => onSelection(piece)}
+                    onPressOut={() => onSelection(pieceSelection)}
                   />
                 );
               })}

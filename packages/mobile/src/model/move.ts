@@ -6,5 +6,5 @@ export type Move = {
   piece: string | undefined;
   column: number | undefined;
   rotation: number | undefined;
-  mirrored: number | undefined;
+  mirrored: boolean | undefined;
 };

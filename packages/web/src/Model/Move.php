@@ -2,25 +2,49 @@
 
 namespace App\Model;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 class Move
 {
+    #[Groups(['game-view'])]
+    private bool $skipped;
+
+    #[Groups(['game-view'])]
+    #[Assert\NotBlank]
+    #[Assert\Regex('/^(blue|white)$/')]
+    private string $color;
+
+    #[Groups(['game-view'])]
+    #[Assert\Regex('/^(1|2|3L|3I|4S|4L|4T)$/')]
+    private ?string $piece;
+
+    #[Groups(['game-view'])]
+    #[Assert\Range(min: 0, max: 8)]
+    private ?int $column;
+
+    #[Groups(['game-view'])]
+    #[Assert\Range(min: 0, max: 3)]
+    private ?int $rotation;
+
+    #[Groups(['game-view'])]
+    private ?bool $mirrored;
+
     public function __construct(
-        #[Groups(['game-view'])]
-        private bool $skipped,
-
-        #[Groups(['game-view'])]
-        private string $color,
-
-        private ?string $piece,
-
-        private ?int $column,
-
-        private ?int $rotation,
-
-        private ?bool $mirrored,
-    ) {}
+        bool $skipped,
+        string $color,
+        ?string $piece,
+        ?int $column,
+        ?int $rotation,
+        ?bool $mirrored,
+    ) {
+        $this->skipped = $skipped;
+        $this->color = $color;
+        $this->piece = $piece;
+        $this->column = $column;
+        $this->rotation = $rotation;
+        $this->mirrored = $mirrored;
+    }
 
     public function getSkipped()
     {
