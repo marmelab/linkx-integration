@@ -35,8 +35,12 @@ export default function Grid({
             {Array.from({ length: game.grid.length }).map((__, x) => {
               return (
                 <Pressable
+                  underlayColor={
+                    game.turnOfPlayer === "blue" ? "#53AFDC" : "#FE7F6E"
+                  }
                   activeOpacity={0.2}
-                  animationDuration={{ in: 50, out: 150 }}
+                  activeUnderlayOpacity={1}
+                  animationDuration={{ in: 50, out: 250 }}
                   disabled={disabled || gameMode === "spectating"}
                   onPress={() => onColumnSelection(x)}
                   key={`${x}.${y}:${game.grid[x][y]}`}
