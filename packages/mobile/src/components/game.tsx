@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 import type { Move } from "@/model/move";
 
-import { IsGameLoadingContext } from "@/context/is-game-loading-context";
 import { RunningGameContext } from "@/context/running-game-context";
 import { getPieceKey } from "@/helper/get-piece-key";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
@@ -20,11 +19,11 @@ import PiecesMenu from "./pieces-menu";
 
 type GameProps = {
   onRequestClose: () => void;
+  disabled?: boolean;
 };
 
-export default function Game({ onRequestClose }: GameProps) {
+export default function Game({ onRequestClose, disabled }: GameProps) {
   const game = useContext(RunningGameContext);
-  const isLoading = useContext(IsGameLoadingContext);
 
   if (!game) {
     return null;
@@ -66,7 +65,7 @@ export default function Game({ onRequestClose }: GameProps) {
       </View>
       <GameLabel />
       <Grid
-        disabled={playTurnMutation.isPending || isLoading}
+        disabled={playTurnMutation.isPending || !!disabled}
         onColumnSelection={(column) => {
           if (!piecesSelections.selectedKey) {
             return;
@@ -93,7 +92,7 @@ export default function Game({ onRequestClose }: GameProps) {
         </View>
       ) : (
         <View style={styles.noErrorPadding}>
-          {(playTurnMutation.isPending || isLoading) && (
+          {(playTurnMutation.isPending || disabled) && (
             <MaterialDesignIcons name="loading" color="#1993D0" size={30} />
           )}
         </View>
