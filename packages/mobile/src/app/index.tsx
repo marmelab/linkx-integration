@@ -1,9 +1,4 @@
-import type { UseMutationResult } from "@tanstack/react-query";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons/static";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -11,18 +6,7 @@ import GamesList from "@/components/game-list";
 import { useCreateLocalGame } from "@/hooks/games/use-create-local-game";
 
 export default function Index() {
-  const createGameMutation = useCreateLocalGame().mutation;
-  const [currentGameId, setCurrentGameId] = useState<string | null | undefined>(
-    null,
-  );
-
-  useEffect(() => {
-    AsyncStorage.getItem("runningGameId")
-      .then((id) => {
-        setCurrentGameId(id);
-      })
-      .catch((error) => console.error(error));
-  });
+  const createGameMutation = useCreateLocalGame();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -38,7 +22,7 @@ export default function Index() {
         )}
         <Pressable
           style={styles.newGameButton}
-          onPress={() => createThenRedirect(createGameMutation)}
+          onPress={() => createGameMutation.mutate({})}
           disabled={createGameMutation.isPending}
         >
           <MaterialDesignIcons
@@ -48,40 +32,9 @@ export default function Index() {
           />
         </Pressable>
 
-        <GamesList currentGameId={currentGameId} />
+        <GamesList />
       </View>
     </SafeAreaView>
-  );
-}
-
-function createThenRedirect(
-  createGameMutation: UseMutationResult<
-    {
-      id: number;
-    },
-    Error,
-    object,
-    unknown
-  >,
-) {
-  createGameMutation.mutate(
-    {},
-    {
-      onSuccess: (data) => {
-        AsyncStorage.setItem("runningGameId", data.id.toString()).catch(
-          (error) => {
-            console.error(error);
-          },
-        );
-        router.navigate({
-          pathname: "/game/[id]",
-          params: {
-            id: data.id,
-            mode: "playing-local",
-          },
-        });
-      },
-    },
   );
 }
 

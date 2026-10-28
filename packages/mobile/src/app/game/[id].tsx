@@ -1,3 +1,4 @@
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons/static";
 import { router, useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -19,8 +20,8 @@ export default function GameRoute() {
 
   if (isPending) {
     return (
-      <View style={styles.fullPageText}>
-        <Text>Loading game...</Text>
+      <View style={[styles.fullPageText, { alignItems: "center" }]}>
+        <MaterialDesignIcons name="loading" size={32} color="#1993D0" />
       </View>
     );
   }
@@ -40,7 +41,7 @@ export default function GameRoute() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <GestureHandlerRootView>
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
           <GameModeContext value={mode}>
             <RunningGameContext value={data?.game}>
               <Game key={`game-${id}`} onRequestClose={() => router.back()} />
@@ -53,6 +54,11 @@ export default function GameRoute() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginLeft: 22,
+    marginRight: 22,
+  },
   fullPageText: {
     flex: 1,
     justifyContent: "center",

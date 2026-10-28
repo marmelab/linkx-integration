@@ -40,10 +40,11 @@ export default function PieceCountIndicator({
     accumulatorBase,
   );
 
-  const key = `count-${pieceModel.color}-${pieceModel.piece}:${pieceModel.count}`;
-
   return (
-    <View key={key} style={styles.container}>
+    <View
+      key={`count-${pieceModel.color}-${pieceModel.piece}:${pieceModel.count}`}
+      style={styles.container}
+    >
       {indicators}
     </View>
   );

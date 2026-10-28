@@ -1,24 +1,24 @@
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 
-import type { PieceSelection } from "@/model/game";
+import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
 import { RunningGameContext } from "@/context/running-game-context";
+import { getPieceKey } from "@/helper/get-piece-key";
 
 import Piece from "./piece";
-import PiecesMenu from "./pieces-menu";
 
 type PieceCarouselProps = {
   width: number;
-  piecesSelections: PieceSelection[];
-  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void;
+  piecesSelections: MultiPieceSelection;
+  onSelection: (pieceSelection: PieceSelection) => void;
   disabled: boolean;
 };
 
 export default function PieceCarousel({
   width,
   piecesSelections,
-  onPiecesSelectionChange,
+  onSelection,
   disabled,
 }: PieceCarouselProps) {
   const game = useContext(RunningGameContext);
@@ -27,7 +27,7 @@ export default function PieceCarousel({
   }
 
   const pieceWidth = Math.max(70, 0.17 * width);
-  const carouselPieces = piecesSelections.filter(
+  const carouselPieces = Object.values(piecesSelections.pieces).filter(
     (piece) => piece.color === game?.turnOfPlayer,
   );
 
@@ -35,123 +35,33 @@ export default function PieceCarousel({
     <View style={styles.carousel}>
       <View style={[styles.container]}>
         {carouselPieces.map((pieceSelection) => {
-          const key = `${pieceSelection.pieceName}-${pieceSelection.color}`;
+          const pieceKey = getPieceKey(
+            pieceSelection.color,
+            pieceSelection.pieceName,
+          );
           return (
             <Piece
+              selected={pieceKey === piecesSelections.selectedKey}
               disabled={disabled}
               contentContainerStyle={{ width: pieceWidth }}
-              key={key}
+              key={`${pieceKey}-${pieceKey === piecesSelections.selectedKey}`}
               width={pieceWidth}
               pieceSelection={pieceSelection}
-              onMirrorPiece={() =>
-                mirrorPiece(
-                  piecesSelections,
-                  onPiecesSelectionChange,
-                  pieceSelection,
-                )
-              }
-              onPressOut={() => {
-                updateSelection(
-                  piecesSelections,
-                  onPiecesSelectionChange,
-                  pieceSelection,
-                );
-              }}
+              onPressOut={() => onSelection(pieceSelection)}
             />
           );
         })}
-      </View>
-      <View style={styles.actions}>
-        <PiecesMenu
-          width={width}
-          onSelection={(piece) =>
-            updateSelection(piecesSelections, onPiecesSelectionChange, piece)
-          }
-          piecesSelection={piecesSelections}
-        />
       </View>
     </View>
   );
 }
 
-function isSamePiece(pieceA: PieceSelection, pieceB: PieceSelection) {
-  return pieceA.color === pieceB.color && pieceA.pieceName === pieceB.pieceName;
-}
-
-function mirrorPiece(
-  piecesSelection: PieceSelection[],
-  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
-  selectedPiece: PieceSelection,
-): void {
-  onPiecesSelectionChange(
-    piecesSelection.map((piece) => {
-      if (isSamePiece(piece, selectedPiece)) {
-        const updatedRotation = reverseOddRotations(piece.selectedRotation);
-        return {
-          ...piece,
-          selectedRotation: updatedRotation,
-          mirrored: !piece.mirrored,
-          selected: true,
-        };
-      }
-
-      return {
-        ...piece,
-        selected: false,
-      };
-    }),
-  );
-}
-
-function updateSelection(
-  piecesSelection: PieceSelection[],
-  onPiecesSelectionChange: (piecesSelections: PieceSelection[]) => void,
-  selectedPiece: PieceSelection,
-): void {
-  const isAlreadySelected = piecesSelection.find(
-    (piece) => isSamePiece(piece, selectedPiece) && piece.selected,
-  );
-  if (isAlreadySelected) {
-    onPiecesSelectionChange(
-      piecesSelection.map((piece) => {
-        if (isSamePiece(piece, selectedPiece)) {
-          return rotatePiece(piece);
-        }
-        return piece;
-      }),
-    );
-  } else {
-    onPiecesSelectionChange(
-      piecesSelection.map((piece) => {
-        return {
-          ...piece,
-          selected: isSamePiece(piece, selectedPiece),
-        };
-      }),
-    );
-  }
-}
-
-function reverseOddRotations(rotation: number) {
-  if (rotation === 1) {
-    return 3;
-  }
-  if (rotation === 3) {
-    return 1;
-  }
-
-  return rotation;
-}
-
-function rotatePiece(piece: PieceSelection): PieceSelection {
-  const updatedRotation = (piece.selectedRotation + 1) % 4;
-  return {
-    ...piece,
-    selectedRotation: updatedRotation,
-  };
-}
-
 const styles = StyleSheet.create({
+  carousel: {
+    flex: 1,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
   container: {
     paddingLeft: 15,
     paddingRight: 15,
@@ -161,11 +71,6 @@ const styles = StyleSheet.create({
     rowGap: 8,
     gap: 18,
     borderRadius: 24,
-  },
-  carousel: {
-    flex: 1,
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   actions: {
     flex: 1,

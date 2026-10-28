@@ -12,12 +12,12 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import type { PieceSelection } from "@/model/game";
+import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
 import Piece from "./piece";
 
 type PiecesMenuProps = {
-  piecesSelection: PieceSelection[];
+  piecesSelection: MultiPieceSelection;
   width: number;
   onSelection: (piece: PieceSelection) => void;
 };
@@ -31,8 +31,10 @@ export default function PiecesMenu({
 
   // TODO Order based on current turn for local play
   // TODO Order based on current player for online play
-  const bluePieces = piecesSelection.filter((piece) => piece.color === "blue");
-  const whitePieces = piecesSelection.filter(
+  const bluePieces = Object.values(piecesSelection.pieces).filter(
+    (piece) => piece.color === "blue",
+  );
+  const whitePieces = Object.values(piecesSelection.pieces).filter(
     (piece) => piece.color === "white",
   );
   const pieceWidth = Math.max(85, 0.18 * width);
@@ -61,28 +63,32 @@ export default function PiecesMenu({
           >
             <View style={[styles.piecesContainer, styles.blueContainer]}>
               {bluePieces.map((piece) => {
-                const key = `${piece.pieceName}-${piece.color}`;
                 return (
                   <Piece
                     contentContainerStyle={{ width: pieceWidth }}
-                    key={key}
+                    key={`${piece.pieceName}-${piece.color}`}
                     pieceSelection={piece}
                     width={pieceWidth}
-                    onPressOut={() => onSelection(piece)}
+                    onPressOut={() => {
+                      setMenuOpened(false);
+                      onSelection(piece);
+                    }}
                   />
                 );
               })}
             </View>
             <View style={[styles.piecesContainer, styles.whiteContainer]}>
               {whitePieces.map((pieceSelection) => {
-                const key = `${pieceSelection.pieceName}-${pieceSelection.color}`;
                 return (
                   <Piece
                     contentContainerStyle={{ width: pieceWidth }}
-                    key={key}
+                    key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
                     pieceSelection={pieceSelection}
                     width={pieceWidth}
-                    onPressOut={() => onSelection(pieceSelection)}
+                    onPressOut={() => {
+                      setMenuOpened(false);
+                      onSelection(pieceSelection);
+                    }}
                   />
                 );
               })}

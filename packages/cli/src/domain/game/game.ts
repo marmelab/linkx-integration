@@ -15,4 +15,10 @@ export type PieceCount = {
   count: number;
 };
 
+export type Victory = string[] | null;
+export type VictoryByArea = {
+  path: string[];
+  color: Color;
+} | null;
+
 export const GRID_MAX_HEIGHT = 8;

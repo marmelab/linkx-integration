@@ -2,7 +2,6 @@ import type { ViewStyle } from "react-native";
 import type { StyleProp } from "react-native";
 import type { PressableEvent } from "react-native-gesture-handler";
 
-import { MaterialDesignIcons } from "@react-native-vector-icons/material-design-icons/static";
 import { useContext } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
@@ -11,6 +10,7 @@ import type { Color, PieceSelection } from "@/model/game";
 
 import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
+import { getPieceKey } from "@/helper/get-piece-key";
 
 import Cell from "./cell";
 import PieceCountIndicator from "./piece-count-indicator";
@@ -18,7 +18,7 @@ import PieceCountIndicator from "./piece-count-indicator";
 type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: PressableEvent) => void;
-  onMirrorPiece?: (event: PressableEvent) => void;
+  selected?: boolean;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
@@ -28,7 +28,7 @@ type PieceProps = {
 export default function Piece({
   pieceSelection,
   onPressOut,
-  onMirrorPiece,
+  selected,
   width,
   style,
   contentContainerStyle,
@@ -37,16 +37,11 @@ export default function Piece({
   const mode = useContext(GameModeContext);
   const game = useContext(RunningGameContext);
 
-  const pieceModel = game?.availablePieces.find(
-    (piece) =>
-      piece.color === pieceSelection.color &&
-      piece.piece === pieceSelection.pieceName,
-  );
+  const pieceKey = getPieceKey(pieceSelection.color, pieceSelection.pieceName);
+  const pieceModel = game?.mappedPieces[pieceKey];
 
   if (!pieceModel) {
-    console.error(
-      `Unknown piece ${pieceSelection.color}-${pieceSelection.pieceName}`,
-    );
+    console.error(`Unknown piece ${pieceKey}`);
     return <></>;
   }
 
@@ -70,13 +65,10 @@ export default function Piece({
   const cells = formatMatrixForFlexWrap(selectedMatrix, pieceModel.color);
 
   const cellWidth = width / 3;
-  const canBeMirrored = selectedPossibleMatrix.mirrored.length === 1;
-  const displayMirror =
-    canBeMirrored && mode && mode !== "spectating" && !game?.completed;
 
   const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
   const borderColor = pieceModel.color === "blue" ? "#006596" : "#9C4438";
-  const pieceAdditionalStyle = pieceSelection.selected
+  const gridAdditionalStyle = selected
     ? {
         backgroundColor,
         borderColor,
@@ -84,46 +76,31 @@ export default function Piece({
       }
     : {};
 
-  const key = `${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}:${pieceModel.count}`;
-  const countKey = `${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`;
   return (
     <Pressable
-      key={key}
       activeOpacity={0.2}
       animationDuration={{ in: 50, out: 150 }}
       disabled={disabled || mode === "spectating" || game?.completed}
-      style={[styles.container, pieceAdditionalStyle, style]}
+      style={[styles.container, style]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
-        <PieceCountIndicator key={countKey} pieceModel={pieceModel} />
+        <PieceCountIndicator
+          key={`${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`}
+          pieceModel={pieceModel}
+        />
         <FlatList
-          key={key}
+          key={`${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}`}
           scrollEnabled={false}
           data={cells}
-          style={[styles.grid, { width, height: width }]}
-          contentContainerStyle={styles.gridContainer}
+          style={[styles.grid, { width, height: width }, gridAdditionalStyle]}
+          contentContainerStyle={[styles.gridContainer]}
           renderItem={(item) => (
             <Cell width={cellWidth} cellValue={item.item.color}></Cell>
           )}
           keyExtractor={(item) => `${item.x}.${item.y}`}
           numColumns={selectedMatrix.length}
         />
-        {displayMirror && (
-          <Pressable
-            activeOpacity={0.2}
-            animationDuration={{ in: 50, out: 150 }}
-            disabled={disabled}
-            onPress={(event) => {
-              if (onMirrorPiece) {
-                onMirrorPiece(event);
-              }
-            }}
-            style={[styles.buttonMirror, { width }]}
-          >
-            <MaterialDesignIcons name="mirror" size={24} />
-          </Pressable>
-        )}
       </View>
     </Pressable>
   );
@@ -169,6 +146,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   gridContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
