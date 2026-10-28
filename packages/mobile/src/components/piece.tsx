@@ -146,9 +146,11 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   gridContainer: {
-    flex: 1,
+    flex: 0,
     justifyContent: "center",
     alignItems: "center",
+    minWidth: 44,
+    minHeight: 44,
   },
   buttonMirror: {
     minHeight: 44,

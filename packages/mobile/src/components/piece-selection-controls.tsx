@@ -26,7 +26,7 @@ export default function PieceSelectionControls({
       </Pressable>
       <Pressable style={styles.control} onPress={onMirror}>
         <MaterialDesignIcons
-          name="mirror-variant"
+          name="swap-horizontal"
           size={iconSize}
           color={iconColor}
         ></MaterialDesignIcons>
@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
     flex: 0,
     flexDirection: "column",
     gap: 20,
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   control: {
     justifyContent: "center",
     alignItems: "center",
-    width: 60,
-    height: 60,
+    width: 44,
+    height: 44,
     backgroundColor: "#53AFDC",
     borderColor: "#005179",
     borderWidth: 2,

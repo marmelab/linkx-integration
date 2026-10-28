@@ -26,14 +26,15 @@ export default function PieceCarousel({
     return <></>;
   }
 
-  const pieceWidth = Math.max(70, 0.17 * width);
+  const pieceGap = 16;
+  const pieceWidth = (width - pieceGap * 3) / 4;
   const carouselPieces = Object.values(piecesSelections.pieces).filter(
     (piece) => piece.color === game?.turnOfPlayer,
   );
 
   return (
     <View style={styles.carousel}>
-      <View style={[styles.container]}>
+      <View style={[styles.container, { gap: pieceGap }]}>
         {carouselPieces.map((pieceSelection) => {
           const pieceKey = getPieceKey(
             pieceSelection.color,
@@ -59,12 +60,8 @@ export default function PieceCarousel({
 const styles = StyleSheet.create({
   carousel: {
     flex: 1,
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   container: {
-    paddingLeft: 15,
-    paddingRight: 15,
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",

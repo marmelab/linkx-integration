@@ -47,6 +47,8 @@ export default function Game({ onRequestClose }: GameProps) {
   );
 
   const insets = useSafeAreaInsets();
+  const buttonWidth = 44;
+  const carouselGap = 16;
   const width =
     Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
@@ -97,7 +99,7 @@ export default function Game({ onRequestClose }: GameProps) {
           onSelection={(piece) =>
             setPiecesSelections(selectPiece(piecesSelections, piece))
           }
-          width={width}
+          width={width - buttonWidth - carouselGap}
         />
         {piecesSelections.selectedKey && (
           <PieceSelectionControls
@@ -238,5 +240,6 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     flexDirection: "row",
+    gap: 16,
   },
 });
