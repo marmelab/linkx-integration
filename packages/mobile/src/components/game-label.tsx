@@ -17,44 +17,44 @@ export default function GameLabel() {
 
   return (
     <>
-      {!game.local && (
-        <Text style={styles.heading}>
-          <GamePlayerLabel
-            fallbackName="Blue"
-            player={game.firstPlayer}
-            style={styles.textBlue}
-          />{" "}
-          VS{" "}
-          <GamePlayerLabel
-            fallbackName="Red"
-            player={game.secondPlayer}
-            style={styles.textWhite}
-          />
-        </Text>
-      )}
-      {game.victory &&
-        (game.lastMove?.color === "blue" ? (
-          <Text style={styles.heading}>
-            Victory of{" "}
+      <Text style={styles.heading}>
+        {!game.local && (
+          <>
             <GamePlayerLabel
               fallbackName="Blue"
               player={game.firstPlayer}
               style={styles.textBlue}
-            />
-          </Text>
-        ) : (
-          <Text style={styles.heading}>
-            Victory of{" "}
+            />{" "}
+            VS{" "}
             <GamePlayerLabel
               fallbackName="Red"
               player={game.secondPlayer}
               style={styles.textWhite}
             />
-          </Text>
-        ))}
-      {!game.victory && game.completed && (
-        <Text style={styles.heading}>It's a draw !</Text>
-      )}
+          </>
+        )}
+        {game.victory &&
+          (game.lastMove?.color === "blue" ? (
+            <>
+              Victory of{" "}
+              <GamePlayerLabel
+                fallbackName="Blue"
+                player={game.firstPlayer}
+                style={styles.textBlue}
+              />
+            </>
+          ) : (
+            <>
+              Victory of{" "}
+              <GamePlayerLabel
+                fallbackName="Red"
+                player={game.secondPlayer}
+                style={styles.textWhite}
+              />
+            </>
+          ))}
+        {!game.victory && game.completed && <>It's a draw !</>}
+      </Text>
       {!game.completed && (
         <Text style={styles.subHeading}>
           Turn of{" "}
@@ -70,7 +70,7 @@ export default function GameLabel() {
               player={game.secondPlayer}
               style={styles.textWhite}
             />
-          )}{" "}
+          )}
         </Text>
       )}
     </>

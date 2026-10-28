@@ -5,10 +5,12 @@ export function useSetLastLocalGameId() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => {
+      return AsyncStorage.setItem("runningGameId", id);
+    },
+    onSuccess: () => {
       queryClient
         .invalidateQueries({ queryKey: ["last-game-id"] })
         .catch((error) => console.error(error));
-      return AsyncStorage.setItem("runningGameId", id);
     },
   });
 }

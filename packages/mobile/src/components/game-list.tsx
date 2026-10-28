@@ -12,7 +12,7 @@ export default function GamesList() {
   return (
     <>
       <Text style={[styles.basicText, styles.heading]}>Your games:</Text>
-      {currentGameId && (
+      {currentGameId ? (
         <TouchableOpacity
           key={`game-${currentGameId}`}
           onPress={() => {
@@ -32,10 +32,10 @@ export default function GamesList() {
             </Text>
           </View>
         </TouchableOpacity>
-      )}
-      {!currentGameId && (
+      ) : (
         <Text style={styles.secondaryText}>No current game.</Text>
       )}
+
       <SpectateGamesList />
     </>
   );

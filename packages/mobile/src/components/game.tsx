@@ -22,7 +22,7 @@ export default function Game({ onRequestClose }: GameProps) {
   const game = useContext(RunningGameContext);
 
   if (!game) {
-    return <></>;
+    return null;
   }
 
   const playTurnMutation = usePlayTurnMutation(game.id);
