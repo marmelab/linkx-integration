@@ -3,10 +3,10 @@ import type { StyleProp } from "react-native";
 import type { PressableEvent } from "react-native-gesture-handler";
 
 import { useContext } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 
-import type { Color, PieceSelection } from "@/model/game";
+import type { PieceSelection } from "@/model/game";
 
 import { GameModeContext } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
@@ -62,8 +62,6 @@ export default function Piece({
     return <></>;
   }
 
-  const cells = formatMatrixForFlexWrap(selectedMatrix, pieceModel.color);
-
   const cellWidth = width / 3;
 
   const backgroundColor = pieceModel.color === "blue" ? "#F6FBFD" : "#FFF8F8";
@@ -87,47 +85,47 @@ export default function Piece({
           key={`${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`}
           pieceModel={pieceModel}
         />
-        <FlatList
+        <View
+          style={[
+            styles.gridContainer,
+            { width, height: width },
+            gridAdditionalStyle,
+          ]}
           key={`${pieceModel.piece}-${pieceModel.color}:${pieceSelection.selectedRotation}:${pieceSelection.mirrored}`}
-          scrollEnabled={false}
-          data={cells}
-          style={[styles.grid, { width, height: width }, gridAdditionalStyle]}
-          contentContainerStyle={[styles.gridContainer]}
-          renderItem={(item) => (
-            <Cell width={cellWidth} cellValue={item.item.color}></Cell>
+        >
+          {Array.from({ length: selectedMatrix[0].length }).map(
+            (_, reversedY) => {
+              const y = selectedMatrix[0].length - 1 - reversedY;
+              return (
+                <View style={styles.row}>
+                  {Array.from({ length: selectedMatrix.length }).map(
+                    (__, x) => {
+                      return (
+                        <Cell
+                          width={cellWidth}
+                          cellValue={
+                            selectedMatrix[x]?.at(y) === 1
+                              ? pieceModel.color
+                              : ""
+                          }
+                          key={`${x}-${y}`}
+                        ></Cell>
+                      );
+                    },
+                  )}
+                </View>
+              );
+            },
           )}
-          keyExtractor={(item) => `${item.x}.${item.y}`}
-          numColumns={selectedMatrix.length}
-        />
+        </View>
       </View>
     </Pressable>
   );
 }
 
-function formatMatrixForFlexWrap(matrix: number[][], color: Color) {
-  const cells = [];
-  for (let y = matrix[0].length - 1; y >= 0; y--) {
-    for (let x = 0; x <= matrix.length - 1; x++) {
-      if (matrix[x] && matrix[x][y]) {
-        cells.push({
-          color,
-          x,
-          y,
-        });
-      } else {
-        cells.push({
-          color: "",
-          x,
-          y,
-        });
-      }
-    }
-  }
-  return cells;
-}
-
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     borderRadius: 18,
     padding: 6,
     paddingBottom: 0,
@@ -137,15 +135,20 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 30,
+    gap: 10,
+  },
+  row: {
+    flex: 0,
+    flexDirection: "row",
   },
   grid: {
     flex: 0,
   },
   gridContainer: {
-    flex: 1,
+    flex: 0,
     justifyContent: "center",
     alignItems: "center",
+    boxSizing: "border-box",
   },
   buttonMirror: {
     minHeight: 44,

@@ -29,7 +29,7 @@ export default function Grid({
   return (
     <View style={styles.grid}>
       {Array.from({ length: game.grid[0].length }).map((_, reversedY) => {
-        const y = game.grid[0].length - reversedY;
+        const y = game.grid[0].length - 1 - reversedY;
         return (
           <View style={styles.row}>
             {Array.from({ length: game.grid.length }).map((__, x) => {
