@@ -11,6 +11,7 @@ export default function Index() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
+        <Text style={styles.title}>Linkx</Text>
         {createGameMutation.error ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
@@ -20,6 +21,7 @@ export default function Index() {
         ) : (
           <View style={styles.noErrorPadding} />
         )}
+        <Text style={styles.heading}>Start a game:</Text>
         <Pressable
           style={styles.newGameButton}
           onPress={() => createGameMutation.mutate({})}
@@ -46,6 +48,18 @@ const styles = StyleSheet.create({
     marginLeft: 22,
     marginRight: 22,
     paddingTop: 18,
+  },
+  title: {
+    color: "#005179",
+    fontSize: 52,
+    textAlign: "center",
+  },
+  heading: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#333333",
   },
   errorText: {
     color: "#9C4438",

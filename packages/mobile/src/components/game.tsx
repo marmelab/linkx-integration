@@ -1,5 +1,6 @@
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons/static";
 import { useContext, useState } from "react";
-import { Dimensions, Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -46,18 +47,20 @@ export default function Game({ onRequestClose }: GameProps) {
   );
 
   const insets = useSafeAreaInsets();
+  const buttonWidth = 44;
+  const carouselGap = 16;
   const width =
     Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
   return (
     <View style={styles.game}>
       <View style={[styles.titleContainer, { width }]}>
-        <Pressable
+        <TouchableOpacity
           onPress={() => onRequestClose()}
-          style={[styles.button, styles.buttonReturn]}
+          style={[styles.button]}
         >
-          <Text>Exit</Text>
-        </Pressable>
+          <MaterialDesignIcons name="arrow-left" size={28} color="#9AA6B5" />
+        </TouchableOpacity>
       </View>
       <GameLabel />
       <Grid
@@ -96,7 +99,7 @@ export default function Game({ onRequestClose }: GameProps) {
           onSelection={(piece) =>
             setPiecesSelections(selectPiece(piecesSelections, piece))
           }
-          width={width}
+          width={width - buttonWidth - carouselGap}
         />
         {piecesSelections.selectedKey && (
           <PieceSelectionControls
@@ -110,7 +113,7 @@ export default function Game({ onRequestClose }: GameProps) {
           />
         )}
       </View>
-      <View style={styles.actions}>
+      <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
         <PiecesMenu
           width={width}
           onSelection={(piece) =>
@@ -206,7 +209,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actions: {
-    flex: 1,
     justifyContent: "flex-end",
   },
   titleContainer: {
@@ -214,21 +216,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   button: {
-    flex: 0,
-    minWidth: 60,
-    borderRadius: 20,
+    minWidth: 44,
+    minHeight: 44,
     padding: 10,
-    elevation: 2,
     textAlign: "center",
     alignItems: "center",
-    borderWidth: 2,
-  },
-  buttonReturn: {
-    position: "absolute",
-    left: 0,
-    top: 10,
-    borderColor: "#9AA6B5",
-    backgroundColor: "#ECEEF1",
   },
   errorText: {
     color: "#9C4438",
@@ -246,6 +238,8 @@ const styles = StyleSheet.create({
     height: 45,
   },
   carouselContainer: {
+    flex: 1,
     flexDirection: "row",
+    gap: 16,
   },
 });

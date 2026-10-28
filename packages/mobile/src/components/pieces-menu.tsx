@@ -42,7 +42,8 @@ export default function PiecesMenu({
   const whitePieces = Object.values(piecesSelection.pieces).filter(
     (piece) => piece.color === "white",
   );
-  const pieceWidth = Math.max(85, 0.18 * width);
+  const pieceGap = 16;
+  const pieceWidth = (width - pieceGap * 3) / 4;
   let scrollView: ScrollView | null;
 
   const insets = useSafeAreaInsets();
@@ -56,12 +57,13 @@ export default function PiecesMenu({
         visible={menuOpened}
         onRequestClose={() => setMenuOpened(false)}
       >
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, margin: 22 }}>
           <ScrollView
             ref={(ref) => {
               scrollView = ref;
             }}
             style={{ flex: 1 }}
+            contentContainerStyle={{ gap: 16 }}
             onContentSizeChange={() =>
               scrollView?.scrollToEnd({ animated: false })
             }
@@ -107,7 +109,7 @@ export default function PiecesMenu({
         </SafeAreaView>
       </Modal>
 
-      <View style={[styles.actions, { width }]}>
+      <View style={[styles.actions, { width, paddingBottom: insets.bottom }]}>
         <Pressable
           style={[styles.button, styles.buttonOpen]}
           onPress={() => setMenuOpened(true)}
@@ -145,6 +147,7 @@ const InlinePiece = ({
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    margin: 22,
   },
   blueContainer: {
     backgroundColor: "#F6FBFD",
@@ -160,14 +163,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     flexWrap: "wrap",
-    padding: 22,
     borderRadius: 15,
     margin: 11,
     gap: 8,
   },
   button: {
-    minWidth: 60,
-    minHeight: 60,
+    minWidth: 44,
+    minHeight: 44,
     borderRadius: 20,
     elevation: 2,
     alignItems: "center",
@@ -187,5 +189,6 @@ const styles = StyleSheet.create({
   },
   actions: {
     justifyContent: "flex-end",
+    paddingTop: 16,
   },
 });

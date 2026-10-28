@@ -76,15 +76,13 @@ export default function Piece({
 
   return (
     <Pressable
+      activeOpacity={0.2}
+      animationDuration={{ in: 50, out: 150 }}
       disabled={disabled || mode === "spectating" || game?.completed}
       style={[styles.container, style]}
       onPressOut={(event) => onPressOut(event)}
     >
       <View style={[styles.piece, contentContainerStyle]}>
-        <PieceCountIndicator
-          key={`${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`}
-          pieceModel={pieceModel}
-        />
         <View
           style={[
             styles.gridContainer,
@@ -118,6 +116,10 @@ export default function Piece({
             },
           )}
         </View>
+        <PieceCountIndicator
+          key={`${pieceModel.piece}-${pieceModel.color}:${pieceModel.count}`}
+          pieceModel={pieceModel}
+        />
       </View>
     </Pressable>
   );
@@ -125,9 +127,8 @@ export default function Piece({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0,
     borderRadius: 18,
-    padding: 6,
     paddingBottom: 0,
   },
   piece: {
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: 6,
   },
   row: {
     flex: 0,
@@ -143,17 +144,20 @@ const styles = StyleSheet.create({
   },
   grid: {
     flex: 0,
+    marginLeft: 6,
+    marginRight: 6,
   },
   gridContainer: {
     flex: 0,
     justifyContent: "center",
     alignItems: "center",
+    minWidth: 44,
+    minHeight: 44,
     boxSizing: "border-box",
   },
   buttonMirror: {
     minHeight: 44,
     borderRadius: 12,
-    elevation: 2,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,

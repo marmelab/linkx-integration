@@ -35,6 +35,8 @@ export default function Grid({
             {Array.from({ length: game.grid.length }).map((__, x) => {
               return (
                 <Pressable
+                  activeOpacity={0.2}
+                  animationDuration={{ in: 50, out: 150 }}
                   disabled={disabled || gameMode === "spectating"}
                   onPress={() => onColumnSelection(x)}
                   key={`${x}.${y}:${game.grid[x][y]}`}
