@@ -19,7 +19,7 @@ import PieceCountIndicator from "./piece-count-indicator";
 type PieceProps = {
   pieceSelection: PieceSelection;
   onPressOut: (event: PressableEvent) => void;
-  selected: boolean;
+  selected?: boolean;
   onMirrorPiece?: (event: PressableEvent) => void;
   width: number;
   style?: StyleProp<ViewStyle> | undefined;

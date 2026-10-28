@@ -69,7 +69,10 @@ export default function PiecesMenu({
                     key={`${piece.pieceName}-${piece.color}`}
                     pieceSelection={piece}
                     width={pieceWidth}
-                    onPressOut={() => onSelection(piece)}
+                    onPressOut={() => {
+                      setMenuOpened(false);
+                      onSelection(piece);
+                    }}
                   />
                 );
               })}
@@ -82,7 +85,10 @@ export default function PiecesMenu({
                     key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
                     pieceSelection={pieceSelection}
                     width={pieceWidth}
-                    onPressOut={() => onSelection(pieceSelection)}
+                    onPressOut={() => {
+                      setMenuOpened(false);
+                      onSelection(pieceSelection);
+                    }}
                   />
                 );
               })}

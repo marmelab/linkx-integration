@@ -3,7 +3,7 @@ import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { MultiPieceSelection } from "@/model/game";
+import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 import type { Move } from "@/model/move";
 
 import { RunningGameContext } from "@/context/running-game-context";
@@ -13,6 +13,8 @@ import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
 import GameLabel from "./game-label";
 import Grid from "./grid";
 import PieceCarousel from "./piece-carousel";
+import PieceSelectionControls from "./piece-selection-controls";
+import PiecesMenu from "./pieces-menu";
 
 type GameProps = {
   onRequestClose: () => void;
@@ -87,14 +89,115 @@ export default function Game({ onRequestClose }: GameProps) {
       ) : (
         <View style={styles.noErrorPadding} />
       )}
-      <PieceCarousel
-        disabled={playTurnMutation.isPending}
-        piecesSelections={piecesSelections}
-        onPiecesSelectionChange={setPiecesSelections}
-        width={width}
-      />
+      <View style={styles.carouselContainer}>
+        <PieceCarousel
+          disabled={playTurnMutation.isPending}
+          piecesSelections={piecesSelections}
+          onSelection={(piece) =>
+            setPiecesSelections(selectPiece(piecesSelections, piece))
+          }
+          width={width}
+        />
+        {piecesSelections.selectedKey && (
+          <PieceSelectionControls
+            onMirror={() => setPiecesSelections(mirrorPiece(piecesSelections))}
+            onRotateClockwise={() =>
+              setPiecesSelections(rotatePiece(piecesSelections, true))
+            }
+            onRotateCounterClockwise={() =>
+              setPiecesSelections(rotatePiece(piecesSelections, false))
+            }
+          />
+        )}
+      </View>
+      <View style={styles.actions}>
+        <PiecesMenu
+          width={width}
+          onSelection={(piece) =>
+            setPiecesSelections({
+              ...piecesSelections,
+              selectedKey: getPieceKey(piece.color, piece.pieceName),
+            })
+          }
+          piecesSelection={piecesSelections}
+        />
+      </View>
     </View>
   );
+}
+
+function selectPiece(
+  piecesSelection: MultiPieceSelection,
+  piece: PieceSelection,
+): MultiPieceSelection {
+  return {
+    ...piecesSelection,
+    selectedKey: getPieceKey(piece.color, piece.pieceName),
+  };
+}
+
+function mirrorPiece(piecesSelections: MultiPieceSelection) {
+  if (!piecesSelections.selectedKey) {
+    return piecesSelections;
+  }
+
+  return {
+    ...piecesSelections,
+    pieces: {
+      ...piecesSelections.pieces,
+      [piecesSelections.selectedKey]: {
+        ...piecesSelections.pieces[piecesSelections.selectedKey],
+        selectedRotation: reverseOddRotations(
+          piecesSelections.pieces[piecesSelections.selectedKey]
+            .selectedRotation,
+        ),
+        mirrored:
+          !piecesSelections.pieces[piecesSelections.selectedKey].mirrored,
+      },
+    },
+  };
+}
+
+function rotatePiece(
+  piecesSelections: MultiPieceSelection,
+  clockwise: boolean,
+) {
+  if (!piecesSelections.selectedKey) {
+    return piecesSelections;
+  }
+
+  return {
+    ...piecesSelections,
+    pieces: {
+      ...piecesSelections.pieces,
+      [piecesSelections.selectedKey]: {
+        ...piecesSelections.pieces[piecesSelections.selectedKey],
+        selectedRotation: correctRotationOverFlow(
+          piecesSelections.pieces[piecesSelections.selectedKey]
+            .selectedRotation + (clockwise ? 1 : -1),
+        ),
+      },
+    },
+  };
+}
+
+function correctRotationOverFlow(rotation: number) {
+  const updatedRotation = rotation % 4;
+  if (updatedRotation < 0) {
+    return 4 + updatedRotation;
+  }
+  return updatedRotation;
+}
+
+function reverseOddRotations(rotation: number) {
+  if (rotation === 1) {
+    return 3;
+  }
+  if (rotation === 3) {
+    return 1;
+  }
+
+  return rotation;
 }
 
 const styles = StyleSheet.create({
@@ -141,5 +244,8 @@ const styles = StyleSheet.create({
   },
   noErrorPadding: {
     height: 45,
+  },
+  carouselContainer: {
+    flexDirection: "row",
   },
 });
