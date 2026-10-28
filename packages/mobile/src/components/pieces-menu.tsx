@@ -131,7 +131,7 @@ const InlinePiece = ({
   onPressOut,
   ...props
 }: InlinePieceProps) => (
-  <View {...props} style={{ flex: 1 }}>
+  <View {...props} style={{ flex: 0 }}>
     <Piece
       contentContainerStyle={{ width }}
       key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
@@ -158,11 +158,12 @@ const styles = StyleSheet.create({
   },
   piecesContainer: {
     flexDirection: "row",
+    justifyContent: "space-around",
     flexWrap: "wrap",
     padding: 22,
     borderRadius: 15,
     margin: 11,
-    gap: 16,
+    gap: 8,
   },
   button: {
     minWidth: 60,
