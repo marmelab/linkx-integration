@@ -27,7 +27,7 @@ export default function PieceCarousel({
   }
 
   const pieceGap = 16;
-  const pieceWidth = (width - pieceGap * 3) / 4;
+  const pieceWidth = (width - pieceGap * 3 - 10) / 4;
   const carouselPieces = Object.values(piecesSelections.pieces).filter(
     (piece) => piece.color === game?.turnOfPlayer,
   );
@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     rowGap: 8,
-    gap: 18,
     borderRadius: 24,
   },
   actions: {
