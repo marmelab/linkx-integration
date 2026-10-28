@@ -1,4 +1,6 @@
-import { useState } from "react";
+import type { ViewProps } from "react-native";
+
+import { useContext, useState } from "react";
 import {
   Modal,
   Pressable,
@@ -14,6 +16,8 @@ import {
 
 import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
+import { RunningGameContext } from "@/context/running-game-context";
+
 import Piece from "./piece";
 
 type PiecesMenuProps = {
@@ -28,6 +32,7 @@ export default function PiecesMenu({
   onSelection,
 }: PiecesMenuProps) {
   const [menuOpened, setMenuOpened] = useState(false);
+  const game = useContext(RunningGameContext);
 
   // TODO Order based on current turn for local play
   // TODO Order based on current player for online play
@@ -62,36 +67,32 @@ export default function PiecesMenu({
             }
           >
             <View style={[styles.piecesContainer, styles.blueContainer]}>
-              {bluePieces.map((piece) => {
-                return (
-                  <Piece
-                    contentContainerStyle={{ width: pieceWidth }}
-                    key={`${piece.pieceName}-${piece.color}`}
-                    pieceSelection={piece}
-                    width={pieceWidth}
-                    onPressOut={() => {
-                      setMenuOpened(false);
-                      onSelection(piece);
-                    }}
-                  />
-                );
-              })}
-            </View>
-            <View style={[styles.piecesContainer, styles.whiteContainer]}>
-              {whitePieces.map((pieceSelection) => {
-                return (
-                  <Piece
-                    contentContainerStyle={{ width: pieceWidth }}
-                    key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
-                    pieceSelection={pieceSelection}
-                    width={pieceWidth}
-                    onPressOut={() => {
+              {bluePieces.map((pieceSelection) => (
+                <InlinePiece
+                  onPressOut={() => {
+                    if (game?.turnOfPlayer === pieceSelection.color) {
                       setMenuOpened(false);
                       onSelection(pieceSelection);
-                    }}
-                  />
-                );
-              })}
+                    }
+                  }}
+                  width={pieceWidth}
+                  pieceSelection={pieceSelection}
+                />
+              ))}
+            </View>
+            <View style={[styles.piecesContainer, styles.whiteContainer]}>
+              {whitePieces.map((pieceSelection) => (
+                <InlinePiece
+                  onPressOut={() => {
+                    if (game?.turnOfPlayer === pieceSelection.color) {
+                      setMenuOpened(false);
+                      onSelection(pieceSelection);
+                    }
+                  }}
+                  width={pieceWidth}
+                  pieceSelection={pieceSelection}
+                />
+              ))}
             </View>
           </ScrollView>
 
@@ -117,6 +118,29 @@ export default function PiecesMenu({
     </View>
   );
 }
+
+interface InlinePieceProps extends ViewProps {
+  width: number;
+  pieceSelection: PieceSelection;
+  onPressOut: (piece: PieceSelection) => void;
+}
+
+const InlinePiece = ({
+  width,
+  pieceSelection,
+  onPressOut,
+  ...props
+}: InlinePieceProps) => (
+  <View {...props} style={{ flex: 1 }}>
+    <Piece
+      contentContainerStyle={{ width }}
+      key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
+      pieceSelection={pieceSelection}
+      width={width}
+      onPressOut={onPressOut}
+    />
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -31,7 +31,7 @@ export default function Grid({
       {Array.from({ length: game.grid[0].length }).map((_, reversedY) => {
         const y = game.grid[0].length - reversedY;
         return (
-          <View style={styles.row}>
+          <View key={`row-${y}`} style={styles.row}>
             {Array.from({ length: game.grid.length }).map((__, x) => {
               return (
                 <Pressable
