@@ -52,7 +52,7 @@ export default function PieceCountIndicator({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0,
     justifyContent: "center",
     flexDirection: "row",
     gap: 8,
