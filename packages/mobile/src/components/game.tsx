@@ -73,6 +73,11 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
           const selectedPiece =
             piecesSelections.pieces[piecesSelections.selectedKey];
 
+          setPiecesSelections({
+            ...piecesSelections,
+            selectedKey: undefined,
+          });
+
           const move: Move = {
             skipped: false,
             color: selectedPiece.color,
