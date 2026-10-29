@@ -190,7 +190,6 @@ const styles = StyleSheet.create({
     borderColor: primary[700],
   },
   actions: {
-    justifyContent: "flex-end",
     paddingTop: 16,
   },
 });

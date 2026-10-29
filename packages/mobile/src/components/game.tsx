@@ -220,10 +220,11 @@ const styles = StyleSheet.create({
   game: {
     flex: 1,
     alignItems: "center",
+    paddingLeft: 22,
+    paddingRight: 22,
   },
   actions: {
     flex: 0,
-    justifyContent: "flex-end",
   },
   titleContainer: {
     flexDirection: "row",
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   carouselContainer: {
-    flex: 0,
+    flex: 1,
     flexDirection: "row",
     gap: 16,
   },
