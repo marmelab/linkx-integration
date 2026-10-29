@@ -149,7 +149,7 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
           <View style={{ width: buttonWidth }} />
         )}
       </View>
-      <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
+      <View style={styles.actions}>
         <PiecesMenu
           width={width}
           onSelection={(piece) =>
