@@ -19,9 +19,10 @@ import PiecesMenu from "./pieces-menu";
 
 type GameProps = {
   onRequestClose: () => void;
+  isLoading?: boolean;
 };
 
-export default function Game({ onRequestClose }: GameProps) {
+export default function Game({ onRequestClose, isLoading }: GameProps) {
   const game = useContext(RunningGameContext);
 
   if (!game) {
@@ -64,13 +65,18 @@ export default function Game({ onRequestClose }: GameProps) {
       </View>
       <GameLabel />
       <Grid
-        disabled={playTurnMutation.isPending}
+        disabled={playTurnMutation.isPending || !!isLoading}
         onColumnSelection={(column) => {
           if (!piecesSelections.selectedKey) {
             return;
           }
           const selectedPiece =
             piecesSelections.pieces[piecesSelections.selectedKey];
+
+          setPiecesSelections({
+            ...piecesSelections,
+            selectedKey: undefined,
+          });
 
           const move: Move = {
             skipped: false,
@@ -90,18 +96,22 @@ export default function Game({ onRequestClose }: GameProps) {
           <Text style={styles.errorText}>{playTurnMutation.error.message}</Text>
         </View>
       ) : (
-        <View style={styles.noErrorPadding} />
+        <View style={styles.noErrorPadding}>
+          {(playTurnMutation.isPending || isLoading) && (
+            <MaterialDesignIcons name="loading" color="#1993D0" size={30} />
+          )}
+        </View>
       )}
       <View style={styles.carouselContainer}>
         <PieceCarousel
-          disabled={playTurnMutation.isPending}
+          disabled={playTurnMutation.isPending || !!isLoading}
           piecesSelections={piecesSelections}
           onSelection={(piece) =>
             setPiecesSelections(selectPiece(piecesSelections, piece))
           }
           width={width - buttonWidth - carouselGap}
         />
-        {piecesSelections.selectedKey && (
+        {piecesSelections.selectedKey ? (
           <PieceSelectionControls
             onMirror={() => setPiecesSelections(mirrorPiece(piecesSelections))}
             onRotateClockwise={() =>
@@ -111,6 +121,8 @@ export default function Game({ onRequestClose }: GameProps) {
               setPiecesSelections(rotatePiece(piecesSelections, false))
             }
           />
+        ) : (
+          <View style={{ width: buttonWidth }} />
         )}
       </View>
       <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
@@ -209,6 +221,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actions: {
+    flex: 0,
     justifyContent: "flex-end",
   },
   titleContainer: {
@@ -233,12 +246,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
   },
   noErrorPadding: {
     height: 45,
+    marginTop: 5,
+    marginBottom: 5,
   },
   carouselContainer: {
-    flex: 1,
+    flex: 0,
     flexDirection: "row",
     gap: 16,
   },

@@ -16,7 +16,10 @@ type GameRouteSearchParams = {
 
 export default function GameRoute() {
   const { id, mode } = useLocalSearchParams<GameRouteSearchParams>();
-  const { isPending, error, data } = useGameById(id);
+  const { isRefetching, isPending, error, data } = useGameById(
+    id,
+    mode !== "playing-local",
+  );
 
   if (isPending) {
     return (
@@ -43,8 +46,12 @@ export default function GameRoute() {
       <GestureHandlerRootView>
         <View style={styles.container}>
           <GameModeContext value={mode}>
-            <RunningGameContext value={data?.game}>
-              <Game key={`game-${id}`} onRequestClose={() => router.back()} />
+            <RunningGameContext value={data.game}>
+              <Game
+                key={`game-${id}`}
+                isLoading={isPending || isRefetching}
+                onRequestClose={() => router.back()}
+              />
             </RunningGameContext>
           </GameModeContext>
         </View>
@@ -66,7 +73,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   errorContainer: {
-    height: 60,
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FFE9E6",
