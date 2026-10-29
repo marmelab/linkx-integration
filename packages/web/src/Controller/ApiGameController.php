@@ -124,6 +124,9 @@ class ApiGameController extends AbstractController
                 $move->getMirrored(),
                 $move->getColumn()
             );
+            if (!$updatedGame->getCanPlay()[$updatedGame->getTurnOfPlayer()]) {
+                $updatedGame = $gameRunner->skipTurn($updatedGame);
+            }
 
             $gamePersister->saveGame($player, $gameEntity, $updatedGame);
 
