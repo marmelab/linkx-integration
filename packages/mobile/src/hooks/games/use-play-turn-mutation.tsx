@@ -10,13 +10,10 @@ export function usePlayTurnMutation(gameId: number) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: ({ gameId, move }: PlayTurnParams) => playTurn(gameId, move),
-    onSuccess: () => {
-      console.log("invalidating query", ["game", gameId], typeof gameId);
-
-      return queryClient.invalidateQueries({
+    onSuccess: () =>
+      queryClient.invalidateQueries({
         queryKey: ["game", gameId.toString()],
-      });
-    },
+      }),
   });
 
   return mutation;

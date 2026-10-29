@@ -19,10 +19,10 @@ import PiecesMenu from "./pieces-menu";
 
 type GameProps = {
   onRequestClose: () => void;
-  disabled?: boolean;
+  isLoading?: boolean;
 };
 
-export default function Game({ onRequestClose, disabled }: GameProps) {
+export default function Game({ onRequestClose, isLoading }: GameProps) {
   const game = useContext(RunningGameContext);
 
   if (!game) {
@@ -65,7 +65,7 @@ export default function Game({ onRequestClose, disabled }: GameProps) {
       </View>
       <GameLabel />
       <Grid
-        disabled={playTurnMutation.isPending || !!disabled}
+        disabled={playTurnMutation.isPending || !!isLoading}
         onColumnSelection={(column) => {
           if (!piecesSelections.selectedKey) {
             return;
@@ -92,14 +92,14 @@ export default function Game({ onRequestClose, disabled }: GameProps) {
         </View>
       ) : (
         <View style={styles.noErrorPadding}>
-          {(playTurnMutation.isPending || disabled) && (
+          {(playTurnMutation.isPending || isLoading) && (
             <MaterialDesignIcons name="loading" color="#1993D0" size={30} />
           )}
         </View>
       )}
       <View style={styles.carouselContainer}>
         <PieceCarousel
-          disabled={playTurnMutation.isPending}
+          disabled={playTurnMutation.isPending || !!isLoading}
           piecesSelections={piecesSelections}
           onSelection={(piece) =>
             setPiecesSelections(selectPiece(piecesSelections, piece))

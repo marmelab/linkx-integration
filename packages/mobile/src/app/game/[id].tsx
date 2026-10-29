@@ -49,7 +49,7 @@ export default function GameRoute() {
             <RunningGameContext value={data.game}>
               <Game
                 key={`game-${id}`}
-                disabled={isPending || isRefetching}
+                isLoading={isPending || isRefetching}
                 onRequestClose={() => router.back()}
               />
             </RunningGameContext>
