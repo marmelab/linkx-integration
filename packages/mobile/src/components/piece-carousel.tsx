@@ -33,9 +33,9 @@ export default function PieceCarousel({
   );
 
   return (
-    <View style={styles.carousel}>
+    <View style={{ flex: 0 }}>
       <ScrollView
-        style={{ flex: 1 }}
+        style={{ flex: 0 }}
         contentContainerStyle={[styles.container, { gap: pieceGap }]}
       >
         {carouselPieces.map((pieceSelection) => {
@@ -61,9 +61,6 @@ export default function PieceCarousel({
 }
 
 const styles = StyleSheet.create({
-  carousel: {
-    flex: 1,
-  },
   container: {
     flexDirection: "row",
     flexWrap: "wrap",

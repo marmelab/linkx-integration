@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import GamesList from "@/components/game-list";
 import { useCreateLocalGame } from "@/hooks/games/use-create-local-game";
+import { primary } from "@/style-constants";
 
 export default function Index() {
   const createGameMutation = useCreateLocalGame();
@@ -29,7 +30,7 @@ export default function Index() {
         >
           <MaterialDesignIcons
             name={createGameMutation.isPending ? "loading" : "plus"}
-            color={"#2C6C2F"}
+            color={primary[700]}
             size={50}
           />
         </Pressable>
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     paddingTop: 18,
   },
   title: {
-    color: "#005179",
+    color: primary[800],
     fontSize: 52,
     textAlign: "center",
   },
@@ -77,8 +78,8 @@ const styles = StyleSheet.create({
     height: 60,
   },
   newGameButton: {
-    borderColor: "#2C6C2F",
-    backgroundColor: "#D9F5DA",
+    borderColor: primary[700],
+    backgroundColor: primary[100],
     borderWidth: 3,
     borderStyle: "dashed",
     justifyContent: "center",
