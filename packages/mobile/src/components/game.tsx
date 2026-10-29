@@ -256,10 +256,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   button: {
-    minWidth: 44,
-    minHeight: 44,
     padding: 10,
-    textAlign: "center",
+    paddingLeft: 0,
     alignItems: "center",
   },
   errorText: {
