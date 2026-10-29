@@ -62,14 +62,15 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
         >
           <MaterialDesignIcons name="arrow-left" size={28} color="#9AA6B5" />
         </TouchableOpacity>
+        <GameLabel />
       </View>
-      <GameLabel />
       <Grid
         disabled={playTurnMutation.isPending || !!isLoading}
         onColumnSelection={(column) => {
           if (!piecesSelections.selectedKey) {
             return;
           }
+
           const selectedPiece =
             piecesSelections.pieces[piecesSelections.selectedKey];
 
@@ -226,7 +227,9 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 24,
+    paddingTop: 10,
   },
   button: {
     minWidth: 44,

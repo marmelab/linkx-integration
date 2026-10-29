@@ -78,7 +78,12 @@ export default function Piece({
     <Pressable
       activeOpacity={0.2}
       animationDuration={{ in: 50, out: 150 }}
-      disabled={disabled || mode === "spectating" || game?.completed}
+      disabled={
+        disabled ||
+        mode === "spectating" ||
+        game?.completed ||
+        pieceModel.count === 0
+      }
       style={[styles.container, style]}
       onPressOut={(event) => onPressOut(event)}
     >

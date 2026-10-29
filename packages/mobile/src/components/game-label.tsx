@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { RunningGameContext } from "@/context/running-game-context";
 
@@ -16,45 +16,47 @@ export default function GameLabel() {
   }
 
   return (
-    <>
-      <Text style={styles.heading}>
-        {!game.local && (
-          <>
-            <GamePlayerLabel
-              fallbackName="Blue"
-              player={game.firstPlayer}
-              style={styles.textBlue}
-            />{" "}
-            VS{" "}
-            <GamePlayerLabel
-              fallbackName="Red"
-              player={game.secondPlayer}
-              style={styles.textWhite}
-            />
-          </>
-        )}
-        {game.victory &&
-          (game.lastMove?.color === "blue" ? (
+    <View style={{ height: 44, justifyContent: "center" }}>
+      {(!game.local || game.completed) && (
+        <Text style={styles.heading}>
+          {!game.local && (
             <>
-              Victory of{" "}
               <GamePlayerLabel
                 fallbackName="Blue"
                 player={game.firstPlayer}
                 style={styles.textBlue}
-              />
-            </>
-          ) : (
-            <>
-              Victory of{" "}
+              />{" "}
+              VS{" "}
               <GamePlayerLabel
                 fallbackName="Red"
                 player={game.secondPlayer}
                 style={styles.textWhite}
               />
             </>
-          ))}
-        {!game.victory && game.completed && <>It's a draw !</>}
-      </Text>
+          )}
+          {game.victory &&
+            (game.lastMove?.color === "blue" ? (
+              <>
+                Victory of{" "}
+                <GamePlayerLabel
+                  fallbackName="Blue"
+                  player={game.firstPlayer}
+                  style={styles.textBlue}
+                />
+              </>
+            ) : (
+              <>
+                Victory of{" "}
+                <GamePlayerLabel
+                  fallbackName="Red"
+                  player={game.secondPlayer}
+                  style={styles.textWhite}
+                />
+              </>
+            ))}
+          {!game.victory && game.completed && <>It's a draw !</>}
+        </Text>
+      )}
       {!game.completed && (
         <Text style={styles.subHeading}>
           Turn of{" "}
@@ -73,7 +75,7 @@ export default function GameLabel() {
           )}
         </Text>
       )}
-    </>
+    </View>
   );
 }
 
