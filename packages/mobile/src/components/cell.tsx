@@ -1,3 +1,5 @@
+import type { ViewStyle } from "react-native";
+
 import { StyleSheet, View } from "react-native";
 
 import { piecesColor } from "@/style-constants";
@@ -8,12 +10,14 @@ type CellProps = {
   cellValue: string;
   width: number;
   isVictoryPath?: boolean;
+  style?: ViewStyle;
 };
 
 export default function Cell({
   cellValue,
   width,
   isVictoryPath: isVictory,
+  style,
 }: CellProps) {
   const isLastMove =
     cellValue === "whiteLastMove" || cellValue === "blueLastMove";
@@ -24,7 +28,7 @@ export default function Cell({
     <>
       {!isEmpty && (isVictory || isLastMove) && (
         <GlowingCell
-          style={[styles.cell, { width }]}
+          style={[styles.cell, { width }, style]}
           toColor={isBlue ? piecesColor.blueGlow : piecesColor.whiteGlow}
           fromColor={isBlue ? piecesColor.blue : piecesColor.white}
         ></GlowingCell>
@@ -37,19 +41,20 @@ export default function Cell({
               width,
               backgroundColor: isBlue ? piecesColor.blue : piecesColor.white,
             },
+            style,
           ]}
         ></View>
       )}
       {isEmpty && (
         <View
-          style={[cellValue === "." ? styles.emptyCell : {}, { width }]}
+          style={[cellValue === "." ? styles.emptyCell : {}, { width }, style]}
         ></View>
       )}
     </>
   );
 }
 
-const borderColor = "#333";
+const borderColor = "#666";
 const styles = StyleSheet.create({
   cell: {
     aspectRatio: 1,
