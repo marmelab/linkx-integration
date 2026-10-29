@@ -81,12 +81,10 @@ export default function GameLabel() {
 
 const styles = StyleSheet.create({
   heading: {
-    textAlign: "center",
     fontSize: 26,
     flex: 0,
   },
   subHeading: {
-    textAlign: "center",
     fontSize: 20,
     color: "#666",
   },
