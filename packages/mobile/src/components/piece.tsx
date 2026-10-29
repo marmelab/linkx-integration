@@ -95,7 +95,7 @@ export default function Piece({
             (_, reversedY) => {
               const y = selectedMatrix[0].length - 1 - reversedY;
               return (
-                <View style={styles.row}>
+                <View key={`row-${y}`} style={styles.row}>
                   {Array.from({ length: selectedMatrix.length }).map(
                     (__, x) => {
                       return (

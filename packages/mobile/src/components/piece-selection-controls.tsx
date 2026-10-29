@@ -2,6 +2,8 @@ import MaterialDesignIcons from "@react-native-vector-icons/material-design-icon
 import { StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 
+import { primary } from "@/style-constants";
+
 type PieceSelectionControlsProps = {
   onRotateClockwise: () => void;
   onMirror: () => void;
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: 44,
     height: 44,
-    backgroundColor: "#53AFDC",
+    backgroundColor: primary[300],
     borderColor: "#005179",
     borderWidth: 2,
     color: "#303943",

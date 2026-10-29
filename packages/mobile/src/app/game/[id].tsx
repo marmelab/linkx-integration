@@ -8,6 +8,7 @@ import Game from "@/components/game";
 import { GameModeContext, type GameMode } from "@/context/game-mode-context";
 import { RunningGameContext } from "@/context/running-game-context";
 import { useGameById } from "@/hooks/games/use-game-by-id";
+import { primary } from "@/style-constants";
 
 type GameRouteSearchParams = {
   id: string;
@@ -21,7 +22,7 @@ export default function GameRoute() {
   if (isPending) {
     return (
       <View style={[styles.fullPageText, { alignItems: "center" }]}>
-        <MaterialDesignIcons name="loading" size={32} color="#1993D0" />
+        <MaterialDesignIcons name="loading" size={32} color={primary[400]} />
       </View>
     );
   }

@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { useLastLocalGameId } from "@/hooks/games/storage/use-last-local-game-id";
+import { primary } from "@/style-constants";
 
 import SpectateGamesList from "./spectate-games-list";
 
@@ -44,7 +45,7 @@ export default function GamesList() {
 const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
-    backgroundColor: "#D0D5DC",
+    backgroundColor: primary[300],
     borderWidth: 1,
     borderColor: "black",
     alignItems: "center",

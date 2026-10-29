@@ -17,6 +17,7 @@ import {
 import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
 import { RunningGameContext } from "@/context/running-game-context";
+import { primary } from "@/style-constants";
 
 import Piece from "./piece";
 
@@ -71,6 +72,7 @@ export default function PiecesMenu({
             <View style={[styles.piecesContainer, styles.blueContainer]}>
               {bluePieces.map((pieceSelection) => (
                 <InlinePiece
+                  key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
                   onPressOut={() => {
                     if (game?.turnOfPlayer === pieceSelection.color) {
                       setMenuOpened(false);
@@ -85,6 +87,7 @@ export default function PiecesMenu({
             <View style={[styles.piecesContainer, styles.whiteContainer]}>
               {whitePieces.map((pieceSelection) => (
                 <InlinePiece
+                  key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
                   onPressOut={() => {
                     if (game?.turnOfPlayer === pieceSelection.color) {
                       setMenuOpened(false);
@@ -136,7 +139,6 @@ const InlinePiece = ({
   <View {...props} style={{ flex: 0 }}>
     <Piece
       contentContainerStyle={{ width }}
-      key={`${pieceSelection.pieceName}-${pieceSelection.color}`}
       pieceSelection={pieceSelection}
       width={width}
       onPressOut={onPressOut}
@@ -180,12 +182,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   buttonOpen: {
-    backgroundColor: "#B5BEC8",
-    borderColor: "#526172",
+    backgroundColor: primary[300],
+    borderColor: primary[700],
   },
   buttonReturn: {
-    backgroundColor: "#B5BEC8",
-    borderColor: "#424D5B",
+    backgroundColor: primary[300],
+    borderColor: primary[700],
   },
   actions: {
     justifyContent: "flex-end",

@@ -6,7 +6,7 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
+      <Stack backgroundColor="#F6FBFD">
         <Stack.Header hidden />
       </Stack>
     </QueryClientProvider>

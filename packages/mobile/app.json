@@ -7,6 +7,7 @@
     "scheme": "linkxintegration",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/images/icon.png",
+    "backgroundColor": "#E0F0F9",
     "ios": {
       "icon": "./assets/images/icon.png"
     },

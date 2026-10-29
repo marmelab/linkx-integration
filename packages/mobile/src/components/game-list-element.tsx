@@ -2,6 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import type { GameModel } from "@/model/game";
 
+import { primary } from "@/style-constants";
+
 type GameListElementProps = {
   game: GameModel;
   onSelection: (id: number) => void;
@@ -26,7 +28,7 @@ export default function GameListElement({
 const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
-    backgroundColor: "#D0D5DC",
+    backgroundColor: primary[300],
     borderWidth: 1,
     borderColor: "black",
     alignItems: "center",
