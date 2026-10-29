@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     borderRadius: 15,
     paddingTop: 11,
-    margin: 11,
     gap: 8,
   },
   button: {
