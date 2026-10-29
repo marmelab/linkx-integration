@@ -179,14 +179,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 22,
+    color: primary[800],
   },
   buttonOpen: {
-    backgroundColor: primary[300],
-    borderColor: primary[700],
+    borderColor: primary[800],
   },
   buttonReturn: {
-    backgroundColor: primary[300],
-    borderColor: primary[700],
+    borderColor: primary[800],
   },
   actions: {
     paddingTop: 16,

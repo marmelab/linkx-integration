@@ -28,9 +28,8 @@ export default function GameListElement({
 const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
-    backgroundColor: primary[300],
     borderWidth: 2,
-    borderColor: primary[700],
+    borderColor: primary[800],
     alignItems: "center",
     justifyContent: "center",
     height: 64,
@@ -39,7 +38,7 @@ const styles = StyleSheet.create({
   },
   basicText: {
     textAlign: "center",
-    color: "#333333",
+    color: primary[800],
     fontSize: 24,
   },
 });

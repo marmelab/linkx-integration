@@ -16,7 +16,7 @@ export default function PieceSelectionControls({
   onRotateCounterClockwise,
 }: PieceSelectionControlsProps) {
   const iconSize = 36;
-  const iconColor = "#303943";
+  const iconColor = primary[800];
   return (
     <View style={styles.container}>
       <Pressable style={styles.control} onPress={onRotateCounterClockwise}>
@@ -56,8 +56,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: 44,
     height: 44,
-    backgroundColor: primary[300],
-    borderColor: "#005179",
+    borderColor: primary[800],
     borderWidth: 2,
     color: "#303943",
     borderRadius: 12,
