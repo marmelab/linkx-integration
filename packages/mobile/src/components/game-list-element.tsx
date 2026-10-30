@@ -29,13 +29,13 @@ const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
     backgroundColor: primary[300],
-    borderWidth: 1,
-    borderColor: "black",
+    borderWidth: 2,
+    borderColor: primary[700],
     alignItems: "center",
     justifyContent: "center",
     height: 64,
     marginBottom: 8,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   basicText: {
     textAlign: "center",

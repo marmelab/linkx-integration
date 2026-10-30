@@ -1,4 +1,3 @@
-import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons/static";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -27,10 +26,7 @@ export default function GamesList() {
           }}
         >
           <View style={styles.listElement}>
-            <Text style={styles.basicText}>
-              Resume game{" "}
-              <MaterialDesignIcons name="location-enter" size={28} />
-            </Text>
+            <Text style={styles.basicText}>Resume game</Text>
           </View>
         </TouchableOpacity>
       ) : (
@@ -46,13 +42,13 @@ const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
     backgroundColor: primary[300],
-    borderWidth: 1,
-    borderColor: "black",
+    borderColor: primary[700],
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
     height: 64,
     marginBottom: 8,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   disabledElement: {
     backgroundColor: "#ECEEF1",
