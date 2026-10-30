@@ -1,4 +1,3 @@
-import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons/static";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -22,17 +21,13 @@ export default function Index() {
         ) : (
           <View style={styles.noErrorPadding} />
         )}
-        <Text style={styles.heading}>Start a game:</Text>
+        <Text style={styles.heading}>New game:</Text>
         <Pressable
           style={styles.newGameButton}
           onPress={() => createGameMutation.mutate({})}
           disabled={createGameMutation.isPending}
         >
-          <MaterialDesignIcons
-            name={createGameMutation.isPending ? "loading" : "plus"}
-            color={primary[700]}
-            size={50}
-          />
+          <Text style={styles.basicText}>Start a game</Text>
         </Pressable>
 
         <GamesList />
@@ -78,13 +73,17 @@ const styles = StyleSheet.create({
     height: 60,
   },
   newGameButton: {
-    borderColor: primary[700],
-    backgroundColor: primary[100],
-    borderWidth: 3,
-    borderStyle: "dashed",
-    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: primary[800],
     alignItems: "center",
-    paddingTop: 38,
-    paddingBottom: 38,
+    justifyContent: "center",
+    height: 64,
+    marginBottom: 8,
+    borderRadius: 20,
+  },
+  basicText: {
+    textAlign: "center",
+    color: primary[800],
+    fontSize: 24,
   },
 });

@@ -41,8 +41,7 @@ export default function GamesList() {
 const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
-    backgroundColor: primary[300],
-    borderColor: primary[700],
+    borderColor: primary[800],
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
@@ -57,10 +56,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#333",
   },
   basicText: {
     textAlign: "center",
-    color: "#333333",
+    color: primary[800],
     fontSize: 24,
   },
   secondaryText: {
