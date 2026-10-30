@@ -105,6 +105,7 @@ export default function Piece({
                     (__, x) => {
                       return (
                         <Cell
+                          style={{ borderColor: "#333" }}
                           width={cellWidth}
                           cellValue={
                             selectedMatrix[x]?.at(y) === 1

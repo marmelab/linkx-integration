@@ -59,7 +59,6 @@ export default function GameLabel() {
       )}
       {!game.completed && (
         <Text style={styles.subHeading}>
-          Turn of{" "}
           {game.turnOfPlayer === "blue" ? (
             <GamePlayerLabel
               fallbackName="Blue"
@@ -73,6 +72,7 @@ export default function GameLabel() {
               style={styles.textWhite}
             />
           )}
+          's Turn
         </Text>
       )}
     </View>

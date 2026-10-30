@@ -4,7 +4,11 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { MultiPieceSelection, PieceSelection } from "@/model/game";
+import type {
+  MultiPieceSelection,
+  PieceModel,
+  PieceSelection,
+} from "@/model/game";
 import type { Move } from "@/model/move";
 
 import { RunningGameContext } from "@/context/running-game-context";
@@ -132,7 +136,11 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
         />
         {piecesSelections.selectedKey ? (
           <PieceSelectionControls
-            onMirror={() => setPiecesSelections(mirrorPiece(piecesSelections))}
+            onMirror={() =>
+              setPiecesSelections(
+                mirrorPiece(piecesSelections, game.mappedPieces),
+              )
+            }
             onRotateClockwise={() =>
               setPiecesSelections(rotatePiece(piecesSelections, true))
             }
@@ -170,10 +178,25 @@ function selectPiece(
   };
 }
 
-function mirrorPiece(piecesSelections: MultiPieceSelection) {
+function mirrorPiece(
+  piecesSelections: MultiPieceSelection,
+  mappedPieces: { [key: string]: PieceModel },
+) {
   if (!piecesSelections.selectedKey) {
     return piecesSelections;
   }
+
+  const canBeMirrored =
+    mappedPieces[piecesSelections.selectedKey].possibleMatrices[0].mirrored
+      .length === 1;
+  const updatedRotation = canBeMirrored
+    ? reverseOddRotations(
+        piecesSelections.pieces[piecesSelections.selectedKey].selectedRotation,
+      )
+    : replicateMirrorWithRotation(
+        piecesSelections.pieces[piecesSelections.selectedKey].pieceName,
+        piecesSelections.pieces[piecesSelections.selectedKey].selectedRotation,
+      );
 
   return {
     ...piecesSelections,
@@ -181,10 +204,7 @@ function mirrorPiece(piecesSelections: MultiPieceSelection) {
       ...piecesSelections.pieces,
       [piecesSelections.selectedKey]: {
         ...piecesSelections.pieces[piecesSelections.selectedKey],
-        selectedRotation: reverseOddRotations(
-          piecesSelections.pieces[piecesSelections.selectedKey]
-            .selectedRotation,
-        ),
+        selectedRotation: updatedRotation,
         mirrored:
           !piecesSelections.pieces[piecesSelections.selectedKey].mirrored,
       },
@@ -221,6 +241,30 @@ function correctRotationOverFlow(rotation: number) {
     return 4 + updatedRotation;
   }
   return updatedRotation;
+}
+
+function replicateMirrorWithRotation(
+  pieceName: string,
+  rotation: number,
+): number {
+  if (pieceName === "3L") {
+    switch (rotation) {
+      case 0:
+        return 3;
+      case 1:
+        return 2;
+      case 2:
+        return 1;
+      case 3:
+        return 0;
+    }
+  }
+
+  if (pieceName === "4T") {
+    return reverseOddRotations(rotation);
+  }
+
+  return rotation;
 }
 
 function reverseOddRotations(rotation: number) {
