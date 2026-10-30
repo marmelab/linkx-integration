@@ -5,9 +5,12 @@ export const UserList = () => (
   <List>
     <DataTable>
       <DataTable.Col source="id" />
-      <DataTable.Col source="username" />
-      <DataTable.Col source="roles" />
       <DataTable.Col source="displayName" />
+      <DataTable.Col source="username" />
+      <DataTable.Col source="email" />
+      <DataTable.Col source="roles" />
+      <DataTable.Col source="createdAt" />
+      <DataTable.Col source="updatedAt" />
     </DataTable>
   </List>
 );

@@ -53,6 +53,7 @@ final class ApiLoginController extends AbstractController
                 $request->getPayload()->get('username'),
                 $request->getPayload()->get('password'),
                 $request->getPayload()->get('displayName'),
+                $request->getPayload()->get('email'),
             );
 
             return $this->json($user, Response::HTTP_CREATED, [], ['groups' => 'self']);

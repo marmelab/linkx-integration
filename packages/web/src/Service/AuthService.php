@@ -21,7 +21,7 @@ class AuthService
     /**
      * @throws ValidationFailedException
      */
-    public function registerUser(string $username, string $password, ?string $displayName): User
+    public function registerUser(string $email, string $username, string $password, ?string $displayName): User
     {
         $user = new User();
 
