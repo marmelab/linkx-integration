@@ -10,6 +10,7 @@ import type { Move } from "@/model/move";
 import { RunningGameContext } from "@/context/running-game-context";
 import { getPieceKey } from "@/helper/get-piece-key";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
+import { usePreviousPlayer } from "@/hooks/games/use-previous-player";
 import { primary } from "@/style-constants";
 
 import GameLabel from "./game-label";
@@ -55,20 +56,7 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
   const width =
     Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
-  const previousPlayer =
-    game.lastMove?.color === "blue" ? game.firstPlayer : game.secondPlayer;
-  const skipInfo = game.lastMove?.skipped ? (
-    <>
-      The turn of{" "}
-      <GamePlayerLabel
-        player={previousPlayer}
-        fallbackName={game.lastMove?.color ?? "Unknown"}
-      />{" "}
-      was skipped because they could not play legal moves.
-    </>
-  ) : (
-    false
-  );
+  const previousPlayer = usePreviousPlayer(game);
 
   return (
     <View style={styles.game}>
@@ -114,12 +102,19 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
           <Text style={styles.errorText}>{playTurnMutation.error.message}</Text>
         </View>
       )}
-      {skipInfo && (
+      {game.lastMove?.skipped && (
         <View style={[styles.infoContainer, { width }]}>
-          <Text style={styles.infoText}>{skipInfo}</Text>
+          <Text style={styles.infoText}>
+            The turn of{" "}
+            <GamePlayerLabel
+              player={previousPlayer}
+              fallbackName={game.lastMove?.color ?? "Unknown"}
+            />{" "}
+            was skipped because they could not play legal moves.
+          </Text>
         </View>
       )}
-      {!playTurnMutation.error && !skipInfo && (
+      {!playTurnMutation.error && !game.lastMove?.skipped && (
         <View style={styles.noErrorPadding}>
           {(playTurnMutation.isPending || isLoading) && (
             <MaterialDesignIcons name="loading" color="#1993D0" size={30} />
