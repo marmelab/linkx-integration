@@ -13,8 +13,8 @@ import type { Move } from "@/model/move";
 
 import { RunningGameContext } from "@/context/running-game-context";
 import { getPieceKey } from "@/helper/get-piece-key";
+import { getPreviousPlayer } from "@/helper/get-previous-player";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
-import { usePreviousPlayer } from "@/hooks/games/use-previous-player";
 import { primary } from "@/style-constants";
 
 import GameLabel from "./game-label";
@@ -60,7 +60,7 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
   const width =
     Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
-  const previousPlayer = usePreviousPlayer(game);
+  const previousPlayer = getPreviousPlayer(game);
 
   return (
     <View style={styles.game}>

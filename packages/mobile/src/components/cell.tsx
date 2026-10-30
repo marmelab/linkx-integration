@@ -31,7 +31,7 @@ export default function Cell({
           style={[styles.cell, { width }, style]}
           toColor={isBlue ? piecesColor.blueGlow : piecesColor.whiteGlow}
           fromColor={isBlue ? piecesColor.blue : piecesColor.white}
-        ></GlowingCell>
+        />
       )}
       {!isEmpty && !(isVictory || isLastMove) && (
         <View
