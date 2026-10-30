@@ -12,7 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity(fields: 'username', repositoryMethod: 'findByUniqueUsername', message: 'This username is already taken.')]
+#[UniqueEntity(fields: 'email', repositoryMethod: 'findByUniqueEmail', message: 'This email is already taken.')]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -47,6 +48,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $currentToken = null;
+
+    #[ORM\Column(length: 254)]
+    #[Groups(['admin-view'])]
+    private ?string $email = null;
+
+    #[ORM\Column]
+    #[Groups(['admin-view'])]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    #[Groups(['admin-view'])]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\PrePersist]
+    public function updateCreatedAt()
+    {
+        $now = new \DateTimeImmutable('now');
+        $this->setCreatedAt($now);
+        $this->setUpdatedAt($now);
+    }
+
+    #[ORM\PreUpdate]
+    public function updateUpdatedAt()
+    {
+        $this->setUpdatedAt(new \DateTimeImmutable('now'));
+    }
 
     public function getId(): ?int
     {
@@ -143,6 +170,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCurrentToken(?string $currentToken): static
     {
         $this->currentToken = $currentToken;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

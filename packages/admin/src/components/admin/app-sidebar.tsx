@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { House, List, Shell } from "lucide-react";
 import {
   useCanAccess,
   useCreatePath,
@@ -9,6 +9,8 @@ import {
   LinkBase,
   useMatch,
 } from "ra-core";
+import { createElement } from "react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +24,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { House, List, Shell } from "lucide-react";
 
 /**
  * Navigation sidebar displaying menu items, allowing users to navigate between different sections of the application.
@@ -55,7 +56,7 @@ export function AppSidebar() {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Shell className="!size-5" />
-              <span className="text-base font-semibold">Acme Inc.</span>
+              <span className="text-base font-semibold">Linkx intégration</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

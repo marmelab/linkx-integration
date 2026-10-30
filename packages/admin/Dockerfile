@@ -21,8 +21,6 @@ ADD --chown=node:node tsconfig.base.json /app/
 
 FROM base AS dev
 
-COPY --link --chmod=755 packages/admin /app/packages/admin
-
 WORKDIR /app/packages/admin
 
 CMD ["pnpm", "run", "dev"]
