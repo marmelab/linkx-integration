@@ -28,6 +28,7 @@ class AuthService
         $user->setUsername($username);
         $user->setDisplayName(!empty($displayName) ? $displayName : $username);
         $user->setPassword($password);
+        $user->setEmail($email);
         $constraints = $this->validator->validate($user);
         if (count($constraints) > 0) {
             throw new ValidationFailedException("Validation failed.", $constraints);
