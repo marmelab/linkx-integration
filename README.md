@@ -7,7 +7,7 @@ Official rules: <https://www.jeux-abstraits.fr/wp-content/uploads/2026/07/lynkx.
 ## Getting started
 
 You need a working **docker** and **docker-compose**.
-You will also need **pnpm 12** for the mobile version.
+You will also need **npm** for the mobile version.
 
 ```bash
 make dev
@@ -16,8 +16,9 @@ make dev
 Web version: https://localhost/game
 Api: http://localhost:3005
 Swagger: http://localhost:3080
+Admin: http://localhost:6173
 
-After modifying the node files, you need to rebuild:
+After using make install or modifying the node files, you need to rebuild:
 
 ```bash
 docker-compose build && docker-compose up
