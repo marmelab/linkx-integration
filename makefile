@@ -4,7 +4,7 @@ help:									## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 install:
-	@pnpm install && cd packages/web/ && composer install && cd ../mobile && pnpm expo install
+	@pnpm install && cd packages/web/ && composer install && cd ../mobile && pnpm expo install && cd ../admin && npm install
 
 lint: generate
 	@pnpm lint:apply
@@ -26,7 +26,7 @@ run:
 	@pnpm --filter @linkx-integration/cli run run:cli --file=$(file)
 
 dev:
-	@docker compose up -d
+	@make install && docker compose up -d
 
 mobile:
 	@cd packages/mobile && pnpm expo run:android
