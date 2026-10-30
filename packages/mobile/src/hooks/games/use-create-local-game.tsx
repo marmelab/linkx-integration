@@ -15,13 +15,15 @@ export function useCreateLocalGame() {
         local: true,
       }),
     onSuccess: (data) => {
-      setLastLocalGameId.mutate(data.id.toString());
-      router.navigate({
-        pathname: "/game/[id]",
-        params: {
-          id: data.id,
-          mode: "playing-local",
-        },
+      setLastLocalGameId.mutate(data.id.toString(), {
+        onSuccess: () =>
+          router.navigate({
+            pathname: "/game/[id]",
+            params: {
+              id: data.id,
+              mode: "playing-local",
+            },
+          }),
       });
     },
   });

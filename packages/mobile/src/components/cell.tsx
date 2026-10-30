@@ -27,7 +27,7 @@ export default function Cell({
           style={[styles.cell, { width }]}
           toColor={isBlue ? piecesColor.blueGlow : piecesColor.whiteGlow}
           fromColor={isBlue ? piecesColor.blue : piecesColor.white}
-        />
+        ></GlowingCell>
       )}
       {!isEmpty && !(isVictory || isLastMove) && (
         <View
@@ -38,10 +38,12 @@ export default function Cell({
               backgroundColor: isBlue ? piecesColor.blue : piecesColor.white,
             },
           ]}
-        />
+        ></View>
       )}
       {isEmpty && (
-        <View style={[cellValue === "." ? styles.emptyCell : {}, { width }]} />
+        <View
+          style={[cellValue === "." ? styles.emptyCell : {}, { width }]}
+        ></View>
       )}
     </>
   );
