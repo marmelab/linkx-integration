@@ -33,6 +33,12 @@ catalogMode: strict
 
 minimumReleaseAge: 4320
 
+minimumReleaseAgeExclude:
+  - cn@0.5.1
+  - lucide-react@1.65.0
+  - react-router-dom@7.18.5
+  - react-router@7.18.5
+  - shadcn@4.23.0
 trustPolicy: no-downgrade
 
 trustPolicyExclude:
