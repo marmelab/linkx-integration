@@ -18,17 +18,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['admin-view'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank]
-    #[Groups(['self'])]
+    #[Groups(['self', 'admin-view'])]
     private ?string $username = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['admin-view'])]
     private array $roles = [];
 
     /**
@@ -40,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['self', 'list-view', 'game-view'])]
+    #[Groups(['self', 'list-view', 'game-view', 'admin-view'])]
     private ?string $displayName = null;
 
     #[ORM\Column(length: 64, nullable: true)]

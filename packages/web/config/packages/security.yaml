@@ -12,6 +12,9 @@ security:
         property: username
     # used to reload user from session & other features (e.g. switch_user)
 
+  role_hierarchy:
+    ROLE_ADMIN: ROLE_USER
+
   firewalls:
     dev:
       # Ensure dev tools and static assets are always allowed
@@ -42,6 +45,7 @@ security:
   access_control:
     - { path: ^/(login|register), roles: PUBLIC_ACCESS }
     - { path: ^/api/user/(login|register), roles: PUBLIC_ACCESS }
+    - { path: ^/api/admin/, roles: PUBLIC_ACCESS } # TODO Auth for admin in later ticket
     - { path: ^/, roles: ROLE_USER }
 
 when@test:

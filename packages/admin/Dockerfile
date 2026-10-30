@@ -18,9 +18,10 @@ WORKDIR /app/packages/admin
 RUN pnpm -F "@linkx-integration/admin..." install --frozen-lockfile
 
 ADD --chown=node:node tsconfig.base.json /app/
-ADD --chown=node:node packages/admin /app/packages/admin
 
 FROM base AS dev
+
+COPY --link --chmod=755 packages/admin /app/packages/admin
 
 WORKDIR /app/packages/admin
 

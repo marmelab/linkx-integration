@@ -78,6 +78,7 @@ services:
       dockerfile: packages/admin/Dockerfile
       target: dev
     restart: unless-stopped
+    env_file: packages/admin/.env
     ports:
       - "6173:5173"
 
