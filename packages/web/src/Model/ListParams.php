@@ -18,6 +18,11 @@ class ListParams
     private string $_order;
 
     /**
+     * Represents the full text search. Can be empty.
+     */
+    private ?string $q = null;
+
+    /**
      * Get the value of _sort
      *
      * @return array|string
@@ -109,6 +114,30 @@ class ListParams
     public function set_end(int $_end): self
     {
         $this->_end = $_end;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of q
+     *
+     * @return string
+     */
+    public function getQ(): ?string
+    {
+        return $this->q;
+    }
+
+    /**
+     * Set the value of q
+     *
+     * @param string $q
+     *
+     * @return self
+     */
+    public function setQ(?string $q): self
+    {
+        $this->q = $q;
 
         return $this;
     }
