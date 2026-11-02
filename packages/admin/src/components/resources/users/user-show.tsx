@@ -1,3 +1,4 @@
+import { BadgeField, SingleFieldList } from "@/components/admin";
 import { DateField } from "@/components/admin/date-field";
 import { NumberField } from "@/components/admin/number-field";
 import { RecordField } from "@/components/admin/record-field";
@@ -10,7 +11,9 @@ export const UserShow = () => (
         <NumberField source="id" />
       </RecordField>
       <RecordField source="username" />
-      <RecordField source="roles" />
+      <BadgeField source="roles">
+        <SingleFieldList />
+      </BadgeField>
       <RecordField source="displayName" />
       <RecordField source="email" />
       <RecordField source="createdAt">
