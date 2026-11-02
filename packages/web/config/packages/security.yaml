@@ -27,9 +27,10 @@ security:
       pattern: ^/api/
       json_login:
         check_path: api_login
-      access_token:
-        token_handler: App\Security\AccessTokenHandler
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
       stateless: true
+      jwt: ~
     main:
       lazy: true
       provider: app_user_provider
