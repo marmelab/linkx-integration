@@ -1,6 +1,7 @@
-import { BadgeField, DateField } from "@/components/admin";
+import { DateField } from "@/components/admin";
 import { DataTable } from "@/components/admin/data-table";
 import { List } from "@/components/admin/list";
+import { RolesField } from "@/components/admin/roles-field";
 import { getClientTimezone } from "@/lib/get-client-timezone";
 
 export const UserList = () => {
@@ -13,7 +14,7 @@ export const UserList = () => {
         <DataTable.Col source="username" />
         <DataTable.Col source="email" />
         <DataTable.Col source="roles">
-          <BadgeField source="roles" />
+          <RolesField />
         </DataTable.Col>
         <DataTable.Col source="createdAt">
           <DateField

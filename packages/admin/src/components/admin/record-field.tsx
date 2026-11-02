@@ -1,15 +1,16 @@
-import type { ReactNode, ElementType, HTMLAttributes } from "react";
-import { createElement } from "react";
 import type { ExtractRecordPaths, HintedString } from "ra-core";
+import type { ReactNode, ElementType, HTMLAttributes } from "react";
+
 import {
   FieldTitle,
   useRecordContext,
   useResourceContext,
   useTranslate,
 } from "ra-core";
-import { cn } from "@/lib/utils";
+import { createElement } from "react";
 
 import { TextField } from "@/components/admin/text-field";
+import { cn } from "@/lib/utils";
 
 /**
  * Displays a labeled field-value pair with flexible rendering options.
