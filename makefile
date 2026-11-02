@@ -26,7 +26,7 @@ run:
 	@pnpm --filter @linkx-integration/cli run run:cli --file=$(file)
 
 dev:
-	@make install && docker compose up -d
+	@make install && docker compose up -d && cd packages/admin && npm run dev
 
 mobile:
 	@cd packages/mobile && pnpm expo run:android
