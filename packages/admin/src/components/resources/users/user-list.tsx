@@ -8,6 +8,7 @@ const userListFilters = [<SearchInput source="q" alwaysOn />];
 
 export const UserList = () => {
   const timeZone = getClientTimezone();
+
   return (
     <List filters={userListFilters}>
       <DataTable>
