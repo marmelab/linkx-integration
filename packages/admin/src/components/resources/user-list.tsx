@@ -3,6 +3,7 @@ import { List } from "@/components/admin/list";
 import { getClientTimezone } from "@/lib/get-client-timezone";
 
 import { DateField } from "../admin";
+import { RolesField } from "../admin/roles-field";
 
 export const UserList = () => {
   const timeZone = getClientTimezone();
@@ -13,11 +14,12 @@ export const UserList = () => {
         <DataTable.Col source="displayName" />
         <DataTable.Col source="username" />
         <DataTable.Col source="email" />
-        <DataTable.Col source="roles" />
+        <DataTable.Col source="roles">
+          <RolesField />
+        </DataTable.Col>
         <DataTable.Col source="createdAt">
           <DateField
             source="createdAt"
-            showTime={true}
             options={{
               timeZone,
             }}
@@ -25,8 +27,7 @@ export const UserList = () => {
         </DataTable.Col>
         <DataTable.Col source="updatedAt">
           <DateField
-            source="createdAt"
-            showTime={true}
+            source="updatedAt"
             options={{
               timeZone,
             }}
