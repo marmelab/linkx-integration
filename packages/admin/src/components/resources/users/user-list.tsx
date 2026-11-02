@@ -1,8 +1,7 @@
+import { DateField } from "@/components/admin";
 import { DataTable } from "@/components/admin/data-table";
 import { List } from "@/components/admin/list";
 import { getClientTimezone } from "@/lib/get-client-timezone";
-
-import { DateField } from "../admin";
 
 export const UserList = () => {
   const timeZone = getClientTimezone();
@@ -25,7 +24,7 @@ export const UserList = () => {
         </DataTable.Col>
         <DataTable.Col source="updatedAt">
           <DateField
-            source="createdAt"
+            source="updatedAt"
             showTime={true}
             options={{
               timeZone,
