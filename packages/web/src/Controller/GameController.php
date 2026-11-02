@@ -7,10 +7,8 @@ use App\Entity\Game as GameEntity;
 use App\Entity\User;
 use App\Model\Move;
 use App\Model\Piece;
-use App\Repository\GameRepository;
 use App\Service\GamePersister;
 use App\Service\GameRunner;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,7 +56,7 @@ class GameController extends AbstractController
             ]);
         }
 
-        $gameEntity = $this->gamePersister->initGame($user);
+        $gameEntity = $this->gamePersister->initGame($user, null);
 
         return $this->redirect("/online-game/{$gameEntity->getId()}");
     }

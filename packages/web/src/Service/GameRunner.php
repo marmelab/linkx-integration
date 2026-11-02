@@ -56,6 +56,13 @@ class GameRunner
         return $this->getGame($state);
     }
 
+    public function skipTurn(Game $game)
+    {
+        $state = $game->getState() . " --";
+
+        return $this->getGame($state);
+    }
+
     public function undoTurn(Game $game, Move|string $moveToUndo)
     {
         // First move case

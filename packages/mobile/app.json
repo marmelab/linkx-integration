@@ -9,7 +9,11 @@
     "icon": "./assets/images/icon.png",
     "backgroundColor": "#E0F0F9",
     "ios": {
-      "icon": "./assets/images/icon.png"
+      "icon": "./assets/images/icon.png",
+      "bundleIdentifier": "com.marmelab.linkxintegration",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

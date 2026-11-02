@@ -4,14 +4,21 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import type { MultiPieceSelection, PieceSelection } from "@/model/game";
+import type {
+  MultiPieceSelection,
+  PieceModel,
+  PieceSelection,
+} from "@/model/game";
 import type { Move } from "@/model/move";
 
 import { RunningGameContext } from "@/context/running-game-context";
 import { getPieceKey } from "@/helper/get-piece-key";
+import { getPreviousPlayer } from "@/helper/get-previous-player";
 import { usePlayTurnMutation } from "@/hooks/games/use-play-turn-mutation";
+import { primary } from "@/style-constants";
 
 import GameLabel from "./game-label";
+import GamePlayerLabel from "./game-player-label";
 import Grid from "./grid";
 import PieceCarousel from "./piece-carousel";
 import PieceSelectionControls from "./piece-selection-controls";
@@ -53,6 +60,8 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
   const width =
     Dimensions.get("screen").width - 44 - insets.left - insets.right;
 
+  const previousPlayer = getPreviousPlayer(game);
+
   return (
     <View style={styles.game}>
       <View style={[styles.titleContainer, { width }]}>
@@ -92,11 +101,24 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
         }}
         width={width}
       />
-      {playTurnMutation.error ? (
+      {playTurnMutation.error && (
         <View style={[styles.errorContainer, { width }]}>
           <Text style={styles.errorText}>{playTurnMutation.error.message}</Text>
         </View>
-      ) : (
+      )}
+      {game.lastMove?.skipped && (
+        <View style={[styles.infoContainer, { width }]}>
+          <Text style={styles.infoText}>
+            The turn of{" "}
+            <GamePlayerLabel
+              player={previousPlayer}
+              fallbackName={game.lastMove?.color ?? "Unknown"}
+            />{" "}
+            was skipped because they could not play legal moves.
+          </Text>
+        </View>
+      )}
+      {!playTurnMutation.error && !game.lastMove?.skipped && (
         <View style={styles.noErrorPadding}>
           {(playTurnMutation.isPending || isLoading) && (
             <MaterialDesignIcons name="loading" color="#1993D0" size={30} />
@@ -114,7 +136,11 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
         />
         {piecesSelections.selectedKey ? (
           <PieceSelectionControls
-            onMirror={() => setPiecesSelections(mirrorPiece(piecesSelections))}
+            onMirror={() =>
+              setPiecesSelections(
+                mirrorPiece(piecesSelections, game.mappedPieces),
+              )
+            }
             onRotateClockwise={() =>
               setPiecesSelections(rotatePiece(piecesSelections, true))
             }
@@ -126,7 +152,7 @@ export default function Game({ onRequestClose, isLoading }: GameProps) {
           <View style={{ width: buttonWidth }} />
         )}
       </View>
-      <View style={[styles.actions, { paddingBottom: insets.bottom }]}>
+      <View style={styles.actions}>
         <PiecesMenu
           width={width}
           onSelection={(piece) =>
@@ -152,10 +178,25 @@ function selectPiece(
   };
 }
 
-function mirrorPiece(piecesSelections: MultiPieceSelection) {
+function mirrorPiece(
+  piecesSelections: MultiPieceSelection,
+  mappedPieces: { [key: string]: PieceModel },
+) {
   if (!piecesSelections.selectedKey) {
     return piecesSelections;
   }
+
+  const canBeMirrored =
+    mappedPieces[piecesSelections.selectedKey].possibleMatrices[0].mirrored
+      .length === 1;
+  const updatedRotation = canBeMirrored
+    ? reverseOddRotations(
+        piecesSelections.pieces[piecesSelections.selectedKey].selectedRotation,
+      )
+    : replicateMirrorWithRotation(
+        piecesSelections.pieces[piecesSelections.selectedKey].pieceName,
+        piecesSelections.pieces[piecesSelections.selectedKey].selectedRotation,
+      );
 
   return {
     ...piecesSelections,
@@ -163,10 +204,7 @@ function mirrorPiece(piecesSelections: MultiPieceSelection) {
       ...piecesSelections.pieces,
       [piecesSelections.selectedKey]: {
         ...piecesSelections.pieces[piecesSelections.selectedKey],
-        selectedRotation: reverseOddRotations(
-          piecesSelections.pieces[piecesSelections.selectedKey]
-            .selectedRotation,
-        ),
+        selectedRotation: updatedRotation,
         mirrored:
           !piecesSelections.pieces[piecesSelections.selectedKey].mirrored,
       },
@@ -205,6 +243,30 @@ function correctRotationOverFlow(rotation: number) {
   return updatedRotation;
 }
 
+function replicateMirrorWithRotation(
+  pieceName: string,
+  rotation: number,
+): number {
+  if (pieceName === "3L") {
+    switch (rotation) {
+      case 0:
+        return 3;
+      case 1:
+        return 2;
+      case 2:
+        return 1;
+      case 3:
+        return 0;
+    }
+  }
+
+  if (pieceName === "4T") {
+    return reverseOddRotations(rotation);
+  }
+
+  return rotation;
+}
+
 function reverseOddRotations(rotation: number) {
   if (rotation === 1) {
     return 3;
@@ -233,10 +295,8 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   button: {
-    minWidth: 44,
-    minHeight: 44,
     padding: 10,
-    textAlign: "center",
+    paddingLeft: 0,
     alignItems: "center",
   },
   errorText: {
@@ -247,6 +307,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFC8C0",
     borderWidth: 1,
     borderColor: "#9C4438",
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  infoText: {
+    color: primary[800],
+  },
+  infoContainer: {
+    padding: 3,
+    backgroundColor: primary[100],
+    height: 45, // Fixed height to avoid jumps on the interface
+    borderWidth: 1,
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",

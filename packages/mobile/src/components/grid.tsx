@@ -45,7 +45,15 @@ export default function Grid({
                   onPress={() => onColumnSelection(x)}
                   key={`${x}.${y}:${game.grid[x][y]}`}
                 >
-                  <Cell width={cellWidth} cellValue={game.grid[x][y]}></Cell>
+                  <Cell
+                    width={cellWidth}
+                    cellValue={game.grid[x][y]}
+                    isVictoryPath={
+                      !!game.victory?.find(
+                        (victoryPathElem) => victoryPathElem === `${x}.${y}`,
+                      )
+                    }
+                  ></Cell>
                 </Pressable>
               );
             })}

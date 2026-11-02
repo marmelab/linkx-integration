@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import type { MultiPieceSelection, PieceSelection } from "@/model/game";
 
@@ -33,29 +33,24 @@ export default function PieceCarousel({
   );
 
   return (
-    <View style={{ flex: 0 }}>
-      <ScrollView
-        style={{ flex: 0 }}
-        contentContainerStyle={[styles.container, { gap: pieceGap }]}
-      >
-        {carouselPieces.map((pieceSelection) => {
-          const pieceKey = getPieceKey(
-            pieceSelection.color,
-            pieceSelection.pieceName,
-          );
-          return (
-            <Piece
-              selected={pieceKey === piecesSelections.selectedKey}
-              disabled={disabled}
-              contentContainerStyle={{ width: pieceWidth }}
-              key={`${pieceKey}-${pieceKey === piecesSelections.selectedKey}`}
-              width={pieceWidth}
-              pieceSelection={pieceSelection}
-              onPressOut={() => onSelection(pieceSelection)}
-            />
-          );
-        })}
-      </ScrollView>
+    <View style={[{ flex: 0, gap: pieceGap }, styles.container]}>
+      {carouselPieces.map((pieceSelection) => {
+        const pieceKey = getPieceKey(
+          pieceSelection.color,
+          pieceSelection.pieceName,
+        );
+        return (
+          <Piece
+            selected={pieceKey === piecesSelections.selectedKey}
+            disabled={disabled}
+            contentContainerStyle={{ width: pieceWidth }}
+            key={`${pieceKey}-${pieceKey === piecesSelections.selectedKey}`}
+            width={pieceWidth}
+            pieceSelection={pieceSelection}
+            onPressOut={() => onSelection(pieceSelection)}
+          />
+        );
+      })}
     </View>
   );
 }

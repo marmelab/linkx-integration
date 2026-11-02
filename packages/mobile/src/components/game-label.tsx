@@ -59,7 +59,6 @@ export default function GameLabel() {
       )}
       {!game.completed && (
         <Text style={styles.subHeading}>
-          Turn of{" "}
           {game.turnOfPlayer === "blue" ? (
             <GamePlayerLabel
               fallbackName="Blue"
@@ -73,6 +72,7 @@ export default function GameLabel() {
               style={styles.textWhite}
             />
           )}
+          's Turn
         </Text>
       )}
     </View>
@@ -81,12 +81,10 @@ export default function GameLabel() {
 
 const styles = StyleSheet.create({
   heading: {
-    textAlign: "center",
     fontSize: 26,
     flex: 0,
   },
   subHeading: {
-    textAlign: "center",
     fontSize: 20,
     color: "#666",
   },

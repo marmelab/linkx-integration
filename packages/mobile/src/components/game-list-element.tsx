@@ -28,18 +28,17 @@ export default function GameListElement({
 const styles = StyleSheet.create({
   listElement: {
     flexDirection: "row",
-    backgroundColor: primary[300],
-    borderWidth: 1,
-    borderColor: "black",
+    borderWidth: 2,
+    borderColor: primary[800],
     alignItems: "center",
     justifyContent: "center",
     height: 64,
     marginBottom: 8,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   basicText: {
     textAlign: "center",
-    color: "#333333",
+    color: primary[800],
     fontSize: 24,
   },
 });

@@ -166,28 +166,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     flexWrap: "wrap",
     borderRadius: 15,
-    margin: 11,
+    paddingTop: 11,
     gap: 8,
   },
   button: {
     minWidth: 44,
     minHeight: 44,
     borderRadius: 20,
-    elevation: 2,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
   },
   buttonText: {
     fontSize: 22,
+    color: primary[800],
   },
   buttonOpen: {
-    backgroundColor: primary[300],
-    borderColor: primary[700],
+    borderColor: primary[800],
   },
   buttonReturn: {
-    backgroundColor: primary[300],
-    borderColor: primary[700],
+    borderColor: primary[800],
   },
   actions: {
     paddingTop: 16,
