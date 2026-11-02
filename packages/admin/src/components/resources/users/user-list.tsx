@@ -1,13 +1,16 @@
-import { DateField } from "@/components/admin";
+import { DateField, SearchInput } from "@/components/admin";
 import { DataTable } from "@/components/admin/data-table";
 import { List } from "@/components/admin/list";
 import { RolesField } from "@/components/admin/roles-field";
 import { getClientTimezone } from "@/lib/get-client-timezone";
 
+const userListFilters = [<SearchInput source="q" alwaysOn />];
+
 export const UserList = () => {
   const timeZone = getClientTimezone();
+
   return (
-    <List>
+    <List filters={userListFilters}>
       <DataTable>
         <DataTable.Col source="id" />
         <DataTable.Col source="displayName" />
