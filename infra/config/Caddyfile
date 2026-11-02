@@ -8,6 +8,7 @@
 linkx-integration.marmelab.com {
 	
 	redir /apk /apk/ permanent
+	redir /admin /admin/ permanent
 	handle_path /apk/* {
 		encode gzip
 		root * /apk
@@ -15,6 +16,13 @@ linkx-integration.marmelab.com {
 			browse
 			index latest.apk
 		}
+	}
+	handle_path /admin/* {
+		# No auth: this is only the admin front-end and requires login to php
+		root * /admin
+		encode gzip
+		try_files {path} /index.html
+		file_server
 	}
     handle {
         # Http is acceptable because every message is within the docker virtual network

@@ -35,7 +35,10 @@ stop:
 	@docker compose down
 
 build:
-	@docker compose build
+	@docker compose build && cd packages/admin && npm run build
+
+build-admin:
+	@cd packages/admin && npm run build
 
 android:
 	@cd packages/mobile && pnpm --filter @linkx-integration/mobile run build:android:dev
