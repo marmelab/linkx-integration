@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -60,6 +62,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Groups(['admin-view'])]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[OneToMany(targetEntity: User::class, mappedBy: 'firstPlayer', cascade: ['remove'])]
+    private Collection $gamesAsBlue;
+
+    #[OneToMany(targetEntity: User::class, mappedBy: 'secondPlayer', cascade: ['remove'])]
+    private Collection $gamesAsWhite;
 
     #[ORM\PrePersist]
     public function updateCreatedAt()

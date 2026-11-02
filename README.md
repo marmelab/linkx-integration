@@ -16,7 +16,7 @@ make dev
 Web version: https://localhost/game
 Api: http://localhost:3005
 Swagger: http://localhost:3080
-Admin: http://localhost:6173
+Admin: http://localhost:5173
 
 After using make install or modifying the node files, you need to rebuild:
 
