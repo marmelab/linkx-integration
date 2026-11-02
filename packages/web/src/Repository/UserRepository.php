@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,6 +34,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return User[]
+     */
+    public function findFilteredBy(array $filter, array $sort, int $limit, int $offset): array
+    {
+        $qb = $this->getFilteredQueryForList($filter);
+
+        foreach ($sort as $key => $direction) {
+            $qb->addOrderBy("u.$key", $direction);
+        }
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function countFilteredBy(array $filter)
+    {
+        $qb = $this->getFilteredQueryForList($filter)
+            ->select('count(u.id)');
+
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
     public function findByUniqueUsername(array $value): ?User
     {
         return $this->createQueryBuilder('u')
@@ -51,5 +80,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getOneOrNullResult()
         ;
+    }
+
+    protected function getFilteredQueryForList(array $filter)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        if (!empty($filter['q'])) {
+            $qb->andWhere("LOWER(u.displayName) LIKE LOWER(:q)")
+                ->orWhere("LOWER(u.email) LIKE LOWER(:q)")
+                ->setParameter('q', '%' . $filter['q'] . '%');
+        }
+
+        return $qb;
     }
 }
