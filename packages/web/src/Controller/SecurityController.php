@@ -44,6 +44,7 @@ class SecurityController extends AbstractController
         try {
             if ($request->getMethod() === 'POST') {
                 $authService->registerUser(
+                    $request->getPayload()->get('email'),
                     $request->getPayload()->get('_username'),
                     $request->getPayload()->get('_password'),
                     $request->getPayload()->get('display-name'),

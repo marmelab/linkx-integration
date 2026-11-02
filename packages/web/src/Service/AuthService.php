@@ -21,13 +21,14 @@ class AuthService
     /**
      * @throws ValidationFailedException
      */
-    public function registerUser(string $username, string $password, ?string $displayName): User
+    public function registerUser(string $email, string $username, string $password, ?string $displayName): User
     {
         $user = new User();
 
         $user->setUsername($username);
         $user->setDisplayName(!empty($displayName) ? $displayName : $username);
         $user->setPassword($password);
+        $user->setEmail($email);
         $constraints = $this->validator->validate($user);
         if (count($constraints) > 0) {
             throw new ValidationFailedException("Validation failed.", $constraints);

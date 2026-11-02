@@ -79,6 +79,8 @@ services:
       target: dev
     restart: unless-stopped
     env_file: packages/admin/.env
+    volumes:
+      - ./packages/admin:/app/packages/admin
     ports:
       - "6173:5173"
 
