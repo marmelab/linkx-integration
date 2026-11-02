@@ -19,6 +19,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./apk:/apk
+      - ./admin:/admin
       - caddy_proxy_data:/data
       - caddy_proxy_config:/config
   php:

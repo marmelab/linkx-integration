@@ -10,8 +10,8 @@ RUN mkdir -p /app/packages && chown node:node /app /app/packages
 USER node
 
 ADD --chown=node:node makefile /app/
-ADD --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml /app/
-ADD --chown=node:node packages/admin/package.json /app/packages/admin/
+ADD --chown=node:node package.json package-lock.json /app/
+ADD --chown=node:node packages/admin/package.json packages/admin/package-lock.json /app/packages/admin/
 
 WORKDIR /app/packages/admin
 
@@ -23,4 +23,4 @@ FROM base AS dev
 
 WORKDIR /app/packages/admin
 
-CMD ["pnpm", "run", "dev"]
+CMD ["npm", "run", "dev"]

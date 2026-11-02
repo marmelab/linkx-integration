@@ -102,8 +102,18 @@ make test
 
 **Make sure you are on main before deploying!**
 
-This command takes 10-30min to complete, as it will start a gradle build for the android app on top of the APIs.
+### Web only (without android app)
+
+By default, android is not included because the deploy time goes from under a minute to 10-30min when building the android version.
 
 ```bash
 DOMAIN=linkx-integration.marmelab.com make deploy
+```
+
+### With android (full deployment)
+
+This command takes 10-30min to complete, as it will start a gradle build for the android app on top of the APIs.
+
+```bash
+DOMAIN=linkx-integration.marmelab.com BUILD_MODE=FULL make deploy
 ```
