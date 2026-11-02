@@ -18,7 +18,7 @@ docker build --platform linux/amd64 -f packages/web/Dockerfile -t frankenphp_pro
 if [[ "$BUILD_MODE_VAR" = "FULL" ]]; then
 	make android
 fi
-make build-admin
+make build-admin-prod
 
 echo "Beginning transfer to server..."
 
@@ -30,6 +30,8 @@ docker save node-linkx-integration:prod frankenphp_prod \
 
 scp $SSH_OPTS ./compose.prod.yaml infra/config/Caddyfile "$SSH_USER@$SSH_HOST:~/"
 
+ssh $SSH_OPTS "$SSH_USER@$SSH_HOST" \
+	'rm -fr ~/admin'
 scp -r $SSH_OPTS ./packages/admin/dist "$SSH_USER@$SSH_HOST:~/admin"
 
 if [[ "$BUILD_MODE_VAR" = "FULL" ]]; then
