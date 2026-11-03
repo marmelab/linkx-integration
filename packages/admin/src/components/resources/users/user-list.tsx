@@ -30,7 +30,6 @@ export const UserList = () => {
         <DataTable.Col source="updatedAt">
           <DateField
             source="updatedAt"
-            showTime={true}
             options={{
               timeZone,
             }}
