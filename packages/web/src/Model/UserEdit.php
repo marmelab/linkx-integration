@@ -7,6 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UserEdit
 {
 
+    // Ignored
+    private ?int $id = null;
+
     #[Assert\NotBlank]
     #[Assert\Length(max: 180)]
     private ?string $username = null;
@@ -18,6 +21,9 @@ class UserEdit
     #[Assert\NotBlank]
     #[Assert\Email]
     private ?string $email = null;
+
+    // Ignored (for now)
+    private array $roles = [];
 
     /**
      * Get the value of username
@@ -87,6 +93,30 @@ class UserEdit
     public function setEmail(?string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
 
         return $this;
     }
