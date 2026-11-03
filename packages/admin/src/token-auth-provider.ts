@@ -41,6 +41,9 @@ export const authProvider: AuthProvider = {
     if (error.status === 401) {
       throw new Error("Session expired.");
     }
+    if (error.status === 403) {
+      throw new Error("You cannot access this page.");
+    }
   },
   checkAuth: async () => {
     const payload = localStorage.getItem(PAYLOAD_KEY);
