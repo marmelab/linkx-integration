@@ -13,7 +13,6 @@ export const UserList = () => {
   return (
     <List title={<UserListTitle />} filters={userListFilters}>
       <DataTable>
-        <DataTable.Col source="id" />
         <DataTable.Col source="displayName" />
         <DataTable.Col source="username" />
         <DataTable.Col source="email" />
