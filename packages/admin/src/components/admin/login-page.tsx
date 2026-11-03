@@ -76,9 +76,6 @@ export const LoginPage = (props: { redirectTo?: string }) => {
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-              <p className="text-muted-foreground text-sm leading-none">
-                Try janedoe@marmelab.com / password
-              </p>
             </div>
             <Form className="space-y-8" onSubmit={handleSubmit}>
               <TextInput
