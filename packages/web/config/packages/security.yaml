@@ -23,13 +23,16 @@ security:
     api_public:
       pattern: ^/api/games/?
       security: false
+    api_login:
+      pattern: ^/api/user/login
+      json_login:
+        check_path: api_user_login
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
     api:
       pattern: ^/api/
-      json_login:
-        check_path: api_login
-      access_token:
-        token_handler: App\Security\AccessTokenHandler
       stateless: true
+      jwt: ~
     main:
       lazy: true
       provider: app_user_provider
@@ -45,7 +48,7 @@ security:
   access_control:
     - { path: ^/(login|register), roles: PUBLIC_ACCESS }
     - { path: ^/api/user/(login|register), roles: PUBLIC_ACCESS }
-    - { path: ^/api/admin/, roles: PUBLIC_ACCESS } # TODO Auth for admin in later ticket
+    - { path: ^/api/admin/, roles: ROLE_ADMIN }
     - { path: ^/, roles: ROLE_USER }
 
 when@test:

@@ -71,24 +71,11 @@ export const LoginPage = (props: { redirectTo?: string }) => {
             </svg>
             Linkx intégration
           </div>
-          <div className="relative z-20 mt-auto">
-            <blockquote className="space-y-2">
-              <p className="text-lg">
-                &ldquo;Shadcn Admin Kit has allowed us to quickly create and
-                evolve a powerful tool that otherwise would have taken months of
-                time and effort to develop.&rdquo;
-              </p>
-              <footer className="text-sm">John Doe</footer>
-            </blockquote>
-          </div>
         </div>
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-              <p className="text-muted-foreground text-sm leading-none">
-                Try janedoe@acme.com / password
-              </p>
             </div>
             <Form className="space-y-8" onSubmit={handleSubmit}>
               <TextInput

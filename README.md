@@ -24,9 +24,9 @@ After using make install or modifying the node files, you need to rebuild:
 docker-compose build && docker-compose up
 ```
 
-## On native mobile
+### On native mobile
 
-You need android studio with a working emulator.
+You need android studio with a working emulator, or a device connected through adb.
 [Expo documentation](https://docs.expo.dev/workflow/android-studio-emulator/)
 
 Dev mode :
@@ -38,7 +38,7 @@ make mobile
 Add to your `.env.local` `EXPO_PUBLIC_API_URL=http://<your LOCAL ip here>/api`.
 Example: `EXPO_PUBLIC_API_URL=http://192.168.1.XXX/api`
 
-## Using cli mode
+### Using cli mode
 
 You need **Node v26** (see `.nvmrc`) and **pnpm 12**. Or open the repository in the devcontainer, which ships with both.
 
@@ -75,7 +75,10 @@ A husky pre-commit hook runs `make lint-staged`, which lints and formats only th
 ## Stack
 
 - TypeScript, run directly by Node: no build step.
-- pnpm workspace: each package lives in `packages/`.
+- pnpm workspace: each package lives in `packages/`. Only the cli package is handled by pnpm. Others are handled through composer (web) or npm.
+- PHP for the public API, with Symfony. Twig is used for the Web package.
+- React-native w/ expo for the mobile package.
+- Shadcn-admin-kit for the admin package.
 - Vitest for tests, oxlint (type-aware) for linting, oxfmt for formatting.
 - Dependency versions are pinned once in the `catalog` of `pnpm-workspace.yaml`; packages reference them as `catalog:`. pnpm refuses releases younger than three days.
 
