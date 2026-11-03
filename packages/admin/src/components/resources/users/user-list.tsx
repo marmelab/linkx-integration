@@ -47,7 +47,7 @@ const UserListTitle = () => {
     <CardTitle>
       <h2 className="mb-2 text-2xl font-bold tracking-tight">Users</h2>
       <h3 className="text-muted-foreground text-l mb-2 tracking-tight">
-        <Count /> users registered.
+        <Count /> users registered
       </h3>
     </CardTitle>
   );
