@@ -4,6 +4,7 @@ import b64DecodeMultibytes from "./lib/b64-decode-multibytes";
 import getCookie from "./lib/get-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const PAYLOAD_KEY = "token-payload";
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
@@ -30,10 +31,7 @@ export const authProvider: AuthProvider = {
         throw new Error("Error met while parsing server response.");
       }
 
-      localStorage.setItem(
-        "token-payload",
-        JSON.stringify(b64DecodeMultibytes(encodedPayload)),
-      );
+      localStorage.setItem(PAYLOAD_KEY, b64DecodeMultibytes(encodedPayload));
     } catch (error) {
       console.error(error);
       throw error;
@@ -45,7 +43,7 @@ export const authProvider: AuthProvider = {
     }
   },
   checkAuth: async () => {
-    const payload = localStorage.getItem("token-payload");
+    const payload = localStorage.getItem(PAYLOAD_KEY);
 
     if (payload) {
       const expiration = JSON.parse(payload).exp;
@@ -57,20 +55,20 @@ export const authProvider: AuthProvider = {
     throw new Error("Session expired.");
   },
   logout: async () => {
-    localStorage.removeItem("token-payload");
+    localStorage.removeItem(PAYLOAD_KEY);
     await fetch(`${API_URL}/user/logout`, {
       method: "POST",
       credentials: "include",
     });
   },
   getIdentity: async () => {
-    const tokenPayloadJson = localStorage.getItem("token-payload");
+    const tokenPayloadJson = localStorage.getItem(PAYLOAD_KEY);
 
     if (tokenPayloadJson) {
       const tokenPayload = JSON.parse(tokenPayloadJson);
       return {
         id: tokenPayload.id,
-        fullName: tokenPayload.displayName,
+        fullName: tokenPayload.fullName,
       };
     }
     throw new Error("Not logged in.");
