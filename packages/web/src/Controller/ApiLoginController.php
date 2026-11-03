@@ -18,43 +18,9 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 final class ApiLoginController extends AbstractController
 {
     #[Route('/api/user/login', name: 'api_user_login', methods: ['POST'])]
-    public function login(#[CurrentUser] ?User $user, EntityManagerInterface $em, JWTTokenManagerInterface $JWTManager): JsonResponse
+    public function login()
     {
-        if (empty($user)) {
-            return $this->json([
-                'message' => 'missing_credentials'
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $expiration = new \DateTimeImmutable('+1 hour');
-
-        $token = $JWTManager->createFromPayload($user, [
-            'exp' => ($expiration)->getTimestamp(),
-            'id' => $user->getId(),
-            'displayName' => $user->getDisplayName(),
-            'email' => $user->getEmail(),
-            'roles' => $user->getRoles(),
-            'domain' => $_ENV['DEFAULT_URI'],
-        ]);
-
-        $em->flush();
-
-        $cookie = Cookie::create('BEARER')
-            ->withValue($token)
-            ->withExpires($expiration)
-            ->withDomain($_ENV['DEFAULT_URI'])
-            ->withSecure($_ENV['APP_ENV'] !== "dev")
-            ->withHttpOnly(true)
-            ->withSameSite(Cookie::SAMESITE_LAX);
-
-        $response = $this->json([
-            'username' => $user->getUsername(),
-            'token' => $token,
-        ]);
-
-        $response->headers->setCookie($cookie);
-
-        return $response;
+        // Handled by Lexit Jwt bundle
     }
 
     #[Route('/api/user/logout', methods: ['POST'])]
@@ -62,7 +28,7 @@ final class ApiLoginController extends AbstractController
     {
         // No ban functionality (yet), so we just have to remove the token from the client.
 
-        $response = $this->json(['message' => 'Token removed.'], 200, [$cookie]);
+        $response = $this->json(['message' => 'Token removed.'], 200, []);
 
         $response->headers->clearCookie("BEARER");
 

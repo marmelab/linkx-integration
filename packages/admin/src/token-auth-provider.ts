@@ -1,6 +1,7 @@
 import type { AuthProvider } from "ra-core";
 
-import { jwtDecode } from "jwt-decode";
+import b64DecodeMultibytes from "./lib/b64-decode-multibytes";
+import getCookie from "./lib/get-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,18 +16,28 @@ export const authProvider: AuthProvider = {
       credentials: "include", // Allows fetch to save the cookie
     });
 
-    const responseBody = await loginResponse.json();
     if (!loginResponse.ok) {
+      const responseBody = await loginResponse.json();
       throw new Error("Login failed: " + responseBody.message);
     }
 
-    // Local storage keeps only the payload.
-    // The token itself is set in a cookie with httpOnly.
-    console.log(jwtDecode(responseBody.token));
-    localStorage.setItem(
-      "token-payload",
-      JSON.stringify(jwtDecode(responseBody.token)),
-    );
+    try {
+      const headerPayloadCookie = getCookie("jwt_hp");
+      const encodedPayload = headerPayloadCookie?.substring(
+        headerPayloadCookie?.indexOf(".") + 1,
+      );
+      if (!encodedPayload) {
+        throw new Error("Error met while parsing server response.");
+      }
+
+      localStorage.setItem(
+        "token-payload",
+        JSON.stringify(b64DecodeMultibytes(encodedPayload)),
+      );
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   },
   checkError: async (error) => {
     if (error.status === 401) {
@@ -49,6 +60,7 @@ export const authProvider: AuthProvider = {
     localStorage.removeItem("token-payload");
     await fetch(`${API_URL}/user/logout`, {
       method: "POST",
+      credentials: "include",
     });
   },
   getIdentity: async () => {
