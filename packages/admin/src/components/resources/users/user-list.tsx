@@ -17,7 +17,7 @@ export const UserList = () => {
         <DataTable.Col source="displayName" />
         <DataTable.Col source="username" />
         <DataTable.Col source="email" />
-        <DataTable.Col source="roles">
+        <DataTable.Col disableSort source="roles">
           <RolesField />
         </DataTable.Col>
         <DataTable.Col source="createdAt">
