@@ -18,7 +18,6 @@ export const UserEdit = () => {
         <TextInput source="displayName" validate={required()} />
         <TextInput source="username" validate={required()} />
         <TextInput source="email" validate={required()} />
-        <TextInput source="roles" hidden disabled />
         <RolesField label="Roles" />
         <DateTimeInput source="createdAt" disabled />
         <DateTimeInput source="updatedAt" disabled />
