@@ -48,9 +48,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['self', 'list-view', 'game-view', 'admin-view'])]
     private ?string $displayName = null;
 
-    #[ORM\Column(length: 64, nullable: true)]
-    private ?string $currentToken = null;
-
     #[ORM\Column(length: 254)]
     #[Groups(['admin-view'])]
     private ?string $email = null;
@@ -166,18 +163,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDisplayName(string $displayName): static
     {
         $this->displayName = $displayName;
-
-        return $this;
-    }
-
-    public function getCurrentToken(): ?string
-    {
-        return $this->currentToken;
-    }
-
-    public function setCurrentToken(?string $currentToken): static
-    {
-        $this->currentToken = $currentToken;
 
         return $this;
     }

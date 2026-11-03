@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\AuthService;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +17,8 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 
 final class ApiLoginController extends AbstractController
 {
-    #[Route('/api/user/login', name: 'api_login')]
-    public function login(#[CurrentUser] ?User $user, EntityManagerInterface $em): JsonResponse
+    #[Route('/api/user/login', name: 'api_user_login', methods: ['POST'])]
+    public function login(#[CurrentUser] ?User $user, EntityManagerInterface $em, JWTTokenManagerInterface $JWTManager): JsonResponse
     {
         if (empty($user)) {
             return $this->json([
@@ -25,24 +26,47 @@ final class ApiLoginController extends AbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = bin2hex(openssl_random_pseudo_bytes(32));
-        $user->setCurrentToken($token);
+        $expiration = new \DateTimeImmutable('+1 hour');
+
+        $token = $JWTManager->createFromPayload($user, [
+            'exp' => ($expiration)->getTimestamp(),
+            'id' => $user->getId(),
+            'displayName' => $user->getDisplayName(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
+            'domain' => $_ENV['DEFAULT_URI'],
+        ]);
 
         $em->flush();
 
-        return $this->json([
+        $cookie = Cookie::create('BEARER')
+            ->withValue($token)
+            ->withExpires($expiration)
+            ->withDomain($_ENV['DEFAULT_URI'])
+            ->withSecure($_ENV['APP_ENV'] !== "dev")
+            ->withHttpOnly(true)
+            ->withSameSite(Cookie::SAMESITE_LAX);
+
+        $response = $this->json([
             'username' => $user->getUsername(),
-            'token' => $user->getCurrentToken(),
+            'token' => $token,
         ]);
+
+        $response->headers->setCookie($cookie);
+
+        return $response;
     }
 
     #[Route('/api/user/logout', methods: ['POST'])]
     public function logout(#[CurrentUser] User $user, EntityManagerInterface $em): JsonResponse
     {
-        $user->setCurrentToken(null);
-        $em->flush();
+        // No ban functionality (yet), so we just have to remove the token from the client.
 
-        return $this->json(['message' => 'Token removed.']);
+        $response = $this->json(['message' => 'Token removed.'], 200, [$cookie]);
+
+        $response->headers->clearCookie("BEARER");
+
+        return $response;
     }
 
     #[Route('/api/user/register', methods: ['POST'])]

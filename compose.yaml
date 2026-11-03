@@ -32,9 +32,6 @@ services:
       postgres-dev:
         condition: service_healthy
         restart: true
-    environment:
-      DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
-      DATABASE_URL: ${DATABASE_URL}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
