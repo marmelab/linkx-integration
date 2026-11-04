@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Game as GameEntity;
 use App\Entity\User;
+use App\Enum\GameStatus;
 use App\Model\Game;
 use App\Model\GameOptions;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,8 +44,19 @@ class GamePersister
             return $value;
         });
 
-        if (!empty($game->getVictory()) || !$canAnyonePlay) {
-            $gameEntity->setCompleted(true);
+
+        if (!$canAnyonePlay) {
+            $gameEntity->setStatus(GameStatus::BLOCKED);
+            // TODO in next PR: get victor from largest area
+        } else if (!empty($game->getVictory())) {
+            $gameEntity->setStatus(GameStatus::EDGES_LINKED);
+            if (!is_null($gameEntity->getSecondPlayer())) {
+                $gameEntity->setVictor(
+                    $game->getLastMove()->getColor() === "blue"
+                        ? $gameEntity->getFirstPlayer()
+                        : $gameEntity->getSecondPlayer()
+                );
+            }
         }
 
         $gameEntity->setState($game->getState());
