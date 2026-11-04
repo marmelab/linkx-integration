@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
@@ -60,11 +61,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['admin-view'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * Only present for the cascade
+     * @var Collection<int, Game>
+     */
     #[OneToMany(targetEntity: User::class, mappedBy: 'firstPlayer', cascade: ['remove'])]
     private Collection $gamesAsBlue;
 
+    /**
+     * Only present for the cascade
+     * @var Collection<int, Game>
+     */
     #[OneToMany(targetEntity: User::class, mappedBy: 'secondPlayer', cascade: ['remove'])]
     private Collection $gamesAsWhite;
+
+    /**
+     * @var Collection<int, Game>
+     */
+    #[ORM\OneToMany(targetEntity: Game::class, mappedBy: 'victor', cascade: ['remove'])]
+    private Collection $wonGames;
+
+    public function __construct()
+    {
+        $this->wonGames = new ArrayCollection();
+        $this->gamesAsBlue = new ArrayCollection();
+        $this->gamesAsWhite = new ArrayCollection();
+    }
 
     #[ORM\PrePersist]
     public function updateCreatedAt()
@@ -201,6 +223,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getWonGames(): Collection
+    {
+        return $this->wonGames;
+    }
+
+    public function addWonGame(Game $wonGame): static
+    {
+        if (!$this->wonGames->contains($wonGame)) {
+            $this->wonGames->add($wonGame);
+            $wonGame->setVictor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWonGame(Game $wonGame): static
+    {
+        if ($this->wonGames->removeElement($wonGame)) {
+            // set the owning side to null (unless already changed)
+            if ($wonGame->getVictor() === $this) {
+                $wonGame->setVictor(null);
+            }
+        }
 
         return $this;
     }
