@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -60,11 +60,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['admin-view'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[OneToMany(targetEntity: User::class, mappedBy: 'firstPlayer', cascade: ['remove'])]
+    /**
+     * @var Collection<int, Game>
+     */
+    #[ORM\OneToMany(targetEntity: Game::class, mappedBy: 'firstPlayer', cascade: ['remove'])]
     private Collection $gamesAsBlue;
 
-    #[OneToMany(targetEntity: User::class, mappedBy: 'secondPlayer', cascade: ['remove'])]
+    /**
+     * @var Collection<int, Game>
+     */
+    #[ORM\OneToMany(targetEntity: Game::class, mappedBy: 'secondPlayer', cascade: ['remove'])]
     private Collection $gamesAsWhite;
+
+    public function __construct()
+    {
+        $this->gamesAsBlue = new ArrayCollection();
+        $this->gamesAsWhite = new ArrayCollection();
+    }
 
     #[ORM\PrePersist]
     public function updateCreatedAt()
@@ -201,6 +213,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGamesAsBlue(): Collection
+    {
+        return $this->gamesAsBlue;
+    }
+
+    public function addGamesAsBlue(Game $gamesAsBlue): static
+    {
+        if (!$this->gamesAsBlue->contains($gamesAsBlue)) {
+            $this->gamesAsBlue->add($gamesAsBlue);
+            $gamesAsBlue->setFirstPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGamesAsBlue(Game $gamesAsBlue): static
+    {
+        if ($this->gamesAsBlue->removeElement($gamesAsBlue)) {
+            // set the owning side to null (unless already changed)
+            if ($gamesAsBlue->getFirstPlayer() === $this) {
+                $gamesAsBlue->setFirstPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGamesAsWhite(): Collection
+    {
+        return $this->gamesAsWhite;
+    }
+
+    public function addGamesAsWhite(Game $gamesAsWhite): static
+    {
+        if (!$this->gamesAsWhite->contains($gamesAsWhite)) {
+            $this->gamesAsWhite->add($gamesAsWhite);
+            $gamesAsWhite->setSecondPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGamesAsWhite(Game $gamesAsWhite): static
+    {
+        if ($this->gamesAsWhite->removeElement($gamesAsWhite)) {
+            // set the owning side to null (unless already changed)
+            if ($gamesAsWhite->getSecondPlayer() === $this) {
+                $gamesAsWhite->setSecondPlayer(null);
+            }
+        }
 
         return $this;
     }

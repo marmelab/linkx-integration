@@ -22,11 +22,11 @@ class Game
     #[Groups(['list-view'])]
     private ?bool $completed = false;
 
-    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\ManyToOne(inversedBy: 'gamesAsBlue')]
     #[Groups(['list-view'])]
     private ?User $firstPlayer = null;
 
-    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\ManyToOne(inversedBy: 'gamesAsWhite')]
     #[Groups(['list-view'])]
     private ?User $secondPlayer = null;
 
@@ -79,7 +79,7 @@ class Game
         return $this->secondPlayer;
     }
 
-    public function setSecondPlayer(User $secondPlayer): static
+    public function setSecondPlayer(?User $secondPlayer): static
     {
         $this->secondPlayer = $secondPlayer;
 
