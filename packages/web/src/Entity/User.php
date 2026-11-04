@@ -6,7 +6,6 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -61,18 +60,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['admin-view'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    /**
-     * Only present for the cascade
-     * @var Collection<int, Game>
-     */
-    #[OneToMany(targetEntity: User::class, mappedBy: 'firstPlayer', cascade: ['remove'])]
-    private Collection $gamesAsBlue;
 
     /**
      * Only present for the cascade
      * @var Collection<int, Game>
      */
-    #[OneToMany(targetEntity: User::class, mappedBy: 'secondPlayer', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Game::class, mappedBy: 'firstPlayer', cascade: ['remove'])]
+    private Collection $gamesAsBlue;
+
+
+    /**
+     * Only present for the cascade
+     * @var Collection<int, Game>
+     */
+    #[ORM\OneToMany(targetEntity: Game::class, mappedBy: 'secondPlayer', cascade: ['remove'])]
     private Collection $gamesAsWhite;
 
     /**
@@ -251,6 +252,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($wonGame->getVictor() === $this) {
                 $wonGame->setVictor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGamesAsBlue(): Collection
+    {
+        return $this->gamesAsBlue;
+    }
+
+    public function addGamesAsBlue(Game $gamesAsBlue): static
+    {
+        if (!$this->gamesAsBlue->contains($gamesAsBlue)) {
+            $this->gamesAsBlue->add($gamesAsBlue);
+            $gamesAsBlue->setFirstPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGamesAsBlue(Game $gamesAsBlue): static
+    {
+        if ($this->gamesAsBlue->removeElement($gamesAsBlue)) {
+            // set the owning side to null (unless already changed)
+            if ($gamesAsBlue->getFirstPlayer() === $this) {
+                $gamesAsBlue->setFirstPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGamesAsWhite(): Collection
+    {
+        return $this->gamesAsWhite;
+    }
+
+    public function addGamesAsWhite(Game $gamesAsWhite): static
+    {
+        if (!$this->gamesAsWhite->contains($gamesAsWhite)) {
+            $this->gamesAsWhite->add($gamesAsWhite);
+            $gamesAsWhite->setSecondPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGamesAsWhite(Game $gamesAsWhite): static
+    {
+        if ($this->gamesAsWhite->removeElement($gamesAsWhite)) {
+            // set the owning side to null (unless already changed)
+            if ($gamesAsWhite->getSecondPlayer() === $this) {
+                $gamesAsWhite->setSecondPlayer(null);
             }
         }
 

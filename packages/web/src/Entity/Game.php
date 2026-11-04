@@ -20,11 +20,11 @@ class Game
     #[ORM\Column(length: 2000, nullable: true)]
     private ?string $state = null;
 
-    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\ManyToOne(inversedBy: 'gamesAsBlue')]
     #[Groups(['list-view', 'admin-game-view'])]
     private ?User $firstPlayer = null;
 
-    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\ManyToOne(inversedBy: 'gamesAsWhite')]
     #[Groups(['list-view', 'admin-game-view'])]
     private ?User $secondPlayer = null;
 
@@ -100,7 +100,7 @@ class Game
         return $this->secondPlayer;
     }
 
-    public function setSecondPlayer(User $secondPlayer): static
+    public function setSecondPlayer(?User $secondPlayer): static
     {
         $this->secondPlayer = $secondPlayer;
 
