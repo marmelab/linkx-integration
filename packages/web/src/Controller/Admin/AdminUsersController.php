@@ -71,7 +71,7 @@ class AdminUsersController extends AbstractController
     public function adminDeleteUser(User $userToDelete)
     {
         if (in_array("ROLE_ADMIN", $userToDelete->getRoles())) {
-            return $this->json(['message' => 'You cannot delete the account of an administrator.']);
+            return $this->json(['message' => 'You cannot delete the account of an administrator.'], 400);
         }
 
         $this->em->remove($userToDelete);

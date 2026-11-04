@@ -30,8 +30,13 @@ export const authProvider: AuthProvider = {
       if (!encodedPayload) {
         throw new Error("Error met while parsing server response.");
       }
+      const payloadJson = b64DecodeMultibytes(encodedPayload);
 
-      localStorage.setItem(PAYLOAD_KEY, b64DecodeMultibytes(encodedPayload));
+      if (!JSON.parse(payloadJson).roles.includes("ROLE_ADMIN")) {
+        throw new Error("You cannot access this page.");
+      }
+
+      localStorage.setItem(PAYLOAD_KEY, payloadJson);
     } catch (error) {
       console.error(error);
       throw error;
