@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -87,10 +86,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb = $this->createQueryBuilder('u');
 
         if (!empty($filter['q'])) {
-            $qb->andWhere("LOWER(u.displayName) LIKE LOWER(:q)")
-                ->orWhere("LOWER(u.username) LIKE LOWER(:q)")
-                ->orWhere("LOWER(u.email) LIKE LOWER(:q)")
+            $qb->andWhere($qb->expr()->orX(
+                "LOWER(u.displayName) LIKE LOWER(:q)",
+                "LOWER(u.username) LIKE LOWER(:q)",
+                "LOWER(u.email) LIKE LOWER(:q)"
+            ))
                 ->setParameter('q', '%' . $filter['q'] . '%');
+        }
+        if (!empty($filter['id'])) {
+            if (is_array($filter['id']) && !empty($filter['id'])) {
+                $qb->andWhere($qb->expr()->in('u.id', $filter['id']));
+            } else {
+                $qb->andWhere('u.id = :id')
+                    ->setParameter("id", $filter['id']);
+            }
         }
 
         return $qb;

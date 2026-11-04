@@ -22,7 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['admin-view'])]
+    #[Groups(['admin-view', 'admin-game-view'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -46,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['self', 'list-view', 'game-view', 'admin-view'])]
+    #[Groups(['self', 'list-view', 'game-view', 'admin-view', 'admin-game-view'])]
     private ?string $displayName = null;
 
     #[ORM\Column(length: 254)]

@@ -7,15 +7,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ListParams
 {
     #[Assert\GreaterThanOrEqual(0)]
-    private int $_start;
+    private ?int $_start = 0;
 
     #[Assert\GreaterThanOrEqual(0)]
-    private int $_end;
+    private ?int $_end = null;
 
-    private array|string $_sort;
+    private array|string|null $_sort = null;
 
     #[Assert\Regex("/(asc|desc)/i")]
-    private string $_order;
+    private ?string $_order = null;
 
     /**
      * Represents the full text search. Can be empty.
@@ -23,11 +23,19 @@ class ListParams
     private ?string $q = null;
 
     /**
+     * @var ?int[]
+     */
+    #[Assert\Count(max: 1000)] // Hard limit forced by the use of SQL's IN
+    private ?array $id = null;
+
+    private ?int $playerId = null;
+
+    /**
      * Get the value of _sort
      *
      * @return array|string
      */
-    public function get_sort(): array|string
+    public function get_sort(): array|string|null
     {
         return $this->_sort;
     }
@@ -51,7 +59,7 @@ class ListParams
      *
      * @return string
      */
-    public function get_order(): string
+    public function get_order(): ?string
     {
         return $this->_order;
     }
@@ -75,7 +83,7 @@ class ListParams
      *
      * @return int
      */
-    public function get_start(): int
+    public function get_start(): ?int
     {
         return $this->_start;
     }
@@ -99,7 +107,7 @@ class ListParams
      *
      * @return int
      */
-    public function get_end(): int
+    public function get_end(): ?int
     {
         return $this->_end;
     }
@@ -138,6 +146,36 @@ class ListParams
     public function setQ(?string $q): self
     {
         $this->q = $q;
+
+        return $this;
+    }
+
+    /**
+     * @return ?int[]
+     */
+    public function getId(): ?array
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param ?int[] $id
+     */
+    public function setId(?array $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getPlayerId(): ?int
+    {
+        return $this->playerId;
+    }
+
+    public function setPlayerId(?int $playerId): static
+    {
+        $this->playerId = $playerId;
 
         return $this;
     }
