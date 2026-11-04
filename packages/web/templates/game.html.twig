@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-    <link href="{{ asset('styles/game.css') }}" rel="stylesheet" />
+    <link href="{{ asset('styles/game.css') }}" rel="stylesheet"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -9,14 +9,14 @@
 
 {% block body %}
     <div id="container">
-        <form action="{{ id is not null ? '/online-game/' ~ id : '/game' }}" method="get">
+        <form action="{{ id is not null ? '/online-game/' ~ id : '/game' }}" method="post">
             {% if id is null and state is defined and state is not null %}
-                <input type="hidden" name="state" value="{{ state }}" />
+                <input type="hidden" name="state" value="{{ state }}"/>
             {% endif %}
             {% if selectedPiece is not null %}
-                <input type="hidden" name="selected" value="{{ selectedPiece.piece }}" />
-                <input type="hidden" name="mirror-piece" value="{{ selectedMirrored }}" />
-                <input type="hidden" name="rotate-piece" value="{{ selectedRotation }}" />
+                <input type="hidden" name="selected" value="{{ selectedPiece.piece }}"/>
+                <input type="hidden" name="mirror-piece" value="{{ selectedMirrored }}"/>
+                <input type="hidden" name="rotate-piece" value="{{ selectedRotation }}"/>
             {% endif %}
             <h2 class="dark-block game-title">
                 {% if game.victory and game.lastMove and game.lastMove.color === "blue" %}
@@ -36,7 +36,7 @@
             <div id="message-container">
                 {% if not isDraw %}
                     {% if infoMessage is defined and infoMessage is not null %}
-                        <div class="message message-info">{{ infoMessage }} <button class="button" type="submit">Refresh ⟳</button></div>
+                        <div class="message message-info">{{ infoMessage }}</div>
                     {% endif %}
                     {% if errorMessage is defined and errorMessage is not null %}
                         <div class="message message-error">{{ errorMessage }}</div>

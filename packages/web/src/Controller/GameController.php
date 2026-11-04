@@ -88,10 +88,10 @@ class GameController extends AbstractController
             $infoMessage = "You are a spectator of this game.";
         }
 
-        $selected = $request->query->get("selected");
-        $selectedMirrored = $request->query->get("mirror-piece") ?? false;
-        $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
-        $column = $request->query->get("column");
+        $selected = $request->getPayload()->get("selected");
+        $selectedMirrored = $request->getPayload()->get("mirror-piece") ?? false;
+        $selectedRotation = $this->formatRotation($request->getPayload()->get("rotate-piece"));
+        $column = $request->getPayload()->get("column");
 
         [$render, $game] = $this->runAndRenderGame(
             $user,
@@ -168,6 +168,8 @@ class GameController extends AbstractController
                 return $piece->getPiece() === $selected;
             });
 
+            $baseResponse = new Response('', 200, !$isYourTurn ? ['Refresh' => 2] : []);
+
             return [$this->render('game.html.twig', [
                 'id' => $gameEntity ? $gameEntity->getId() : null,
                 'state' => $game->getState(),
@@ -187,7 +189,7 @@ class GameController extends AbstractController
                     return in_array($selectedMirrored, $matrix->getMirrored())
                         && in_array($selectedRotation, $matrix->getRotations());
                 }) : null,
-            ]), $game];
+            ], $baseResponse), $game];
         } catch (ClientExceptionInterface $exception) {
             $response = $exception->getResponse()->toArray(false);
             if (!empty($response["additionalContext"]["move"])) {
