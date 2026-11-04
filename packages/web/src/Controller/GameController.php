@@ -234,6 +234,9 @@ class GameController extends AbstractController
 
     function isYourTurn(?GameEntity $gameEntity, Game $game, User $user)
     {
+        if (!empty($game->getVictory())) {
+            return false;
+        }
         if (!empty($gameEntity)) {
             $playerIdCurrentTurn = $game->getTurnOfPlayer() === "blue"
                 ? $gameEntity->getFirstPlayer()->getId()
