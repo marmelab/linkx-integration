@@ -8,12 +8,17 @@ use App\Enum\GameStatus;
 use App\Model\Game;
 use App\Model\GameOptions;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class GamePersister
 {
 
     public function __construct(
         private EntityManagerInterface $em,
+        private HubInterface $hub,
+        private SerializerInterface $serializer,
     ) {}
 
     public function initGame(?User $currentUser, ?GameOptions $options): GameEntity
@@ -63,5 +68,10 @@ class GamePersister
 
         $this->em->persist($gameEntity);
         $this->em->flush();
+
+        $this->hub->publish(new Update(
+            "{$_ENV['SERVER_NAME']}/admin/games/{$gameEntity->getId()}",
+            $this->serializer->serialize($gameEntity, 'json', ['groups' => 'admin-game-view'])
+        ));
     }
 }

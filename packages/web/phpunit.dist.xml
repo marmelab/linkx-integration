@@ -25,6 +25,18 @@
         <env name="JWT_PUBLIC_KEY" value="%kernel.project_dir%/config/jwt/public.pem"/>
         <env name="JWT_PASSPHRASE" value="050ffd8463f6929474854f2c9d2e0c573d2474a2f5014a333036785767e2d95d"/>
         <!-- ###- lexik/jwt-authentication-bundle ### -->
+
+        <!-- ###+ symfony/mercure-bundle ### -->
+        <!-- See https://symfony.com/doc/current/mercure.html#configuration -->
+        <!-- The URL of the Mercure hub, used by the app to publish updates (can be a local URL) -->
+        <env name="MERCURE_URL" value="http://example.com/.well-known/mercure"/>
+        <!-- The public URL of the Mercure hub, used by the browser to connect -->
+        <env name="MERCURE_PUBLIC_URL" value="http://example.com/.well-known/mercure"/>
+        <!-- The secret used to sign the JWTs -->
+        <env name="MERCURE_JWT_SECRET" value="!ChangeThisMercureHubJWTSecretKey!"/>
+        <!-- The issuer of the JWTs, must be trusted by the hub (MERCURE_TRUSTED_ISSUERS) -->
+        <env name="MERCURE_JWT_ISSUER" value="http://localhost"/>
+        <!-- ###- symfony/mercure-bundle ### -->
     </php>
 
     <testsuites>

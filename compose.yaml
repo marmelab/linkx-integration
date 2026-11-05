@@ -24,10 +24,20 @@ services:
     env_file:
       - .env
       - .env.local
+      - packages/web/.env
+      - packages/web/.env.local
     build:
       context: .
       dockerfile: packages/web/Dockerfile
     restart: unless-stopped
+    environment:
+      # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
+      MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
+      MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${DEFAULT_URI:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MERCURE_JWT_ISSUER: ${CADDY_MERCURE_JWT_ISSUER:-https://localhost}
+      MERCURE_EXTRA_DIRECTIVES: cors_origins "http://localhost:5173"
+      ###> dunglas/symfony-docker ###
     depends_on:
       postgres-dev:
         condition: service_healthy

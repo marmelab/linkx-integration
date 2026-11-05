@@ -1,3 +1,4 @@
+import { addRealTimeMethodsBasedOnMercure } from "@react-admin/ra-core-ee";
 import queryString from "query-string";
 import { fetchUtils, type GetManyParams, type Options } from "ra-core";
 import jsonServerProvider from "ra-data-json-server";
@@ -14,7 +15,7 @@ const httpClient = (url: string, options: Options = {}) => {
 export const apiUrl =
   (import.meta.env.VITE_API_URL ?? "http://localhost/api") + "/admin";
 
-export const dataProvider = {
+const baseDataProvider = {
   ...jsonServerProvider(apiUrl, httpClient),
   getMany: async (resource: string, params: GetManyParams) => {
     const query = {
@@ -26,3 +27,9 @@ export const dataProvider = {
     return { data: json };
   },
 };
+
+export const dataProvider = addRealTimeMethodsBasedOnMercure(
+  baseDataProvider,
+  import.meta.env.VITE_MERCURE_PUBLIC_URL ??
+    "http://localhost/.well-known/mercure",
+);

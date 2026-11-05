@@ -13,7 +13,7 @@ You will also need **npm** for the mobile version.
 make dev
 ```
 
-Web version: https://localhost/game
+Web version: http://localhost
 Api: http://localhost:3005
 Swagger: http://localhost:3080
 Admin: http://localhost:5173
@@ -24,6 +24,19 @@ After using make install or modifying the node files, you need to rebuild:
 docker-compose build && docker-compose up
 ```
 
+### With real time
+
+Execute the following commands from the project root
+
+````bash
+cd packages/web/config/jwt/mercure
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out publisher.key
+openssl pkey -in publisher.key -pubout -out publisher.key.pub
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out subscriber.key
+openssl pkey -in subscriber.key -pubout -out subscriber.key.pub
+cd ../../../../..
+`̀`
+
 ### On native mobile
 
 You need android studio with a working emulator, or a device connected through adb.
@@ -33,7 +46,7 @@ Dev mode :
 
 ```bash
 make mobile
-```
+````
 
 Add to your `.env.local` `EXPO_PUBLIC_API_URL=http://<your LOCAL ip here>/api`.
 Example: `EXPO_PUBLIC_API_URL=http://192.168.1.XXX/api`

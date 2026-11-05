@@ -17,6 +17,10 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           cache: true
+      - name: Setup react-admin registry
+        uses: react-admin/ra-enterprise-action@v1.0.0
+        env:
+          RA_EE_CI_TOKEN: ${{secrets.RA_EE_CI_TOKEN}}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:

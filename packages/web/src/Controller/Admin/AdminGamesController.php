@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Game;
 use App\Model\ListParams;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,15 +28,21 @@ class AdminGamesController extends AbstractController
         $filter = [];
         $filter['playerId'] = $params->getPlayerId();
 
-        $users = $this->gameRepository->findOnlineGamesBy(
+        $games = $this->gameRepository->findOnlineGamesBy(
             $filter,
             $sort,
             $params->get_end() - $params->get_start(),
             $params->get_start()
         );
 
-        return $this->json($users, 200, [
+        return $this->json($games, 200, [
             "X-Total-Count" => $this->gameRepository->countOnlineGamesBy($filter),
         ], ['groups' => ['admin-game-view']]);
+    }
+
+    #[Route(path: "/api/admin/games/{id}", name: "admin_show_game")]
+    public function adminShowGame(Game $game)
+    {
+        return $this->json($game, 200, [], ['groups' => 'admin-game-view']);
     }
 }
