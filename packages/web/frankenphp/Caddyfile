@@ -21,7 +21,7 @@
 
 	mercure {
 		name default
-		resource_identifier "http://localhost/.well-known/mercure"
+		resource_identifier {$CADDY_MERCURE_PUBLIC_URL}
 		
 		issuer {$MERCURE_TRUSTED_ISSUERS:http://localhost} {
 			authorization_server

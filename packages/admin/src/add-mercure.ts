@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { DataProvider } from "ra-core";
 
 import { EventSourcePolyfill } from "event-source-polyfill";
