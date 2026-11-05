@@ -19,11 +19,6 @@
 	root /app/public
 	encode zstd br gzip
 
-
-
-	vars token "{http.request.cookie.jwt_hp}.{http.request.cookie.jwt_s}"
-	request_header __Secure-mercure_access_token {vars.token}
-
 	mercure {
 		name default
 		resource_identifier "http://localhost/.well-known/mercure"
@@ -39,7 +34,6 @@
 				jwt {env.MERCURE_SUBSCRIBER_JWT_KEY} {env.MERCURE_SUBSCRIBER_JWT_ALG}
 			}
 		}
-		anonymous # TODO remove and use php's JWT
 
 		{$MERCURE_EXTRA_DIRECTIVES}
 	}

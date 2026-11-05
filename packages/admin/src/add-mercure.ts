@@ -58,7 +58,7 @@ export const addMercure = (
       );
       return new Promise((resolve, reject) => {
         eventSource = new EventSourcePolyfill(url, {
-          credentials: "include",
+          withCredentials: true,
         });
         eventSource.onmessage = (e: any): void => {
           const event: Event = JSON.parse(e.data);

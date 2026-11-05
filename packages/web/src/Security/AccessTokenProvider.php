@@ -25,9 +25,7 @@ final class AccessTokenProvider implements TokenProviderInterface
     {
         if ($this->exp <= new DateTimeImmutable('now')) {
             $this->jwt = $this->JWTManager->createFromPayload($this->dummyUser, [
-                "iss" => $_ENV['JWT_ISSUER'],
                 "sub" => "0",
-                "aud" => $_ENV['MERCURE_PUBLIC_URL'],
                 "authorization_details" => [
                     [
                         "type" => "https://mercure.rocks/authorization-detail",
