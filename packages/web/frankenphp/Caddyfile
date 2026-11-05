@@ -19,10 +19,17 @@
 	root /app/public
 	encode zstd br gzip
 
+
+
+	vars token "{http.request.cookie.jwt_hp}.{http.request.cookie.jwt_s}"
+	request_header __Secure-mercure_access_token {vars.token}
+
 	mercure {
 		name default
+		resource_identifier "http://localhost/.well-known/mercure"
 		
 		issuer {$MERCURE_TRUSTED_ISSUERS:http://localhost} {
+			authorization_server
 			# Publisher JWT key
 			publisher {
 				jwt {env.MERCURE_PUBLISHER_JWT_KEY} {env.MERCURE_PUBLISHER_JWT_ALG}
@@ -42,6 +49,7 @@
 	{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
 	@phpRoute {
+        not path /.well-known/mercure*
 		not file {path}
 	}
 	rewrite @phpRoute index.php

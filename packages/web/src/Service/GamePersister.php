@@ -8,9 +8,13 @@ use App\Enum\GameStatus;
 use App\Model\Game;
 use App\Model\GameOptions;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 class GamePersister
 {
@@ -19,6 +23,7 @@ class GamePersister
         private EntityManagerInterface $em,
         private HubInterface $hub,
         private SerializerInterface $serializer,
+        private LoggerInterface $logger,
     ) {}
 
     public function initGame(?User $currentUser, ?GameOptions $options): GameEntity
@@ -66,12 +71,24 @@ class GamePersister
 
         $gameEntity->setState($game->getState());
 
+        $isCreation = is_null($gameEntity->getId());
+
         $this->em->persist($gameEntity);
         $this->em->flush();
 
-        $this->hub->publish(new Update(
-            "{$_ENV['SERVER_NAME']}/admin/games/{$gameEntity->getId()}",
-            $this->serializer->serialize($gameEntity, 'json', ['groups' => 'admin-game-view'])
-        ));
+        try {
+            if ($isCreation) {
+                $this->hub->publish(new Update(
+                    "{$_ENV['SERVER_NAME']}/api/admin/games",
+                    $this->serializer->serialize($gameEntity, 'json', ['groups' => 'admin-game-view'])
+                ));
+            }
+            $this->hub->publish(new Update(
+                "{$_ENV['SERVER_NAME']}/api/admin/games/{$gameEntity->getId()}",
+                $this->serializer->serialize($gameEntity, 'json', ['groups' => 'admin-game-view'])
+            ));
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage() . ($exception->getPrevious() ? " {$exception->getPrevious()->getMessage()}" : ""));
+        }
     }
 }

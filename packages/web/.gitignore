@@ -18,7 +18,5 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 ###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
+/config/jwt/**
 ###< lexik/jwt-authentication-bundle ###
-
-/config/jwt/mercure/**
