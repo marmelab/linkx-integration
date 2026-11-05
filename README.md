@@ -35,7 +35,7 @@ openssl pkey -in publisher.key -pubout -out publisher.key.pub
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out subscriber.key
 openssl pkey -in subscriber.key -pubout -out subscriber.key.pub
 cd ../../../../..
-`̀``
+```
 
 ### On native mobile
 
