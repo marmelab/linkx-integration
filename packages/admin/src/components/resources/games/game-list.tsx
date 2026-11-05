@@ -13,7 +13,7 @@ interface GameListProps extends ListProps {}
 
 const gameFilters = [
   <ReferenceInput alwaysOn reference="users" label="Player" source="playerId">
-    <AutocompleteInput />
+    <AutocompleteInput className="w-64" />
   </ReferenceInput>,
 ];
 
