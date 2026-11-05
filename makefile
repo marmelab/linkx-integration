@@ -49,5 +49,8 @@ make-migration: # Requires make dev
 migrate:
 	@docker compose exec php php bin/console d:m:m --no-interaction
 
+mercure-token:
+	@docker compose exec php frankenphp mercure-token --iss http://localhost --aud http://localhost/.well-known/mercure --key packages/web/config/jwt/publisher.key --subscribe 'http://localhost/games' --subscribe-urlpattern http://localhost/games/:id
+
 deploy:	## Deploy over SSH (requires DOMAIN=...)
 	@DOMAIN=$(DOMAIN) ./infra/scripts/deploy.sh
