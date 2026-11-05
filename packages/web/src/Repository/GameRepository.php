@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Game;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Query\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,7 +39,11 @@ class GameRepository extends ServiceEntityRepository
         $qb = $this->getFilteredQueryForList($filter);
 
         foreach ($sort as $key => $direction) {
-            $qb->addOrderBy("g.$key", $direction);
+            if (!str_contains($key, ".")) {
+                $qb->addOrderBy("g.$key", $direction);
+            } else {
+                $qb->addOrderBy($key, $direction);
+            }
         }
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
@@ -58,6 +63,9 @@ class GameRepository extends ServiceEntityRepository
     private function getFilteredQueryForList($filter)
     {
         $qb = $this->createQueryBuilder('g')
+            ->leftJoin('g.firstPlayer', 'firstPlayer')
+            ->leftJoin('g.secondPlayer', 'secondPlayer')
+            ->leftJoin('g.victor', 'victor')
             ->andWhere('g.firstPlayer is not null')
             ->andWhere('g.secondPlayer is not null')
             ->andWhere('(g.localGame IS NULL OR NOT g.localGame = TRUE)');

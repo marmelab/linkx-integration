@@ -1,4 +1,9 @@
-import { DateField, ReferenceField } from "@/components/admin";
+import {
+  AutocompleteInput,
+  DateField,
+  ReferenceField,
+  ReferenceInput,
+} from "@/components/admin";
 import { DataTable } from "@/components/admin/data-table";
 import GameStatusField from "@/components/admin/game-status-field";
 import { List, type ListProps } from "@/components/admin/list";
@@ -6,8 +11,14 @@ import { getClientTimezone } from "@/lib/get-client-timezone";
 
 interface GameListProps extends ListProps {}
 
+const gameFilters = [
+  <ReferenceInput alwaysOn reference="users" label="Player" source="playerId">
+    <AutocompleteInput className="w-64" />
+  </ReferenceInput>,
+];
+
 export const GameList = ({ ...props }: GameListProps) => (
-  <List {...props}>
+  <List filters={gameFilters} {...props}>
     <GameDataTable />
   </List>
 );
