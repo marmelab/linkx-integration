@@ -33,7 +33,7 @@ export const UserShow = () => {
           reference="games"
           target="playerId"
         >
-          <div className="text-2xl font-bold tracking-tight">Games played</div>
+          <h2 className="text-2xl font-bold tracking-tight">Games played</h2>
           <GameDataTable />
         </ReferenceManyField>
       </div>
