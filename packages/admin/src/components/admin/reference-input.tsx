@@ -1,5 +1,7 @@
 import type { ReferenceInputBaseProps } from "ra-core";
+
 import { ReferenceInputBase } from "ra-core";
+
 import { AutocompleteInput } from "./autocomplete-input";
 
 /**

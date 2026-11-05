@@ -1,11 +1,12 @@
-import { ResourceContext, useRecordContext } from "ra-core";
+import { useRecordContext } from "ra-core";
 
+import { ReferenceManyField } from "@/components/admin";
 import { DateField } from "@/components/admin/date-field";
 import { RecordField } from "@/components/admin/record-field";
 import { RolesField } from "@/components/admin/roles-field";
 import { Show } from "@/components/admin/show";
 
-import { GameList } from "../games/game-list";
+import { GameDataTable } from "../games/game-list";
 
 const UserShowTitle = () => {
   const record = useRecordContext();
@@ -26,23 +27,16 @@ export const UserShow = () => {
         <RecordField source="updatedAt">
           <DateField source="updatedAt" />
         </RecordField>
-        <ResourceContext value="games">
-          <PlayerGameList />
-        </ResourceContext>
+        <ReferenceManyField
+          sort={{ field: "updatedAt", order: "DESC" }}
+          perPage={5}
+          reference="games"
+          target="playerId"
+        >
+          <h2 className="text-2xl font-bold tracking-tight">Games played</h2>
+          <GameDataTable />
+        </ReferenceManyField>
       </div>
     </Show>
-  );
-};
-
-const PlayerGameList = () => {
-  const record = useRecordContext();
-  const filter = record ? { playerId: record.id } : {};
-  return (
-    <GameList
-      filter={filter}
-      perPage={5}
-      sort={{ field: "updatedAt", order: "DESC" }}
-      title="Games played"
-    />
   );
 };
