@@ -28,14 +28,14 @@ docker-compose build && docker-compose up
 
 Execute the following commands from the project root
 
-````bash
+```bash
 cd packages/web/config/jwt/mercure
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out publisher.key
 openssl pkey -in publisher.key -pubout -out publisher.key.pub
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out subscriber.key
 openssl pkey -in subscriber.key -pubout -out subscriber.key.pub
 cd ../../../../..
-`̀`
+`̀``
 
 ### On native mobile
 
@@ -46,7 +46,7 @@ Dev mode :
 
 ```bash
 make mobile
-````
+```
 
 Add to your `.env.local` `EXPO_PUBLIC_API_URL=http://<your LOCAL ip here>/api`.
 Example: `EXPO_PUBLIC_API_URL=http://192.168.1.XXX/api`
