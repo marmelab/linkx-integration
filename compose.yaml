@@ -33,10 +33,11 @@ services:
     environment:
       # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
-      MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${DEFAULT_URI:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
+      MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-http://${DEFAULT_URI:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
       MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
       MERCURE_JWT_ISSUER: ${CADDY_MERCURE_JWT_ISSUER:-https://localhost}
       MERCURE_EXTRA_DIRECTIVES: cors_origins "http://localhost:5173"
+      MERCURE_TRUSTED_ISSUERS: ${CADDY_MERCURE_JWT_ISSUER:-https://localhost}
       ###> dunglas/symfony-docker ###
     depends_on:
       postgres-dev:
