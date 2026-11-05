@@ -31,6 +31,7 @@ class Game
     #[ORM\Column(options: ['default' => false])]
     private ?bool $localGame = false;
 
+    #[Groups(['admin-game-view'])]
     #[ORM\Column(enumType: GameStatus::class)]
     private ?GameStatus $status = GameStatus::RUNNING;
 

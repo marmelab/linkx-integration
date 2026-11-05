@@ -28,4 +28,47 @@ class GameRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+
+    /**
+     * @return Game[]
+     */
+    public function findOnlineGamesBy(array $filter, array $sort, int $limit, int $offset)
+    {
+        $qb = $this->getFilteredQueryForList($filter);
+
+        foreach ($sort as $key => $direction) {
+            $qb->addOrderBy("g.$key", $direction);
+        }
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countOnlineGamesBy(array $filter)
+    {
+        $qb = $this->getFilteredQueryForList($filter);
+
+        $qb->select("count(g.id)");
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    private function getFilteredQueryForList($filter)
+    {
+        $qb = $this->createQueryBuilder('g')
+            ->andWhere('g.firstPlayer is not null')
+            ->andWhere('g.secondPlayer is not null')
+            ->andWhere('(g.localGame IS NULL OR NOT g.localGame = TRUE)');
+
+        if (!empty($filter['playerId'])) {
+            $qb->andWhere($qb->expr()->orX(
+                'g.firstPlayer = :playerId',
+                'g.secondPlayer = :playerId',
+            ))->setParameter('playerId', $filter['playerId']);
+        }
+
+        return $qb;
+    }
 }
