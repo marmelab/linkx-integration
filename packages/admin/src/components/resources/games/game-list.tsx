@@ -7,7 +7,7 @@ import { getClientTimezone } from "@/lib/get-client-timezone";
 interface GameListProps extends ListProps {}
 
 export const GameList = ({ ...props }: GameListProps) => (
-  <List {...props}>
+  <List {...props} queryOptions={{ refetchInterval: 10000 }}>
     <GameDataTable />
   </List>
 );

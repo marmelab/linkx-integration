@@ -32,6 +32,7 @@ export const UserShow = () => {
           perPage={5}
           reference="games"
           target="playerId"
+          queryOptions={{ refetchInterval: 10000 }}
         >
           <div className="text-2xl font-bold tracking-tight">Games played</div>
           <GameDataTable />
