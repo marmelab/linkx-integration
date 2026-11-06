@@ -6,6 +6,20 @@ import getCookie from "./lib/get-cookie";
 const API_URL = import.meta.env.VITE_API_URL;
 const PAYLOAD_KEY = "token-payload";
 
+export const ROLE_ADMIN = "ROLE_ADMIN";
+export const ROLE_USER = "ROLE_USER";
+export const ROLE_USER_MANAGER = "ROLE_USER_MANAGER";
+export type Role =
+  | typeof ROLE_ADMIN
+  | typeof ROLE_USER
+  | typeof ROLE_USER_MANAGER;
+
+export const ROLES: Record<Role, string> = {
+  ROLE_ADMIN: "Administrator",
+  ROLE_USER: "Player",
+  ROLE_USER_MANAGER: "Player manager",
+};
+
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
     const loginResponse = await fetch(`${API_URL}/user/login`, {
@@ -31,8 +45,9 @@ export const authProvider: AuthProvider = {
         throw new Error("Error met while parsing server response.");
       }
       const payloadJson = b64DecodeMultibytes(encodedPayload);
+      const roles = JSON.parse(payloadJson).roles;
 
-      if (!JSON.parse(payloadJson).roles.includes("ROLE_ADMIN")) {
+      if (!(roles.includes(ROLE_ADMIN) || roles.includes(ROLE_USER_MANAGER))) {
         throw new Error("You cannot access this page.");
       }
 
@@ -78,4 +93,24 @@ export const authProvider: AuthProvider = {
     }
     throw new Error("Not logged in.");
   },
+  canAccess: async ({ resource }) => {
+    const roles = getTokenPayload().roles;
+
+    if (resource === "users") {
+      return true;
+    } else {
+      return roles.includes(ROLE_ADMIN);
+    }
+  },
 };
+
+export function getTokenPayload() {
+  try {
+    const json = localStorage.getItem(PAYLOAD_KEY);
+    return json ? JSON.parse(json) : null;
+  } catch (error: any) {
+    console.error("Invalid payload saved. " + error.message);
+    localStorage.removeItem(PAYLOAD_KEY);
+    return null;
+  }
+}

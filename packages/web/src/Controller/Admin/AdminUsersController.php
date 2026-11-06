@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class AdminUsersController extends AbstractController
 {
@@ -68,12 +69,28 @@ class AdminUsersController extends AbstractController
     }
 
     #[Route(path: "/api/admin/users/{id}", methods: ['PUT'], name: "admin_edit_user")]
-    public function adminEditUser(User $userToEdit, #[MapRequestPayload] UserEdit $formData)
+    public function adminEditUser(User $userToEdit, #[MapRequestPayload] UserEdit $formData, #[CurrentUser] User $currentUser)
     {
+        $roles = array_filter($formData->getRoles(), function ($role) {
+            return $role !== "ROLE_USER";
+        });
+        $rolesHaveBeenModified = $formData->getRoles() != $userToEdit->getRoles();
+
+        if (
+            $userToEdit->getId() === $currentUser->getId()
+            && !in_array('ROLE_ADMIN', $roles)
+        ) {
+            return $this->json(['message' => 'You cannot remove this role from yourself.'], 400);
+        }
+        if ($rolesHaveBeenModified && !$this->isGranted("ROLE_ADMIN")) {
+            return $this->json(['message' => 'You cannot edit roles without being administrator.'], 403);
+        }
+
         $userToEdit
             ->setDisplayName($formData->getDisplayName())
             ->setUsername($formData->getUsername())
-            ->setEmail($formData->getEmail());
+            ->setEmail($formData->getEmail())
+            ->setRoles($roles);
 
         $this->em->flush();
 
