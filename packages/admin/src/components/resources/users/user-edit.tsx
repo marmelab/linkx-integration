@@ -16,7 +16,7 @@ const UserEditTitle = () => {
 export const UserEdit = () => {
   const tokenPayload = getTokenPayload();
   const isAdmin = tokenPayload
-    ? JSON.parse(tokenPayload).roles?.includes(ROLE_ADMIN)
+    ? tokenPayload.roles?.includes(ROLE_ADMIN)
     : false;
 
   return (
