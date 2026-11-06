@@ -13,7 +13,8 @@ security:
     # used to reload user from session & other features (e.g. switch_user)
 
   role_hierarchy:
-    ROLE_ADMIN: ROLE_USER
+    ROLE_ADMIN: ROLE_USER_MANAGER
+    ROLE_USER_MANAGER: ROLE_USER
 
   firewalls:
     dev:
@@ -48,6 +49,7 @@ security:
   access_control:
     - { path: ^/(login|register), roles: PUBLIC_ACCESS }
     - { path: ^/api/user/(login|register), roles: PUBLIC_ACCESS }
+    - { path: ^/api/admin/users, roles: ROLE_USER_MANAGER }
     - { path: ^/api/admin/, roles: ROLE_ADMIN }
     - { path: ^/, roles: ROLE_USER }
 

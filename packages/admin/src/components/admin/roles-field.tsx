@@ -31,5 +31,6 @@ export const RolesField = ({ label }: RolesFieldProps) => {
 const transformRoleForDisplay = (role: string) => {
   if (role === "ROLE_USER") return "Player";
   if (role === "ROLE_ADMIN") return "Administrator";
+  if (role === "ROLE_USER_MANAGER") return "Player manager";
   return role;
 };

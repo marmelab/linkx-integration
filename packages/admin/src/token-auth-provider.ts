@@ -31,8 +31,11 @@ export const authProvider: AuthProvider = {
         throw new Error("Error met while parsing server response.");
       }
       const payloadJson = b64DecodeMultibytes(encodedPayload);
+      const roles = JSON.parse(payloadJson).roles;
 
-      if (!JSON.parse(payloadJson).roles.includes("ROLE_ADMIN")) {
+      if (
+        !(roles.includes("ROLE_ADMIN") || roles.includes("ROLE_USER_MANAGER"))
+      ) {
         throw new Error("You cannot access this page.");
       }
 
@@ -77,5 +80,20 @@ export const authProvider: AuthProvider = {
       };
     }
     throw new Error("Not logged in.");
+  },
+  canAccess: async ({ resource }) => {
+    const tokenPayloadJson = localStorage.getItem(PAYLOAD_KEY);
+
+    if (tokenPayloadJson) {
+      const roles = JSON.parse(tokenPayloadJson).roles;
+
+      if (resource === "users") {
+        return true;
+      } else {
+        return roles.includes("ROLE_ADMIN");
+      }
+    }
+
+    throw new Error("Authentication information is missing.");
   },
 };
