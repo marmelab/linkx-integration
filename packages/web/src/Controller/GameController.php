@@ -35,11 +35,11 @@ class GameController extends AbstractController
     #[Route('/game')]
     public function state(Request $request, #[CurrentUser] User $user): Response
     {
-        $state = $request->query->get("state");
-        $selected = $request->query->get("selected");
-        $selectedMirrored = $request->query->get("mirror-piece") ?? false;
-        $selectedRotation = $this->formatRotation($request->query->get("rotate-piece"));
-        $column = $request->query->get("column");
+        $state = $request->getPayload()->get("state") ?? $request->query->get("state");
+        $selected = $request->getPayload()->get("selected");
+        $selectedMirrored = $request->getPayload()->get("mirror-piece") ?? false;
+        $selectedRotation = $this->formatRotation($request->getPayload()->get("rotate-piece"));
+        $column = $request->getPayload()->get("column");
 
         [$render] = $this->runAndRenderGame($user, null, $state, $selected, $selectedMirrored, $selectedRotation, $column, null, null);
 
@@ -208,7 +208,7 @@ class GameController extends AbstractController
                 }
                 $errorMessage = $response["message"];
                 $game = $this->gameRunner->undoTurn($game, $errorMove);
-                return [$this->runAndRenderGame($user, $gameEntity, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null), $game];
+                return $this->runAndRenderGame($user, $gameEntity, $state, $selected, $selectedMirrored, $selectedRotation, $column, $errorMessage, null);
             } else {
                 return [$this->render('error.html.twig', [
                     "errorMessage" => $response["message"]
