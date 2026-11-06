@@ -74,18 +74,16 @@ class AdminUsersController extends AbstractController
         $roles = array_filter($formData->getRoles(), function ($role) {
             return $role !== "ROLE_USER";
         });
+        $rolesHaveBeenModified = $formData->getRoles() != $userToEdit->getRoles();
 
         if (
             $userToEdit->getId() === $currentUser->getId()
-            && empty(array_intersect(['ROLE_ADMIN', 'ROLE_USER_MANAGER'], $roles))
+            && !in_array('ROLE_ADMIN', $roles)
         ) {
             return $this->json(['message' => 'You cannot remove this role from yourself.'], 400);
         }
-        if (in_array("ROLE_ADMIN", $userToEdit->getRoles()) && !$this->isGranted("ROLE_ADMIN")) {
-            return $this->json(['message' => 'You do not have the required role to edit an administrator.'], 403);
-        }
-        if (in_array("ROLE_ADMIN", $formData->getRoles()) && !$this->isGranted("ROLE_ADMIN")) {
-            return $this->json(['message' => 'You do not have the required role to assign someone as a administrator.'], 403);
+        if ($rolesHaveBeenModified && !$this->isGranted("ROLE_ADMIN")) {
+            return $this->json(['message' => 'You cannot edit roles without being administrator.'], 403);
         }
 
         $userToEdit

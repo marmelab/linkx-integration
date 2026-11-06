@@ -11,14 +11,8 @@ export const RolesInput = ({ ...props }: RolesInputProps) => {
   return (
     <AutocompleteInput
       {...props}
-      format={(roles) => {
-        console.log("format", roles);
-        return roles[0];
-      }}
-      parse={(choice) => {
-        console.log("parse", choice);
-        return [choice];
-      }}
+      format={(roles) => roles[0]}
+      parse={(choice) => [choice]}
       choices={[
         { id: "ROLE_USER", name: "Player" },
         { id: "ROLE_USER_MANAGER", name: "Player Manager" },

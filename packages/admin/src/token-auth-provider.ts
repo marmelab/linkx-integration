@@ -4,7 +4,7 @@ import b64DecodeMultibytes from "./lib/b64-decode-multibytes";
 import getCookie from "./lib/get-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const PAYLOAD_KEY = "token-payload";
+export const PAYLOAD_KEY = "token-payload";
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
