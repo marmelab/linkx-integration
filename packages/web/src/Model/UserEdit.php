@@ -2,8 +2,11 @@
 
 namespace App\Model;
 
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity(fields: ['email'], entityClass: User::class, identifierFieldNames: ['id' => 'id'])]
 class UserEdit
 {
 
