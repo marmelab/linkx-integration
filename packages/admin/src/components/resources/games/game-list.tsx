@@ -18,7 +18,11 @@ const gameFilters = [
 ];
 
 export const GameList = ({ ...props }: GameListProps) => (
-  <List filters={gameFilters} {...props}>
+  <List
+    sort={{ field: "createdAt", order: "DESC" }}
+    filters={gameFilters}
+    {...props}
+  >
     <GameDataTable />
   </List>
 );
