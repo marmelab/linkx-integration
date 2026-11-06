@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 import { FieldTitle, useRecordContext } from "ra-core";
 
+import { ROLES, type Role } from "@/token-auth-provider";
+
 import { Badge } from "../ui/badge";
 
 type RolesFieldProps = {
@@ -21,16 +23,9 @@ export const RolesField = ({ label }: RolesFieldProps) => {
           <FieldTitle label={label}></FieldTitle>
         </div>
       ) : null}
-      {record.roles.map((role: string) => (
-        <Badge key={role}>{transformRoleForDisplay(role)}</Badge>
+      {record.roles.map((role: Role) => (
+        <Badge key={role}>{ROLES[role]}</Badge>
       ))}
     </div>
   );
-};
-
-const transformRoleForDisplay = (role: string) => {
-  if (role === "ROLE_USER") return "Player";
-  if (role === "ROLE_ADMIN") return "Administrator";
-  if (role === "ROLE_USER_MANAGER") return "Player manager";
-  return role;
 };
