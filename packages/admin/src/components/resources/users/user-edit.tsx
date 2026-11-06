@@ -6,7 +6,7 @@ import { RolesField } from "@/components/admin/roles-field";
 import { RolesInput } from "@/components/admin/roles-input";
 import { SimpleForm } from "@/components/admin/simple-form";
 import { TextInput } from "@/components/admin/text-input";
-import { PAYLOAD_KEY, ROLE_ADMIN } from "@/token-auth-provider";
+import { getTokenPayload, ROLE_ADMIN } from "@/token-auth-provider";
 
 const UserEditTitle = () => {
   const record = useRecordContext();
@@ -14,7 +14,7 @@ const UserEditTitle = () => {
 };
 
 export const UserEdit = () => {
-  const tokenPayload = localStorage.getItem(PAYLOAD_KEY);
+  const tokenPayload = getTokenPayload();
   const isAdmin = tokenPayload
     ? JSON.parse(tokenPayload).roles?.includes(ROLE_ADMIN)
     : false;

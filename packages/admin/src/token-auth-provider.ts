@@ -4,7 +4,7 @@ import b64DecodeMultibytes from "./lib/b64-decode-multibytes";
 import getCookie from "./lib/get-cookie";
 
 const API_URL = import.meta.env.VITE_API_URL;
-export const PAYLOAD_KEY = "token-payload";
+const PAYLOAD_KEY = "token-payload";
 
 export const ROLE_ADMIN = "ROLE_ADMIN";
 export const ROLE_USER = "ROLE_USER";
@@ -109,3 +109,14 @@ export const authProvider: AuthProvider = {
     throw new Error("Authentication information is missing.");
   },
 };
+
+export function getTokenPayload() {
+  try {
+    const json = localStorage.getItem(PAYLOAD_KEY);
+    return json ? JSON.parse(json) : null;
+  } catch (error: any) {
+    console.error("Invalid payload saved. " + error.message);
+    localStorage.removeItem(PAYLOAD_KEY);
+    return null;
+  }
+}
