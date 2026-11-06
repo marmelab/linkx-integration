@@ -84,6 +84,9 @@ class AdminUsersController extends AbstractController
         if (in_array("ROLE_ADMIN", $userToEdit->getRoles()) && !$this->isGranted("ROLE_ADMIN")) {
             return $this->json(['message' => 'You do not have the required role to edit an administrator.'], 403);
         }
+        if (in_array("ROLE_ADMIN", $formData->getRoles()) && !$this->isGranted("ROLE_ADMIN")) {
+            return $this->json(['message' => 'You do not have the required role to assign someone as a administrator.'], 403);
+        }
 
         $userToEdit
             ->setDisplayName($formData->getDisplayName())
