@@ -94,19 +94,13 @@ export const authProvider: AuthProvider = {
     throw new Error("Not logged in.");
   },
   canAccess: async ({ resource }) => {
-    const tokenPayloadJson = localStorage.getItem(PAYLOAD_KEY);
+    const roles = getTokenPayload().roles;
 
-    if (tokenPayloadJson) {
-      const roles = JSON.parse(tokenPayloadJson).roles;
-
-      if (resource === "users") {
-        return true;
-      } else {
-        return roles.includes(ROLE_ADMIN);
-      }
+    if (resource === "users") {
+      return true;
+    } else {
+      return roles.includes(ROLE_ADMIN);
     }
-
-    throw new Error("Authentication information is missing.");
   },
 };
 
