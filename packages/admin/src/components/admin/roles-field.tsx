@@ -24,8 +24,26 @@ export const RolesField = ({ label }: RolesFieldProps) => {
         </div>
       ) : null}
       {record.roles.map((role: Role) => (
-        <Badge key={role}>{ROLES[role]}</Badge>
+        <Badge variant={rolesVariant[role]} key={role}>
+          {ROLES[role]}
+        </Badge>
       ))}
     </div>
   );
+};
+
+const rolesVariant: Record<
+  Role,
+  | "destructive"
+  | "ghost"
+  | "link"
+  | "default"
+  | "secondary"
+  | "outline"
+  | null
+  | undefined
+> = {
+  ROLE_ADMIN: "destructive",
+  ROLE_USER_MANAGER: "default",
+  ROLE_USER: "secondary",
 };
