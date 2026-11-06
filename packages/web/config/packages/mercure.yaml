@@ -1,0 +1,7 @@
+mercure:
+  hubs:
+    default:
+      url: "%env(default::MERCURE_URL)%"
+      public_url: "%env(default::MERCURE_PUBLIC_URL)%"
+      jwt:
+        provider: App\Security\AccessTokenProvider

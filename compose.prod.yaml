@@ -25,6 +25,7 @@ services:
   php:
     image: frankenphp_prod
     restart: unless-stopped
+    env_file: docker-compose.env
     depends_on:
       postgres-dev:
         condition: service_healthy
@@ -33,6 +34,10 @@ services:
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
       DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
       DATABASE_URL: ${DATABASE_URL}
+      MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
+      MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-http://${DEFAULT_URI:-localhost}:${HTTPS_PORT:-443}/.well-known/mercure}
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MERCURE_JWT_ISSUER: ${CADDY_MERCURE_JWT_ISSUER:-https://localhost}
     volumes:
       - caddy_data:/data
       - caddy_config:/config

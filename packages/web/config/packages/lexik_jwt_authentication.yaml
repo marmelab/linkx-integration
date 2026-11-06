@@ -11,6 +11,17 @@ lexik_jwt_authentication:
         - jwt_s
 
   set_cookies:
+    # For mercure only. Does not work over http.
+    __Secure-mercure_access_token:
+      lifetime: 0
+      samesite: strict
+      path: /
+      domain: null
+      httpOnly: true
+      partitioned: false
+      secure: true
+
+    # Readable by javascript, no signature
     jwt_hp:
       lifetime: null
       samesite: strict
@@ -23,6 +34,7 @@ lexik_jwt_authentication:
         - header
         - payload
 
+    # Signature, not readable by javascript
     jwt_s:
       lifetime: 0
       samesite: strict
