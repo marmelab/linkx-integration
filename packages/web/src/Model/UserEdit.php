@@ -22,7 +22,10 @@ class UserEdit
     #[Assert\Email]
     private ?string $email = null;
 
-    // Ignored (for now)
+    #[Assert\Count(1)]
+    #[Assert\All(
+        new Assert\Regex("/(ROLE_ADMIN|ROLE_USER|ROLE_USER_MANAGER)/")
+    )]
     private array $roles = [];
 
     /**
