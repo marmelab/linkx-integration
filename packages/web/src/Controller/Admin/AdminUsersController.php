@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Model\ChartParams;
 use App\Model\ListParams;
 use App\Model\UserEdit;
 use App\Repository\UserRepository;
@@ -91,5 +92,14 @@ class AdminUsersController extends AbstractController
         $this->em->flush();
 
         return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route(path: "/api/admin/charts/new_users", methods: ['GET'], name: 'admin_get_new_user_chart')]
+    public function adminGetNewUsersChart(#[MapQueryString] ChartParams $chartParams)
+    {
+        return $this->json(['chart-data' => $this->userRepository->getNewPlayersChartData(
+            $chartParams->getFromDate(),
+            $chartParams->getToDate(),
+        )]);
     }
 }

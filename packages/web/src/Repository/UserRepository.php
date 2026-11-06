@@ -81,6 +81,26 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
 
+    public function getNewPlayersChartData(\DateTimeImmutable $fromDate, \DateTimeImmutable $toDate): array
+    {
+        $stmt = $this->getEntityManager()->getConnection()->prepare(
+            <<<'SQL'
+            SELECT COUNT(_user.*) as count, _user.created_date
+            FROM (
+                SELECT u.id, date_trunc('day', u.created_at::date)
+                FROM "public.user" u
+                WHERE created_at BETWEEN :start_timestamp AND :end_timestamp
+            ) as _user
+            GROUP BY _user.created_date
+        SQL
+        );
+
+        $stmt->bindValue('start_timestamp', $fromDate->getTimestamp());
+        $stmt->bindValue('end_timestamp', $toDate->getTimestamp());
+
+        return $stmt->executeQuery()->fetchAllAssociative();
+    }
+
     protected function getFilteredQueryForList(array $filter)
     {
         $qb = $this->createQueryBuilder('u');
